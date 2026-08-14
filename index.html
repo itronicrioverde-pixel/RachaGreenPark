@@ -370,8 +370,21 @@
 
     .date-time{
       display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:12px;
+      grid-template-columns:minmax(0,1fr);
+      gap:14px;
+      width:100%;
+    }
+
+    .date-time .field{
+      width:100%;
+      min-width:0;
+    }
+
+    .date-time input{
+      display:block;
+      width:100%;
+      max-width:100%;
+      box-sizing:border-box;
     }
 
     .field{min-width:0}
@@ -555,6 +568,11 @@
       border:0;border-radius:12px;
       background:var(--red);
       color:#fff;font-weight:950;
+    }
+
+    .reset-btn:disabled{
+      opacity:.65;
+      cursor:wait;
     }
 
     /* MENU */
@@ -1960,7 +1978,6 @@
           <div class="suggestions" id="locationSuggestions"></div>
           <div class="search-state" id="locationState"></div>
 
-          <button class="map-btn" id="openMapsButton">Abrir local no Google Maps</button>
         </div>
       </div>
 
@@ -2038,6 +2055,7 @@ import {
   doc,
   setDoc,
   updateDoc,
+  deleteDoc,
   collection,
   addDoc,
   query,
@@ -3547,7 +3565,7 @@ let messagingInstance = null;
   // AUTOCOMPLETE DE LOCAIS
   // Busca ao digitar, priorizando Rio Verde - GO.
   // Photon utiliza dados do OpenStreetMap.
-  // O local escolhido abre no Google Maps.
+  // Tudo acontece dentro do próprio app, sem abrir mapas externos.
   // -------------------------------
 
   function formatPlace(feature){
@@ -3608,9 +3626,15 @@ let messagingInstance = null;
 
       btn.addEventListener('click', () => {
         selectedPlace = place;
-        matchLocation.value = place.name;
+        matchLocation.value = place.name || place.address;
         suggestionsBox.classList.remove('show');
-        locationState.classList.remove('show');
+
+        if(place.address){
+          locationState.textContent = 'Endereço encontrado: ' + place.address;
+          locationState.classList.add('show');
+        }else{
+          locationState.classList.remove('show');
+        }
       });
 
       suggestionsBox.appendChild(btn);
@@ -3648,7 +3672,7 @@ let messagingInstance = null;
 
       suggestionsBox.classList.remove('show');
       locationState.textContent =
-        'Não foi possível carregar sugestões agora. Você ainda pode digitar o endereço e abrir no Google Maps.';
+        'Não foi possível carregar sugestões agora. Você ainda pode digitar o endereço manualmente.';
       locationState.classList.add('show');
     }
   }
@@ -3729,33 +3753,6 @@ let messagingInstance = null;
     });
   });
 
-  function mapsQuery(){
-    if(selectedPlace?.latitude != null && selectedPlace?.longitude != null){
-      return `${selectedPlace.latitude},${selectedPlace.longitude}`;
-    }
-
-    if(state.config.latitude != null && state.config.longitude != null &&
-       matchLocation.value.trim() === state.config.locationName){
-      return `${state.config.latitude},${state.config.longitude}`;
-    }
-
-    return matchLocation.value.trim() + ', Rio Verde, GO';
-  }
-
-  document.getElementById('openMapsButton').addEventListener('click', () => {
-    const query = mapsQuery();
-
-    if(!matchLocation.value.trim()){
-      alert('Digite e escolha um local primeiro.');
-      return;
-    }
-
-    window.open(
-      'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(query),
-      '_blank'
-    );
-  });
-
   document.getElementById('saveRachaButton').addEventListener('click', async () => {
     const locationText = matchLocation.value.trim();
 
@@ -3802,48 +3799,112 @@ let messagingInstance = null;
   });
 
   // RESET TOTAL
-  document.getElementById('resetAppButton').addEventListener('click', () => {
-    if(!confirm('Apagar TODOS os dados do Green Park salvos neste aparelho?')) return;
-    if(!confirm('Confirma o RESET TOTAL? Esta ação não poderá ser desfeita.')) return;
+  // Zera jogadores, pagamentos e Pix no Firebase; mantém a configuração do próximo racha.
+  async function apagarColecaoDoFirebase(collectionName){
+    const snapshot = await getDocs(collection(db, collectionName));
+    const docs = snapshot.docs;
 
-    // Limpa tudo que pertence ao projeto, inclusive versões antigas.
-    const removeLocal = [];
-    for(let i=0;i<localStorage.length;i++){
-      const key = localStorage.key(i);
-      if(!key) continue;
-      const k = key.toLowerCase();
-
-      if(
-        k.includes('greenpark') ||
-        k.includes('green_park') ||
-        k.includes('racha')
-      ){
-        removeLocal.push(key);
-      }
+    for(let i = 0; i < docs.length; i += 25){
+      const lote = docs.slice(i, i + 25);
+      await Promise.all(lote.map(item => deleteDoc(item.ref)));
     }
-    removeLocal.forEach(key => localStorage.removeItem(key));
 
-    const removeSession = [];
-    for(let i=0;i<sessionStorage.length;i++){
-      const key = sessionStorage.key(i);
-      if(!key) continue;
-      const k = key.toLowerCase();
+    return docs.length;
+  }
 
-      if(
-        k.includes('greenpark') ||
-        k.includes('green_park') ||
-        k.includes('racha')
-      ){
-        removeSession.push(key);
-      }
+  document.getElementById('resetAppButton').addEventListener('click', async () => {
+    if(!isAdminUser()){
+      alert('Entre como administrador para zerar os dados online do racha.');
+      return;
     }
-    removeSession.forEach(key => sessionStorage.removeItem(key));
 
-    state = freshState();
-    saveState();
+    if(!confirm('Zerar jogadores, confirmações e pagamentos? A configuração do próximo racha será mantida.')) return;
+    if(!confirm('Confirma o RESET? O contador de confirmados voltará para 0.')) return;
 
-    alert('Aplicativo zerado. Confirmados voltaram para 0 e todos os dados do racha foram apagados.');
-    location.reload();
+    const resetButton = document.getElementById('resetAppButton');
+    const originalText = resetButton.textContent;
+
+    resetButton.disabled = true;
+    resetButton.textContent = 'ZERANDO...';
+
+    const configPreserved = {...state.config};
+
+    try{
+      const [playersDeleted, paymentsDeleted, pixDeleted] = await Promise.all([
+        apagarColecaoDoFirebase('players'),
+        apagarColecaoDoFirebase('payments'),
+        apagarColecaoDoFirebase('pix_orders')
+      ]);
+
+      await setDoc(doc(db, 'racha', 'current'), {
+        confirmedCount: 0,
+        countUpdatedAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
+      }, {merge:true});
+
+      const removeLocal = [];
+      for(let i=0;i<localStorage.length;i++){
+        const key = localStorage.key(i);
+        if(!key) continue;
+        const k = key.toLowerCase();
+
+        if(
+          k.includes('greenpark') ||
+          k.includes('green_park') ||
+          k.includes('racha')
+        ){
+          removeLocal.push(key);
+        }
+      }
+      removeLocal.forEach(key => localStorage.removeItem(key));
+
+      const removeSession = [];
+      for(let i=0;i<sessionStorage.length;i++){
+        const key = sessionStorage.key(i);
+        if(!key) continue;
+        const k = key.toLowerCase();
+
+        if(
+          k.includes('greenpark') ||
+          k.includes('green_park') ||
+          k.includes('racha')
+        ){
+          removeSession.push(key);
+        }
+      }
+      removeSession.forEach(key => sessionStorage.removeItem(key));
+
+      state = freshState();
+      state.config = configPreserved;
+
+      remotePendingPayments = [];
+      remoteRacha = {
+        ...(remoteRacha || {}),
+        confirmedCount: 0
+      };
+
+      saveState();
+      renderHome();
+      renderApprovals();
+
+      alert(
+        'Racha zerado com sucesso.\n\n' +
+        'Jogadores removidos: ' + playersDeleted + '\n' +
+        'Pagamentos removidos: ' + paymentsDeleted + '\n' +
+        'Pix removidos: ' + pixDeleted + '\n\n' +
+        'Confirmados: 0'
+      );
+
+      location.reload();
+    }catch(error){
+      console.error('Erro ao zerar o app:', error);
+      alert(
+        'Não foi possível concluir o reset online.\n\n' +
+        'Erro: ' + error.message
+      );
+      resetButton.disabled = false;
+      resetButton.textContent = originalText;
+    }
   });
 
   let firstAuthCheck = true;
