@@ -1027,6 +1027,225 @@
       .payment-types{grid-template-columns:1fr}
     }
 
+
+    /* SEGUNDA PÁGINA — sequência visual da referência */
+    #confirmationView .page-head{
+      display:grid;
+      grid-template-columns:42px 1fr 42px;
+      align-items:center;
+      gap:8px;
+      margin:2px 0 14px;
+    }
+
+    #confirmationView .page-head-title{
+      text-align:center;
+      color:var(--green2);
+      font-size:16px;
+      font-weight:950;
+      letter-spacing:.02em;
+    }
+
+    #confirmationView .confirm-card{
+      padding:15px;
+      border-radius:16px;
+      margin-bottom:12px;
+    }
+
+    #confirmationView .confirm-card h2{
+      margin:0 0 7px;
+      font-size:13px;
+      text-transform:uppercase;
+    }
+
+    #confirmationView .confirmation-summary{
+      margin:0 0 13px;
+      padding:0;
+      border:0;
+      border-radius:0;
+      background:transparent;
+      color:#cbd3cf;
+      font-size:11px;
+      font-weight:700;
+      text-align:left;
+    }
+
+    #confirmationView .decision-grid{
+      grid-template-columns:1.1fr .9fr 1fr;
+      gap:7px;
+      margin-top:0;
+    }
+
+    #confirmationView .decision{
+      min-height:46px;
+      border-radius:9px;
+      padding:7px 5px;
+      font-size:9px;
+      white-space:nowrap;
+    }
+
+    #confirmationView .decision.yes{
+      grid-column:auto;
+      font-size:10px;
+    }
+
+    #confirmationView .payment-flow{
+      margin-top:0;
+      padding-top:0;
+      border-top:0;
+    }
+
+    #confirmationView .flow-label{
+      margin:0 0 10px;
+      font-size:12px;
+      color:#fff;
+    }
+
+    #confirmationView .payment-types{
+      display:grid;
+      grid-template-columns:1fr;
+      gap:8px;
+      margin-bottom:0;
+    }
+
+    #confirmationView .payment-type{
+      min-height:67px;
+      border-radius:11px;
+      padding:12px 14px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+    }
+
+    #confirmationView .payment-type.selected{
+      background:linear-gradient(90deg,#247a22,#359c27);
+      border-color:#43b735;
+      box-shadow:none;
+    }
+
+    #confirmationView .payment-type strong{
+      font-size:16px;
+      color:#fff;
+    }
+
+    #confirmationView .payment-type span{
+      margin-top:4px;
+      font-size:10px;
+      color:#dfe6e2;
+    }
+
+    .payment-radio{
+      width:20px;
+      height:20px;
+      flex:0 0 20px;
+      border:2px solid #aab5af;
+      border-radius:50%;
+      position:relative;
+    }
+
+    .payment-type.selected .payment-radio{
+      border-color:#fff;
+    }
+
+    .payment-type.selected .payment-radio::after{
+      content:"";
+      position:absolute;
+      inset:3px;
+      border-radius:50%;
+      background:#fff;
+    }
+
+    #confirmationView .pix-box{
+      border:1px solid var(--line);
+      border-radius:16px;
+      background:#101920;
+      padding:15px;
+      margin-bottom:12px;
+    }
+
+    #confirmationView .pix-title{
+      font-size:12px;
+    }
+
+    #confirmationView .pix-sub{
+      font-size:10px;
+      margin-top:4px;
+    }
+
+    .pix-content{
+      display:grid;
+      grid-template-columns:112px minmax(0,1fr);
+      gap:11px;
+      align-items:center;
+      margin-top:13px;
+    }
+
+    #confirmationView .qr-placeholder{
+      width:112px;
+      height:112px;
+      margin:0;
+      border-width:7px;
+      border-radius:9px;
+      font-size:9px;
+    }
+
+    .pix-side{
+      min-width:0;
+    }
+
+    #confirmationView .pix-key-label{
+      font-size:9px;
+    }
+
+    #confirmationView .pix-key-row{
+      display:block;
+      margin-top:5px;
+    }
+
+    #confirmationView .pix-key{
+      min-height:auto;
+      border:0;
+      padding:0;
+      background:transparent;
+      font-size:11px;
+      margin-bottom:8px;
+      white-space:normal;
+      overflow-wrap:anywhere;
+    }
+
+    #confirmationView .copy-pix{
+      width:100%;
+      min-height:38px;
+      border-radius:8px;
+      font-size:10px;
+    }
+
+    #confirmationView .paid-done{
+      min-height:46px;
+      border-radius:9px;
+      margin-top:13px;
+      font-size:11px;
+    }
+
+    #confirmationView .payment-admin-note{
+      font-size:9px;
+      margin-top:9px;
+    }
+
+    @media(max-width:360px){
+      #confirmationView .decision-grid{
+        grid-template-columns:1fr;
+      }
+
+      .pix-content{
+        grid-template-columns:1fr;
+      }
+
+      #confirmationView .qr-placeholder{
+        margin:auto;
+      }
+    }
+
 </style>
 </head>
 
@@ -1107,15 +1326,15 @@
   <main class="content view" id="confirmationView">
     <div class="page-head">
       <button class="back-btn" data-back-home>←</button>
-      <div>
-        <div class="page-kicker">CONFIRMAÇÃO</div>
-        <h1>Confirmar presença</h1>
-      </div>
+      <div class="page-head-title">CONFIRMAÇÃO</div>
+      <div></div>
     </div>
 
     <section class="confirm-card">
+      <h2>CONFIRMAR PRESENÇA</h2>
+
       <div class="confirmation-summary" id="confirmMatchInfo">
-        Próximo racha
+        Quinta-feira - 30/05/2024 - 20:00
       </div>
 
       <div class="decision-grid">
@@ -1123,47 +1342,57 @@
         <button class="decision no" id="noButton">NÃO VOU</button>
         <button class="decision maybe" id="maybeButton">AINDA NÃO SEI</button>
       </div>
+    </section>
 
-      <div class="payment-flow" id="paymentFlow">
-        <div class="flow-label">Tipo de pagamento</div>
+    <div class="payment-flow" id="paymentFlow">
+      <section class="confirm-card">
+        <div class="flow-label">TIPO DE PAGAMENTO</div>
 
         <div class="payment-types">
           <button class="payment-type selected" id="dailyPayment" type="button">
-            <strong>R$ 15,00</strong>
-            <span>Pagamento diário</span>
+            <span>
+              <strong>R$ 15,00</strong>
+              <span>Pagamento diário</span>
+            </span>
+            <span class="payment-radio"></span>
           </button>
 
           <button class="payment-type" id="monthlyPayment" type="button">
-            <strong>R$ 70,00</strong>
-            <span>Mensalidade</span>
+            <span>
+              <strong>R$ 70,00</strong>
+              <span>Mensalidade</span>
+            </span>
+            <span class="payment-radio"></span>
           </button>
         </div>
+      </section>
 
-        <div class="pix-box">
-          <div class="pix-title">Pagamento via Pix</div>
-          <div class="pix-sub">Escaneie o QR Code ou copie o código Pix</div>
+      <section class="pix-box">
+        <div class="pix-title">PAGAMENTO VIA PIX</div>
+        <div class="pix-sub">Escaneie o QR Code ou copie o código Pix</div>
 
-          <div class="qr-placeholder">
-            QR PIX
-          </div>
+        <div class="pix-content">
+          <div class="qr-placeholder">QR PIX</div>
 
-          <div class="pix-key-label">Chave Pix</div>
+          <div class="pix-side">
+            <div class="pix-key-label">CHAVE PIX</div>
 
-          <div class="pix-key-row">
-            <div class="pix-key" id="pixKey">greenparkfc@pix.com</div>
-            <button class="copy-pix" id="copyPix" type="button">COPIAR</button>
-          </div>
-
-          <button class="paid-done" id="paymentDone" type="button">
-            JÁ REALIZEI O PAGAMENTO
-          </button>
-
-          <div class="payment-admin-note">
-            O pagamento será confirmado pelo administrador.
+            <div class="pix-key-row">
+              <div class="pix-key" id="pixKey">greenparkfc@pix.com</div>
+              <button class="copy-pix" id="copyPix" type="button">COPIAR</button>
+            </div>
           </div>
         </div>
-      </div>
-    </section>
+
+        <button class="paid-done" id="paymentDone" type="button">
+          JÁ REALIZEI O PAGAMENTO
+        </button>
+
+        <div class="payment-admin-note">
+          O pagamento será confirmado pelo administrador.
+        </div>
+      </section>
+    </div>
   </main>
 
   <!-- CADASTRO RÁPIDO -->
