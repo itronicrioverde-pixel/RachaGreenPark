@@ -32,7 +32,7 @@
     html,body{
       margin:0;
       min-height:100%;
-      font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display","Helvetica Neue",Arial,sans-serif;
       background:#fff;
     }
 
@@ -42,24 +42,25 @@
       color:var(--text);
     }
 
-    button,input{font:inherit}
+    button,input,select,textarea{font:inherit;font-family:inherit}
     button{cursor:pointer}
 
     .phone{
       width:100%;
       max-width:430px;
       min-height:100vh;
+      min-height:100dvh;
       position:relative;
       overflow-x:hidden;
-      padding-bottom:100px;
+      padding-bottom:calc(100px + env(safe-area-inset-bottom, 0px));
       background:
         radial-gradient(circle at 100% 0,rgba(86,213,46,.08),transparent 30%),
         linear-gradient(180deg,var(--bg),var(--bg2));
     }
 
     .topbar{
-      min-height:84px;
-      padding:22px 18px 12px;
+      min-height:calc(76px + env(safe-area-inset-top, 0px));
+      padding:calc(14px + env(safe-area-inset-top, 0px)) 18px 12px;
       display:grid;
       grid-template-columns:44px 1fr 44px;
       gap:8px;
@@ -565,7 +566,7 @@
       min-height:82px;
       padding:10px 8px calc(9px + env(safe-area-inset-bottom));
       display:grid;
-      grid-template-columns:repeat(5,1fr);
+      grid-template-columns:repeat(4,1fr);
       align-items:end;
       z-index:100;
       background:rgba(7,16,24,.98);
@@ -1017,6 +1018,104 @@
       color:#102011;
       font-size:13px;
       font-weight:950;
+    }
+
+    .pix-email-field{
+      margin-top:14px;
+      border:1px solid #34424b;
+      border-radius:12px;
+      background:#172128;
+      padding:9px 12px 8px;
+    }
+
+    .pix-email-field label{
+      display:block;
+      color:#9aa6a0;
+      font-size:9px;
+      font-weight:900;
+      text-transform:uppercase;
+      letter-spacing:.05em;
+      margin-bottom:2px;
+    }
+
+    .pix-email-field input{
+      width:100%;
+      height:36px;
+      border:0;
+      outline:none;
+      background:transparent;
+      color:#fff;
+      font-size:15px;
+    }
+
+    .pix-generate{
+      width:100%;
+      min-height:52px;
+      margin-top:12px;
+      border:0;
+      border-radius:14px;
+      background:var(--green);
+      color:#102011;
+      font-size:13px;
+      font-weight:950;
+    }
+
+    .pix-generate:disabled,
+    .payment-type:disabled{
+      opacity:.55;
+      cursor:default;
+    }
+
+    .pix-generated{
+      display:none;
+      margin-top:14px;
+    }
+
+    .pix-generated.show{display:block}
+
+    .pix-qr{
+      display:none;
+      width:190px;
+      height:190px;
+      object-fit:contain;
+      margin:0 auto 14px;
+      padding:10px;
+      border-radius:16px;
+      background:#fff;
+    }
+
+    .pix-qr.show{display:block}
+
+    .pix-status{
+      margin-top:12px;
+      padding:12px 13px;
+      border:1px solid #3b4a51;
+      border-radius:12px;
+      background:#0e171d;
+      color:#dce4df;
+      font-size:11px;
+      font-weight:800;
+      line-height:1.45;
+      text-align:center;
+    }
+
+    .pix-status.waiting{
+      border-color:#6d5b25;
+      color:#f2c85f;
+    }
+
+    .pix-status.ok{
+      border-color:rgba(86,213,46,.6);
+      color:var(--green2);
+      background:#102016;
+    }
+
+    #confirmationView.payment-mode > .confirm-card{display:none}
+
+    #confirmationView.payment-mode .page-head-title{font-size:0}
+    #confirmationView.payment-mode .page-head-title::after{
+      content:'PAGAMENTO';
+      font-size:15px;
     }
 
     .payment-admin-note{
@@ -1702,25 +1801,33 @@
 
       <section class="pix-box">
         <div class="pix-title">PAGAMENTO VIA PIX</div>
-        <div class="pix-sub">Copie a chave Pix para realizar o pagamento</div>
+        <div class="pix-sub">O Pix é gerado pelo Mercado Pago. Sua vaga só será confirmada depois que o pagamento for identificado.</div>
 
-        <div class="pix-content pix-key-only">
-          <div class="pix-side">
-            <div class="pix-key-label">CHAVE PIX</div>
+        <div class="pix-email-field" id="pixEmailField">
+          <label for="paymentEmail">E-mail do pagador</label>
+          <input id="paymentEmail" type="email" inputmode="email" autocomplete="email" placeholder="seuemail@exemplo.com">
+        </div>
 
-            <div class="pix-key-row">
-              <div class="pix-key" id="pixKey">66 99638-2601</div>
-              <button class="copy-pix" id="copyPix" type="button">COPIAR</button>
-            </div>
+        <button class="pix-generate" id="generatePixButton" type="button">
+          GERAR PIX
+        </button>
+
+        <div class="pix-generated" id="pixGeneratedArea">
+          <img class="pix-qr" id="pixQrImage" alt="QR Code Pix">
+
+          <div class="pix-key-label">PIX COPIA E COLA</div>
+          <div class="pix-key-row">
+            <div class="pix-key" id="pixKey">Aguardando geração...</div>
+            <button class="copy-pix" id="copyPix" type="button">COPIAR</button>
+          </div>
+
+          <div class="pix-status waiting" id="pixPaymentStatus">
+            Aguardando pagamento...
           </div>
         </div>
 
-        <button class="paid-done" id="paymentDone" type="button">
-          JÁ REALIZEI O PAGAMENTO
-        </button>
-
         <div class="payment-admin-note">
-          O pagamento será confirmado pelo administrador.
+          Não existe botão para informar pagamento. O próprio sistema libera sua vaga quando o Mercado Pago confirmar o Pix.
         </div>
       </section>
     </div>
@@ -1917,12 +2024,7 @@
     <button class="nav-item" data-nav="racha">
       <span class="icon">◉</span><span>Racha</span>
     </button>
-
-    <div class="plus-wrap">
-      <button class="plus" id="plusButton">+</button>
-    </div>
-
-    <button class="nav-item" data-nav="ranking">
+<button class="nav-item" data-nav="ranking">
       <span class="icon">♛</span><span>Ranking</span>
     </button>
 
@@ -1960,6 +2062,10 @@ import {
   onMessage,
   isSupported as isMessagingSupported
 } from 'https://www.gstatic.com/firebasejs/12.11.0/firebase-messaging.js';
+import {
+  getFunctions,
+  httpsCallable
+} from 'https://www.gstatic.com/firebasejs/12.11.0/firebase-functions.js';
 
 const firebaseConfig = {
   apiKey: "AIzaSyDnafgCpOkeNcWKT8XO3b7g6sloX51Aiwo",
@@ -1973,6 +2079,9 @@ const firebaseConfig = {
 const firebaseApp = initializeApp(firebaseConfig);
 const auth = getAuth(firebaseApp);
 const db = getFirestore(firebaseApp);
+const functions = getFunctions(firebaseApp, 'southamerica-east1');
+const criarPagamentoPixCall = httpsCallable(functions, 'criarPagamentoPix');
+const consultarPagamentoPixCall = httpsCallable(functions, 'consultarPagamentoPix');
 const ADMIN_UID = 'd3nVt6SbQlO6lYnOcCUDbLBhoU02';
 const VAPID_PUBLIC_KEY = 'BPBQyOZBpQS-uBaM5H0YhkyPNjQI2dNjrweS4zjvmB79e7TVQR-QuzkmpQyAGJgTCxxaFL_ZnRCelCsbK0T9Lg0';
 let messagingInstance = null;
@@ -1997,9 +2106,14 @@ let messagingInstance = null;
       status: 'unanswered',
       name: '',
       phone: '',
+      email: '',
       photo: '',
       paymentType: '',
-      paymentReported: false
+      paymentReported: false,
+      pixOrderId: '',
+      pixQrCode: '',
+      pixQrCodeBase64: '',
+      pixStatus: '' 
     },
     payments: [],
     teams: [],
@@ -2062,7 +2176,12 @@ let messagingInstance = null;
   const monthlyPayment = document.getElementById('monthlyPayment');
   const copyPix = document.getElementById('copyPix');
   const pixKey = document.getElementById('pixKey');
-  const paymentDone = document.getElementById('paymentDone');
+  const paymentEmail = document.getElementById('paymentEmail');
+  const generatePixButton = document.getElementById('generatePixButton');
+  const pixGeneratedArea = document.getElementById('pixGeneratedArea');
+  const pixQrImage = document.getElementById('pixQrImage');
+  const pixPaymentStatus = document.getElementById('pixPaymentStatus');
+  const confirmationView = document.getElementById('confirmationView');
 
   const firebaseStatus = document.getElementById('firebaseStatus');
   const adminAuthTag = document.getElementById('adminAuthTag');
@@ -2089,6 +2208,9 @@ let messagingInstance = null;
   let rachaDocUnsubscribe = null;
 
   let selectedPaymentType = state.currentUser.paymentType || 'daily';
+  let currentPixOrderId = state.currentUser.pixOrderId || '';
+  let pixPollTimer = null;
+  let pixCheckRunning = false;
 
   let selfieData = state.currentUser.photo || '';
 
@@ -2447,6 +2569,8 @@ let messagingInstance = null;
 
       if(data.status === 'confirmed' && state.currentUser.status !== 'confirmed'){
         state.currentUser.status = 'confirmed';
+        state.currentUser.paymentReported = true;
+        stopPixPolling();
         saveState();
         renderHome();
       }else if(data.status === 'rejected' && state.currentUser.status !== 'rejected'){
@@ -2870,7 +2994,18 @@ let messagingInstance = null;
   }
 
   document.getElementById('enterRacha').addEventListener('click', () => {
+    if(state.currentUser.pixOrderId && state.currentUser.status !== 'confirmed'){
+      paymentFlow.classList.add('show');
+      confirmationView.classList.add('payment-mode');
+      selectedPaymentType = state.currentUser.paymentType || 'daily';
+      renderPixFromState();
+      showView('confirmationView');
+      startPixPolling();
+      return;
+    }
+
     paymentFlow.classList.remove('show');
+    confirmationView.classList.remove('payment-mode');
     showView('confirmationView');
   });
 
@@ -2888,65 +3023,215 @@ let messagingInstance = null;
   document.getElementById('maybeButton').addEventListener('click', () => setAttendance('maybe'));
 
 
+  function setPixStatus(message, type = 'waiting'){
+    pixPaymentStatus.textContent = message;
+    pixPaymentStatus.className = 'pix-status ' + type;
+  }
+
   function renderPaymentType(){
     dailyPayment.classList.toggle('selected', selectedPaymentType === 'daily');
     monthlyPayment.classList.toggle('selected', selectedPaymentType === 'monthly');
+
+    const locked = !!currentPixOrderId && state.currentUser.status !== 'confirmed';
+    dailyPayment.disabled = locked;
+    monthlyPayment.disabled = locked;
+    paymentEmail.disabled = locked;
+  }
+
+  function renderPixFromState(){
+    currentPixOrderId = state.currentUser.pixOrderId || '';
+    paymentEmail.value = state.currentUser.email || '';
+
+    if(!currentPixOrderId){
+      pixGeneratedArea.classList.remove('show');
+      pixQrImage.classList.remove('show');
+      pixQrImage.removeAttribute('src');
+      generatePixButton.disabled = false;
+      generatePixButton.textContent = 'GERAR PIX';
+      confirmationView.classList.toggle('payment-mode', paymentFlow.classList.contains('show'));
+      renderPaymentType();
+      return;
+    }
+
+    pixGeneratedArea.classList.add('show');
+    generatePixButton.disabled = true;
+    generatePixButton.textContent = 'PIX GERADO';
+    pixKey.textContent = state.currentUser.pixQrCode || 'Pix gerado';
+
+    const qrBase64 = state.currentUser.pixQrCodeBase64 || '';
+    if(qrBase64){
+      pixQrImage.src = qrBase64.startsWith('data:')
+        ? qrBase64
+        : 'data:image/png;base64,' + qrBase64;
+      pixQrImage.classList.add('show');
+    }else{
+      pixQrImage.classList.remove('show');
+    }
+
+    setPixStatus('Aguardando pagamento... Assim que o Mercado Pago confirmar, sua vaga será liberada automaticamente.', 'waiting');
+    confirmationView.classList.add('payment-mode');
+    renderPaymentType();
+  }
+
+  function stopPixPolling(){
+    if(pixPollTimer){
+      clearInterval(pixPollTimer);
+      pixPollTimer = null;
+    }
+  }
+
+  async function consultarPixAtual(){
+    if(!currentPixOrderId || pixCheckRunning) return;
+    pixCheckRunning = true;
+
+    try{
+      const result = await consultarPagamentoPixCall({orderId: currentPixOrderId});
+      const data = result.data || {};
+
+      if(data.paid){
+        stopPixPolling();
+        state.currentUser.status = 'confirmed';
+        state.currentUser.paymentReported = true;
+        state.currentUser.paymentType = selectedPaymentType;
+        state.currentUser.pixStatus = 'paid';
+        saveState();
+        syncLocalUserConfirmation();
+        renderHome();
+        setPixStatus('PAGAMENTO CONFIRMADO ✓\nSua vaga está garantida.', 'ok');
+
+        setTimeout(() => {
+          state.currentUser.pixOrderId = '';
+          state.currentUser.pixQrCode = '';
+          state.currentUser.pixQrCodeBase64 = '';
+          currentPixOrderId = '';
+          saveState();
+          paymentFlow.classList.remove('show');
+          confirmationView.classList.remove('payment-mode');
+          showView('homeView');
+        }, 1600);
+        return;
+      }
+
+      const status = String(data.status || '').toLowerCase();
+      const detail = String(data.statusDetail || '').toLowerCase();
+      if(status === 'canceled' || status === 'cancelled' || status === 'expired' || detail === 'expired'){
+        stopPixPolling();
+        state.currentUser.pixOrderId = '';
+        state.currentUser.pixQrCode = '';
+        state.currentUser.pixQrCodeBase64 = '';
+        state.currentUser.pixStatus = 'expired';
+        currentPixOrderId = '';
+        saveState();
+        setPixStatus('Este Pix expirou. Gere um novo pagamento para continuar.', 'waiting');
+        generatePixButton.disabled = false;
+        generatePixButton.textContent = 'GERAR NOVO PIX';
+        renderPaymentType();
+      }
+    }catch(error){
+      console.warn('Consulta do Pix:', error);
+      setPixStatus('Aguardando pagamento... A conexão será verificada novamente automaticamente.', 'waiting');
+    }finally{
+      pixCheckRunning = false;
+    }
+  }
+
+  function startPixPolling(){
+    stopPixPolling();
+    if(!currentPixOrderId) return;
+    setTimeout(() => consultarPixAtual(), 2500);
+    pixPollTimer = setInterval(() => consultarPixAtual(), 8000);
   }
 
   dailyPayment.addEventListener('click', () => {
+    if(currentPixOrderId) return;
     selectedPaymentType = 'daily';
     renderPaymentType();
   });
 
   monthlyPayment.addEventListener('click', () => {
+    if(currentPixOrderId) return;
     selectedPaymentType = 'monthly';
     renderPaymentType();
   });
 
   copyPix.addEventListener('click', async () => {
-    const key = pixKey.textContent.trim();
+    const key = state.currentUser.pixQrCode || pixKey.textContent.trim();
+    if(!key || key === 'Aguardando geração...') return;
 
     try{
       await navigator.clipboard.writeText(key);
       copyPix.textContent = 'COPIADO ✓';
-
-      setTimeout(() => {
-        copyPix.textContent = 'COPIAR';
-      }, 1600);
+      setTimeout(() => { copyPix.textContent = 'COPIAR'; }, 1600);
     }catch{
-      alert('Chave Pix: ' + key);
+      alert('Não foi possível copiar automaticamente. Toque e segure no código Pix para copiar.');
     }
   });
 
-  paymentDone.addEventListener('click', async () => {
-    paymentDone.disabled = true;
-    const originalText = paymentDone.textContent;
-    paymentDone.textContent = 'ENVIANDO PAGAMENTO...';
+  generatePixButton.addEventListener('click', async () => {
+    if(currentPixOrderId) return;
+
+    const email = paymentEmail.value.trim().toLowerCase();
+    if(!email || !/^\S+@\S+\.\S+$/.test(email)){
+      alert('Informe um e-mail válido para gerar o Pix.');
+      paymentEmail.focus();
+      return;
+    }
+
+    generatePixButton.disabled = true;
+    generatePixButton.textContent = 'GERANDO PIX...';
 
     try{
+      const user = await ensureFirebasePlayer();
+      if(user.uid === ADMIN_UID){
+        throw new Error('Saia do modo administrador antes de gerar um Pix de jogador.');
+      }
+
+      state.currentUser.id = user.uid;
+      state.currentUser.email = email;
       state.currentUser.paymentType = selectedPaymentType;
-      await createPaymentInCloud();
 
-      state.currentUser.paymentReported = true;
-      state.currentUser.status = 'requested';
-      syncLocalUserConfirmation();
+      await setDoc(doc(db, 'players', user.uid), {
+        uid: user.uid,
+        email,
+        paymentType: selectedPaymentType,
+        updatedAt: serverTimestamp()
+      }, {merge:true});
+
+      const result = await criarPagamentoPixCall({
+        type: selectedPaymentType,
+        email
+      });
+      const data = result.data || {};
+
+      if(!data.orderId || !data.qrCode){
+        throw new Error('O Mercado Pago não retornou o código Pix. Tente novamente.');
+      }
+
+      currentPixOrderId = data.orderId;
+      state.currentUser.pixOrderId = data.orderId;
+      state.currentUser.pixQrCode = data.qrCode;
+      state.currentUser.pixQrCodeBase64 = data.qrCodeBase64 || '';
+      state.currentUser.pixStatus = 'waiting';
       saveState();
-      renderHome();
-      renderApprovals();
 
-      alert('Pagamento enviado para conferência do administrador.');
-      showView('homeView');
+      renderPixFromState();
+      startPixPolling();
     }catch(error){
       console.error(error);
-      alert('Não foi possível enviar o pagamento: ' + error.message);
-    }finally{
-      paymentDone.disabled = false;
-      paymentDone.textContent = originalText;
+      generatePixButton.disabled = false;
+      generatePixButton.textContent = 'GERAR PIX';
+      alert('Não foi possível gerar o Pix: ' + (error?.message || 'erro desconhecido'));
     }
   });
 
   document.querySelectorAll('[data-back-home]').forEach(btn => {
-    btn.addEventListener('click', () => showView('homeView'));
+    btn.addEventListener('click', () => {
+      if(btn.closest('#confirmationView') && currentPixOrderId && state.currentUser.status !== 'confirmed'){
+        alert('Seu Pix está aguardando pagamento. A vaga só será liberada depois da confirmação do Mercado Pago.');
+        return;
+      }
+      showView('homeView');
+    });
   });
 
 
@@ -3055,8 +3340,10 @@ let messagingInstance = null;
 
       saveState();
       selectedPaymentType = state.currentUser.paymentType || 'daily';
-      renderPaymentType();
+      paymentEmail.value = state.currentUser.email || '';
       paymentFlow.classList.add('show');
+      confirmationView.classList.add('payment-mode');
+      renderPixFromState();
       showView('confirmationView');
       setTimeout(() => paymentFlow.scrollIntoView({behavior:'smooth',block:'start'}),100);
     }catch(error){
@@ -3181,10 +3468,6 @@ let messagingInstance = null;
   document.getElementById('adminNavButton').addEventListener('click', () => {
     renderApprovals();
     showView('adminView');
-  });
-  document.getElementById('plusButton').addEventListener('click', () => {
-    paymentFlow.classList.remove('show');
-    showView('confirmationView');
   });
 
   document.querySelector('[data-nav="home"]').addEventListener('click', () => showView('homeView'));
