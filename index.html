@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#071018">
+  <title>Green Park FC — Racha Oficial</title>
+
+  <style>
+    :root{
+      --bg:#071018;
+      --bg2:#0a1219;
+      --panel:#101920;
+      --panel2:#151f26;
+      --line:#28343c;
+      --green:#58d52f;
+      --green2:#7bec4b;
+      --text:#f6f8f7;
+      --muted:#a8b1ad;
+      --white:#f4f5f2;
+      --dark:#111516;
+      --yellow:#f1b72f;
+    }
+
+    *{
+      box-sizing:border-box;
+      -webkit-tap-highlight-color:transparent;
+    }
+
+    html,body{
+      margin:0;
+      padding:0;
+      min-height:100%;
+      background:#fff;
+      font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    }
+
+    body{
+      display:flex;
+      justify-content:center;
+      color:var(--text);
+    }
+
+    button,input{
+      font:inherit;
+    }
+
+    button{
+      cursor:pointer;
+    }
+
+    .phone{
+      width:100%;
+      max-width:430px;
+      min-height:100vh;
+      background:
+        radial-gradient(circle at 100% 0%,rgba(88,213,47,.08),transparent 32%),
+        linear-gradient(180deg,var(--bg),var(--bg2));
+      position:relative;
+      padding-bottom:102px;
+      overflow-x:hidden;
+    }
+
+    .topbar{
+      min-height:86px;
+      padding:24px 18px 14px;
+      display:grid;
+      grid-template-columns:44px 1fr 44px;
+      align-items:center;
+      gap:8px;
+    }
+
+    .top-icon{
+      width:44px;
+      height:44px;
+      border:0;
+      background:transparent;
+      color:#fff;
+      display:grid;
+      place-items:center;
+      font-size:28px;
+      border-radius:12px;
+    }
+
+    .brand{
+      text-align:center;
+      font-size:20px;
+      font-weight:950;
+      letter-spacing:-.4px;
+      white-space:nowrap;
+    }
+
+    .brand .green{
+      color:var(--green2);
+    }
+
+    .bell{
+      position:relative;
+      font-size:24px;
+    }
+
+    .bell::after{
+      content:"";
+      position:absolute;
+      width:9px;
+      height:9px;
+      border-radius:50%;
+      background:var(--green2);
+      top:4px;
+      right:5px;
+      box-shadow:0 0 0 3px var(--bg);
+    }
+
+    .content{
+      padding:0 18px 20px;
+    }
+
+    .admin-card{
+      border:1px solid var(--line);
+      background:rgba(16,25,32,.96);
+      border-radius:22px;
+      padding:18px;
+      margin-bottom:16px;
+    }
+
+    .admin-head{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:14px;
+      margin-bottom:18px;
+    }
+
+    .admin-head h2{
+      margin:0;
+      font-size:18px;
+      line-height:1.2;
+    }
+
+    .admin-tag{
+      color:var(--green2);
+      font-size:12px;
+      font-weight:950;
+      letter-spacing:.04em;
+    }
+
+    .fields{
+      display:grid;
+      gap:14px;
+    }
+
+    .date-time{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+    }
+
+    .field{
+      min-width:0;
+    }
+
+    .field label{
+      display:block;
+      margin:0 0 7px;
+      color:#b8c0bc;
+      font-size:11px;
+      font-weight:900;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+    }
+
+    .field input{
+      display:block;
+      width:100%;
+      min-width:0;
+      height:52px;
+      border:1px solid #34424b;
+      border-radius:15px;
+      background:#111a21;
+      color:#fff;
+      padding:0 14px;
+      outline:none;
+    }
+
+    .field input:focus{
+      border-color:var(--green);
+    }
+
+    input[type="date"],
+    input[type="time"]{
+      appearance:none;
+      -webkit-appearance:none;
+    }
+
+    .location-line{
+      display:grid;
+      grid-template-columns:minmax(0,1fr) 52px;
+      gap:10px;
+      align-items:end;
+    }
+
+    .gps{
+      width:52px;
+      height:52px;
+      border:0;
+      border-radius:15px;
+      background:var(--green);
+      color:#0f1a10;
+      font-size:22px;
+      font-weight:950;
+    }
+
+    .location-actions{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+      margin-top:14px;
+    }
+
+    .action{
+      min-height:48px;
+      border-radius:14px;
+      border:1px solid #34424b;
+      background:#182228;
+      color:#fff;
+      padding:10px 12px;
+      font-size:13px;
+      font-weight:900;
+    }
+
+    .action.primary{
+      border-color:transparent;
+      background:var(--green);
+      color:#122014;
+    }
+
+    .match-card{
+      background:var(--white);
+      color:var(--dark);
+      border-radius:22px;
+      padding:17px;
+      box-shadow:0 18px 45px rgba(0,0,0,.16);
+      margin-bottom:13px;
+    }
+
+    .eyebrow{
+      color:#45b928;
+      font-size:12px;
+      font-weight:950;
+      text-transform:uppercase;
+      letter-spacing:.06em;
+    }
+
+    .match-date{
+      margin-top:4px;
+      margin-bottom:14px;
+      color:#626968;
+      font-size:13px;
+    }
+
+    .match-info{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+      margin-bottom:16px;
+    }
+
+    .info{
+      min-width:0;
+      min-height:76px;
+      background:#fff;
+      border-radius:14px;
+      padding:12px;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      box-shadow:0 4px 14px rgba(0,0,0,.05);
+    }
+
+    .info-icon{
+      width:34px;
+      height:34px;
+      border-radius:10px;
+      background:#eff2ee;
+      display:grid;
+      place-items:center;
+      flex:0 0 34px;
+    }
+
+    .info strong{
+      display:block;
+      font-size:15px;
+      line-height:1.15;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    .info small{
+      display:block;
+      margin-top:4px;
+      color:#7c8381;
+      font-size:10px;
+      font-weight:800;
+      text-transform:uppercase;
+    }
+
+    .capacity{
+      display:grid;
+      grid-template-columns:1fr 96px 1fr;
+      align-items:center;
+      gap:8px;
+    }
+
+    .cap{
+      text-align:center;
+    }
+
+    .cap strong{
+      display:block;
+      font-size:24px;
+    }
+
+    .cap span{
+      color:#707775;
+      font-size:10px;
+      font-weight:900;
+      text-transform:uppercase;
+    }
+
+    .ring{
+      width:90px;
+      height:90px;
+      margin:auto;
+      border-radius:50%;
+      background:conic-gradient(var(--green) 0 80%,#dde2dd 80% 100%);
+      position:relative;
+      display:grid;
+      place-items:center;
+    }
+
+    .ring::before{
+      content:"";
+      position:absolute;
+      width:68px;
+      height:68px;
+      border-radius:50%;
+      background:var(--white);
+    }
+
+    .ring-text{
+      position:relative;
+      z-index:2;
+      text-align:center;
+      line-height:1;
+    }
+
+    .ring-text strong{
+      display:block;
+      font-size:23px;
+    }
+
+    .ring-text span{
+      display:block;
+      margin-top:3px;
+      color:#6e7472;
+      font-size:11px;
+    }
+
+    .status-card,
+.between{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+    }
+
+    .small-title{
+      font-size:11px;
+      font-weight:950;
+      text-transform:uppercase;
+    }
+
+    .badge{
+      border-radius:999px;
+      padding:6px 10px;
+      background:var(--green);
+      color:#fff;
+      font-size:10px;
+      font-weight:950;
+    }
+
+    .badge.pending{
+      background:var(--yellow);
+    }
+.quick-title{
+      margin:18px 0 10px;
+      color:#c7ceca;
+      font-size:11px;
+      font-weight:950;
+      text-transform:uppercase;
+    }
+
+    .quick-grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:9px;
+    }
+
+    .quick{
+      min-height:82px;
+      border-radius:14px;
+      border:1px solid var(--line);
+      background:linear-gradient(180deg,#151f26,#10171d);
+      color:#fff;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      align-items:center;
+      gap:7px;
+      font-size:11px;
+      font-weight:850;
+    }
+
+    .quick b{
+      font-size:20px;
+      font-weight:500;
+    }
+
+    .footer-note{
+      text-align:center;
+      color:#73807a;
+      font-size:11px;
+      margin-top:18px;
+    }
+
+    .bottom-nav{
+      position:fixed;
+      left:50%;
+      bottom:0;
+      transform:translateX(-50%);
+      width:min(430px,100%);
+      min-height:82px;
+      padding:10px 10px calc(9px + env(safe-area-inset-bottom));
+      background:rgba(7,16,24,.98);
+      border-top:1px solid #202c34;
+      display:grid;
+      grid-template-columns:repeat(5,1fr);
+      align-items:end;
+      z-index:100;
+      backdrop-filter:blur(18px);
+    }
+
+    .nav-item{
+      position:relative;
+      height:58px;
+      border:0;
+      background:transparent;
+      color:#aab3af;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      gap:4px;
+      font-size:10px;
+      padding:0;
+    }
+
+    .nav-item .icon{
+      font-size:21px;
+      line-height:1;
+      height:23px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+
+    .nav-item.active{
+      color:var(--green2);
+    }
+
+    .plus-wrap{
+      height:58px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      position:relative;
+    }
+
+    .plus{
+      position:absolute;
+      top:-22px;
+      width:58px;
+      height:58px;
+      border:0;
+      border-radius:50%;
+      background:var(--green);
+      color:#fff;
+      font-size:38px;
+      font-weight:300;
+      line-height:1;
+      box-shadow:0 8px 25px rgba(88,213,47,.35);
+    }
+
+    @media(max-width:360px){
+      .content{padding-left:14px;padding-right:14px}
+      .date-time{grid-template-columns:1fr}
+      .location-actions{grid-template-columns:1fr}
+      .match-info{grid-template-columns:1fr}
+      .capacity{grid-template-columns:1fr 82px 1fr}
+      .ring{width:78px;height:78px}
+      .ring::before{width:58px;height:58px}
+    }
+
+    @media(min-width:700px){
+      body{
+        background:#e9ece9;
+        padding:20px 0;
+      }
+      .phone{
+        min-height:calc(100vh - 40px);
+        border-radius:30px;
+        overflow:hidden;
+        box-shadow:0 30px 90px rgba(0,0,0,.25);
+      }
+      .bottom-nav{
+        border-radius:0 0 30px 30px;
+      }
+    }
+  
+    .admin-view{
+      display:none;
+    }
+
+    .phone.admin-mode #homeView,
+    .phone.admin-mode .bottom-nav{
+      display:none;
+    }
+
+    .phone.admin-mode #adminView{
+      display:block;
+    }
+
+    .admin-page-head{
+      display:flex;
+      align-items:flex-start;
+      gap:14px;
+      margin:6px 0 20px;
+    }
+
+    .back-btn{
+      width:42px;
+      height:42px;
+      flex:0 0 42px;
+      border:1px solid var(--line);
+      border-radius:13px;
+      background:#111a21;
+      color:#fff;
+      font-size:22px;
+    }
+
+    .admin-kicker{
+      color:var(--green2);
+      font-size:11px;
+      font-weight:950;
+      letter-spacing:.08em;
+      margin-bottom:4px;
+    }
+
+    .admin-page-head h1{
+      margin:0;
+      font-size:26px;
+      line-height:1.1;
+    }
+
+    .admin-page-head p{
+      margin:6px 0 0;
+      color:var(--muted);
+      font-size:13px;
+    }
+
+    .save-admin{
+      width:100%;
+      min-height:50px;
+      margin-top:14px;
+      border:0;
+      border-radius:14px;
+      background:var(--green);
+      color:#112012;
+      font-weight:950;
+    }
+
+    .admin-options{
+      display:grid;
+      gap:10px;
+      padding-bottom:20px;
+    }
+
+    .admin-option{
+      width:100%;
+      text-align:left;
+      border:1px solid var(--line);
+      border-radius:16px;
+      background:#101920;
+      color:#fff;
+      padding:15px 16px;
+    }
+
+    .admin-option span{
+      display:block;
+      font-size:14px;
+      font-weight:900;
+    }
+
+    .admin-option small{
+      display:block;
+      margin-top:4px;
+      color:var(--muted);
+      font-size:11px;
+    }
+
+  
+    .status-card{
+      background:#f4f5f2;
+      color:#111516;
+      border-radius:18px;
+      padding:15px 16px;
+      margin:0 0 13px;
+      box-shadow:0 10px 24px rgba(0,0,0,.10);
+    }
+
+    .status-card .between{
+      min-height:34px;
+    }
+
+    .status-card .small-title{
+      font-size:12px;
+      font-weight:950;
+      letter-spacing:.01em;
+    }
+
+    .status-card .badge{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-height:31px;
+      padding:7px 12px;
+      border-radius:999px;
+      background:#58d52f;
+      color:#fff;
+      font-size:11px;
+      font-weight:950;
+      white-space:nowrap;
+      box-shadow:0 5px 12px rgba(88,213,47,.18);
+    }
+
+
+    .nav-item:last-child span:last-child{
+      font-size:9px;
+    }
+
+    .danger-zone{
+      margin:18px 0 30px;
+      padding:16px;
+      border:1px solid rgba(216,78,78,.35);
+      background:rgba(216,78,78,.07);
+      border-radius:17px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+    }
+
+    .danger-zone strong{
+      display:block;
+      color:#fff;
+      font-size:14px;
+    }
+
+    .danger-zone small{
+      display:block;
+      color:#9ca7a2;
+      font-size:11px;
+      line-height:1.4;
+      margin-top:4px;
+    }
+
+    .danger-zone button{
+      flex:0 0 auto;
+      border:1px solid #d84e4e;
+      background:#d84e4e;
+      color:#fff;
+      border-radius:11px;
+      padding:10px 12px;
+      font-size:12px;
+      font-weight:900;
+    }
+
+</style>
+</head>
+
+<body>
+  <div class="phone">
+
+    <header class="topbar">
+      <button class="top-icon" id="adminButton" aria-label="Painel do administrador">☰</button>
+
+      <div class="brand">
+        <span class="green">GREEN</span> PARK FC
+      </div>
+
+      <button class="top-icon bell" aria-label="Notificações">♧</button>
+    </header>
+
+    <main class="content" id="homeView">
+<section class="match-card">
+        <div class="eyebrow">Próximo racha</div>
+        <div class="match-date" id="displayDate">Quinta-feira</div>
+
+        <div class="match-info">
+          <div class="info">
+            <div class="info-icon">◷</div>
+            <div>
+              <strong id="displayTime">20:00</strong>
+              <small>Horário</small>
+            </div>
+          </div>
+
+          <div class="info">
+            <div class="info-icon">⌖</div>
+            <div>
+              <strong id="displayLocation">Arena Green Park</strong>
+              <small>Local</small>
+            </div>
+          </div>
+        </div>
+
+        <div class="capacity">
+          <div class="cap">
+            <strong>32</strong>
+            <span>Confirmados</span>
+          </div>
+
+          <div class="ring">
+            <div class="ring-text">
+              <strong>32</strong>
+              <span>/ 40</span>
+            </div>
+          </div>
+
+          <div class="cap">
+            <strong>8</strong>
+            <span>Vagas restantes</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="status-card">
+        <div class="between">
+          <span class="small-title">Sua situação</span>
+          <span class="badge">CONFIRMADO ✓</span>
+        </div>
+      </section>
+<div class="quick-title">Acessos rápidos</div>
+
+      <div class="quick-grid">
+        <button class="quick"><b>⚽</b>Times</button>
+        <button class="quick"><b>♛</b>Ranking</button>
+        <button class="quick"><b>▥</b>Estatísticas</button>
+        <button class="quick"><b>▣</b>Galeria</button>
+        <button class="quick"><b>▤</b>Comunicados</button>
+        <button class="quick"><b>◆</b>Patrocinadores</button>
+      </div>
+
+      <div class="footer-note">Green Park FC • Racha Oficial</div>
+    </main>
+
+
+    <main class="content admin-view" id="adminView">
+      <div class="admin-page-head">
+        <button class="back-btn" id="backHome" aria-label="Voltar">←</button>
+        <div>
+          <div class="admin-kicker">ADMINISTRAÇÃO</div>
+          <h1>Painel do Admin</h1>
+          <p>Configure as informações do próximo racha.</p>
+        </div>
+      </div>
+
+      <section class="admin-card">
+        <div class="admin-head">
+          <h2>Próximo racha</h2>
+          <span class="admin-tag">GREEN PARK FC</span>
+        </div>
+
+        <div class="fields">
+          <div class="date-time">
+            <div class="field">
+              <label for="matchDate">Data</label>
+              <input id="matchDate" type="date">
+            </div>
+
+            <div class="field">
+              <label for="matchTime">Horário</label>
+              <input id="matchTime" type="time" value="20:00">
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="matchLocation">Local</label>
+
+            <div class="location-line">
+              <input
+                id="matchLocation"
+                type="text"
+                value="Arena Green Park"
+                placeholder="Digite o local ou endereço"
+              >
+              <button class="gps" id="gpsButton" aria-label="Usar GPS">⌖</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="location-actions">
+          <button class="action" id="searchLocation">Buscar localização</button>
+          <button class="action primary" id="openMaps">Abrir no Google Maps</button>
+        </div>
+
+        <button class="save-admin" id="saveRacha">Salvar informações do racha</button>
+      </section>
+
+      <section class="admin-options">
+        <button class="admin-option">
+          <span>Jogadores</span>
+          <small>Cadastros, confirmados e lista de espera</small>
+        </button>
+
+        <button class="admin-option">
+          <span>Pagamentos</span>
+          <small>Confirmar Pix, diária e mensalidade</small>
+        </button>
+
+        <button class="admin-option">
+          <span>Sorteio dos times</span>
+          <small>Time Verde x Time Preto</small>
+        </button>
+
+        <button class="admin-option">
+          <span>Estatísticas</span>
+          <small>Gols e ranking dos jogadores</small>
+        </button>
+      </section>
+
+      <section class="danger-zone">
+        <div>
+          <strong>Zerar aplicativo</strong>
+          <small>Apaga os dados salvos neste aparelho e restaura o aplicativo.</small>
+        </div>
+        <button id="resetApp">Zerar app</button>
+      </section>
+    </main>
+
+    <nav class="bottom-nav">
+      <button class="nav-item active">
+        <span class="icon">⌂</span>
+        <span>Início</span>
+      </button>
+
+      <button class="nav-item">
+        <span class="icon">◉</span>
+        <span>Racha</span>
+      </button>
+
+      <div class="plus-wrap">
+        <button class="plus" aria-label="Ação rápida">+</button>
+      </div>
+
+      <button class="nav-item">
+        <span class="icon">♛</span>
+        <span>Ranking</span>
+      </button>
+
+      <button class="nav-item" id="adminNavButton">
+        <span class="icon">⚙</span>
+        <span>Administrador</span>
+      </button>
+    </nav>
+
+  </div>
+
+  <script>
+    const phone = document.querySelector('.phone');
+    const homeView = document.getElementById('homeView');
+    const adminView = document.getElementById('adminView');
+
+    const adminButton = document.getElementById('adminButton');
+    const backHome = document.getElementById('backHome');
+
+    const matchDate = document.getElementById('matchDate');
+    const matchTime = document.getElementById('matchTime');
+    const matchLocation = document.getElementById('matchLocation');
+
+    const displayDate = document.getElementById('displayDate');
+    const displayTime = document.getElementById('displayTime');
+    const displayLocation = document.getElementById('displayLocation');
+
+    function openAdmin(){
+      phone.classList.add('admin-mode');
+      window.scrollTo({top:0, behavior:'smooth'});
+    }
+
+    function closeAdmin(){
+      phone.classList.remove('admin-mode');
+      window.scrollTo({top:0, behavior:'smooth'});
+    }
+
+    const adminNavButton = document.getElementById('adminNavButton');
+
+    adminButton.addEventListener('click', openAdmin);
+    adminNavButton.addEventListener('click', openAdmin);
+    backHome.addEventListener('click', closeAdmin);
+
+    function formatDate(value){
+      if(!value) return 'Data não definida';
+
+      const d = new Date(value + 'T12:00:00');
+      const weekday = d.toLocaleDateString('pt-BR',{weekday:'long'});
+      const date = d.toLocaleDateString('pt-BR');
+
+      return weekday.charAt(0).toUpperCase() + weekday.slice(1) + ' • ' + date;
+    }
+
+    function updateHome(){
+      displayDate.textContent = formatDate(matchDate.value);
+      displayTime.textContent = matchTime.value || '--:--';
+      displayLocation.textContent = matchLocation.value.trim() || 'Local não definido';
+    }
+
+    function saveRacha(){
+      localStorage.setItem('greenparkRacha', JSON.stringify({
+        date: matchDate.value,
+        time: matchTime.value,
+        location: matchLocation.value
+      }));
+
+      updateHome();
+    }
+
+    const saved = JSON.parse(localStorage.getItem('greenparkRacha') || 'null');
+
+    if(saved){
+      matchDate.value = saved.date || '';
+      matchTime.value = saved.time || '20:00';
+      matchLocation.value = saved.location || 'Arena Green Park';
+    }
+
+    if(!matchDate.value){
+      const today = new Date();
+      const diff = (4 - today.getDay() + 7) % 7 || 7;
+      today.setDate(today.getDate() + diff);
+
+      const year = today.getFullYear();
+      const month = String(today.getMonth()+1).padStart(2,'0');
+      const day = String(today.getDate()).padStart(2,'0');
+
+      matchDate.value = `${year}-${month}-${day}`;
+    }
+
+    document.getElementById('saveRacha').addEventListener('click',()=>{
+      saveRacha();
+      alert('Informações do racha salvas.');
+      closeAdmin();
+    });
+
+    matchDate.addEventListener('change', updateHome);
+    matchTime.addEventListener('change', updateHome);
+    matchLocation.addEventListener('input', updateHome);
+
+    document.getElementById('searchLocation').addEventListener('click',()=>{
+      const local = matchLocation.value.trim();
+
+      if(!local){
+        alert('Digite um local ou endereço.');
+        return;
+      }
+
+      window.open(
+        'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(local),
+        '_blank'
+      );
+    });
+
+    document.getElementById('openMaps').addEventListener('click',()=>{
+      const local = matchLocation.value.trim();
+
+      if(!local){
+        alert('Digite um local ou endereço.');
+        return;
+      }
+
+      window.open(
+        'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(local),
+        '_blank'
+      );
+    });
+
+    document.getElementById('gpsButton').addEventListener('click',()=>{
+      if(!navigator.geolocation){
+        alert('GPS não disponível neste navegador.');
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition(
+        pos=>{
+          matchLocation.value =
+            pos.coords.latitude.toFixed(6) +
+            ', ' +
+            pos.coords.longitude.toFixed(6);
+
+          updateHome();
+        },
+        ()=>{
+          alert('Não foi possível acessar o GPS. Verifique a permissão de localização.');
+        },
+        {
+          enableHighAccuracy:true,
+          timeout:10000
+        }
+      );
+    });
+
+    document.querySelectorAll('.nav-item').forEach(item=>{
+      item.addEventListener('click',()=>{
+        document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+        item.classList.add('active');
+      });
+    });
+
+
+    document.getElementById('resetApp').addEventListener('click',()=>{
+      const first = confirm(
+        'Tem certeza que deseja zerar o aplicativo? Os dados salvos neste aparelho serão apagados.'
+      );
+
+      if(!first) return;
+
+      const second = confirm(
+        'Confirma novamente? Esta ação não poderá ser desfeita.'
+      );
+
+      if(!second) return;
+
+      localStorage.removeItem('greenparkRacha');
+      localStorage.removeItem('greenpark_racha_v1');
+      localStorage.removeItem('greenpark_match');
+
+      alert('Aplicativo zerado com sucesso.');
+      location.reload();
+    });
+
+    updateHome();
+  </script>
+</body>
+</html>
