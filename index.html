@@ -12,27 +12,24 @@
       --bg2:#0a1219;
       --panel:#101920;
       --panel2:#151f26;
-      --line:#28343c;
-      --green:#58d52f;
-      --green2:#7bec4b;
+      --line:#293740;
+      --green:#56d52e;
+      --green2:#78ec49;
       --text:#f6f8f7;
-      --muted:#a8b1ad;
-      --white:#f4f5f2;
+      --muted:#9aa6a0;
+      --white:#f5f6f3;
       --dark:#111516;
-      --yellow:#f1b72f;
+      --yellow:#f2b735;
+      --red:#d94e4e;
     }
 
-    *{
-      box-sizing:border-box;
-      -webkit-tap-highlight-color:transparent;
-    }
+    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 
     html,body{
       margin:0;
-      padding:0;
       min-height:100%;
-      background:#fff;
       font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      background:#fff;
     }
 
     body{
@@ -41,199 +38,63 @@
       color:var(--text);
     }
 
-    button,input{
-      font:inherit;
-    }
-
-    button{
-      cursor:pointer;
-    }
+    button,input{font:inherit}
+    button{cursor:pointer}
 
     .phone{
       width:100%;
       max-width:430px;
       min-height:100vh;
-      background:
-        radial-gradient(circle at 100% 0%,rgba(88,213,47,.08),transparent 32%),
-        linear-gradient(180deg,var(--bg),var(--bg2));
       position:relative;
-      padding-bottom:102px;
       overflow-x:hidden;
+      padding-bottom:100px;
+      background:
+        radial-gradient(circle at 100% 0,rgba(86,213,46,.08),transparent 30%),
+        linear-gradient(180deg,var(--bg),var(--bg2));
     }
 
     .topbar{
-      min-height:86px;
-      padding:24px 18px 14px;
+      min-height:84px;
+      padding:22px 18px 12px;
       display:grid;
       grid-template-columns:44px 1fr 44px;
-      align-items:center;
       gap:8px;
+      align-items:center;
     }
 
     .top-icon{
-      width:44px;
-      height:44px;
-      border:0;
-      background:transparent;
-      color:#fff;
-      display:grid;
-      place-items:center;
-      font-size:28px;
-      border-radius:12px;
+      width:44px;height:44px;
+      border:0;border-radius:12px;
+      background:transparent;color:#fff;
+      display:grid;place-items:center;
+      font-size:27px;
     }
 
     .brand{
       text-align:center;
       font-size:20px;
       font-weight:950;
-      letter-spacing:-.4px;
       white-space:nowrap;
+      letter-spacing:-.4px;
     }
 
-    .brand .green{
-      color:var(--green2);
-    }
+    .brand .green{color:var(--green2)}
 
-    .bell{
-      position:relative;
-      font-size:24px;
-    }
-
+    .bell{position:relative;font-size:23px}
     .bell::after{
       content:"";
       position:absolute;
-      width:9px;
-      height:9px;
-      border-radius:50%;
+      width:9px;height:9px;border-radius:50%;
       background:var(--green2);
-      top:4px;
-      right:5px;
+      right:5px;top:5px;
       box-shadow:0 0 0 3px var(--bg);
     }
 
-    .content{
-      padding:0 18px 20px;
-    }
+    .content{padding:0 18px 22px}
+    .view{display:none}
+    .view.active{display:block}
 
-    .admin-card{
-      border:1px solid var(--line);
-      background:rgba(16,25,32,.96);
-      border-radius:22px;
-      padding:18px;
-      margin-bottom:16px;
-    }
-
-    .admin-head{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:14px;
-      margin-bottom:18px;
-    }
-
-    .admin-head h2{
-      margin:0;
-      font-size:18px;
-      line-height:1.2;
-    }
-
-    .admin-tag{
-      color:var(--green2);
-      font-size:12px;
-      font-weight:950;
-      letter-spacing:.04em;
-    }
-
-    .fields{
-      display:grid;
-      gap:14px;
-    }
-
-    .date-time{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:12px;
-    }
-
-    .field{
-      min-width:0;
-    }
-
-    .field label{
-      display:block;
-      margin:0 0 7px;
-      color:#b8c0bc;
-      font-size:11px;
-      font-weight:900;
-      letter-spacing:.08em;
-      text-transform:uppercase;
-    }
-
-    .field input{
-      display:block;
-      width:100%;
-      min-width:0;
-      height:52px;
-      border:1px solid #34424b;
-      border-radius:15px;
-      background:#111a21;
-      color:#fff;
-      padding:0 14px;
-      outline:none;
-    }
-
-    .field input:focus{
-      border-color:var(--green);
-    }
-
-    input[type="date"],
-    input[type="time"]{
-      appearance:none;
-      -webkit-appearance:none;
-    }
-
-    .location-line{
-      display:grid;
-      grid-template-columns:minmax(0,1fr) 52px;
-      gap:10px;
-      align-items:end;
-    }
-
-    .gps{
-      width:52px;
-      height:52px;
-      border:0;
-      border-radius:15px;
-      background:var(--green);
-      color:#0f1a10;
-      font-size:22px;
-      font-weight:950;
-    }
-
-    .location-actions{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:10px;
-      margin-top:14px;
-    }
-
-    .action{
-      min-height:48px;
-      border-radius:14px;
-      border:1px solid #34424b;
-      background:#182228;
-      color:#fff;
-      padding:10px 12px;
-      font-size:13px;
-      font-weight:900;
-    }
-
-    .action.primary{
-      border-color:transparent;
-      background:var(--green);
-      color:#122014;
-    }
-
+    /* HOME */
     .match-card{
       background:var(--white);
       color:var(--dark);
@@ -244,17 +105,14 @@
     }
 
     .eyebrow{
-      color:#45b928;
-      font-size:12px;
-      font-weight:950;
-      text-transform:uppercase;
-      letter-spacing:.06em;
+      color:#43b928;
+      font-size:12px;font-weight:950;
+      letter-spacing:.06em;text-transform:uppercase;
     }
 
     .match-date{
-      margin-top:4px;
-      margin-bottom:14px;
-      color:#626968;
+      margin:4px 0 14px;
+      color:#66706c;
       font-size:13px;
     }
 
@@ -262,14 +120,14 @@
       display:grid;
       grid-template-columns:1fr 1fr;
       gap:10px;
-      margin-bottom:16px;
+      margin-bottom:17px;
     }
 
     .info{
       min-width:0;
-      min-height:76px;
+      min-height:78px;
       background:#fff;
-      border-radius:14px;
+      border-radius:15px;
       padding:12px;
       display:flex;
       align-items:center;
@@ -278,29 +136,26 @@
     }
 
     .info-icon{
-      width:34px;
-      height:34px;
-      border-radius:10px;
-      background:#eff2ee;
-      display:grid;
-      place-items:center;
-      flex:0 0 34px;
+      width:36px;height:36px;
+      flex:0 0 36px;
+      border-radius:11px;
+      background:#eef1ed;
+      display:grid;place-items:center;
     }
 
     .info strong{
       display:block;
       font-size:15px;
       line-height:1.15;
-      overflow:hidden;
-      text-overflow:ellipsis;
+      overflow-wrap:anywhere;
     }
 
     .info small{
       display:block;
       margin-top:4px;
-      color:#7c8381;
+      color:#7b8580;
       font-size:10px;
-      font-weight:800;
+      font-weight:850;
       text-transform:uppercase;
     }
 
@@ -308,96 +163,83 @@
       display:grid;
       grid-template-columns:1fr 96px 1fr;
       align-items:center;
-      gap:8px;
+      gap:6px;
     }
 
-    .cap{
-      text-align:center;
-    }
-
-    .cap strong{
-      display:block;
-      font-size:24px;
-    }
-
+    .cap{text-align:center}
+    .cap strong{display:block;font-size:25px}
     .cap span{
-      color:#707775;
-      font-size:10px;
-      font-weight:900;
+      display:block;
+      margin-top:3px;
+      color:#707a75;
+      font-size:10px;font-weight:900;
       text-transform:uppercase;
     }
 
     .ring{
-      width:90px;
-      height:90px;
-      margin:auto;
-      border-radius:50%;
-      background:conic-gradient(var(--green) 0 80%,#dde2dd 80% 100%);
+      width:90px;height:90px;
+      margin:auto;border-radius:50%;
       position:relative;
-      display:grid;
-      place-items:center;
+      display:grid;place-items:center;
+      background:conic-gradient(var(--green) 0deg,#dfe4df 0deg);
     }
 
     .ring::before{
       content:"";
       position:absolute;
-      width:68px;
-      height:68px;
+      width:68px;height:68px;
       border-radius:50%;
       background:var(--white);
     }
 
-    .ring-text{
-      position:relative;
-      z-index:2;
-      text-align:center;
-      line-height:1;
+    .ring-text{position:relative;z-index:2;text-align:center;line-height:1}
+    .ring-text strong{display:block;font-size:23px}
+    .ring-text span{display:block;margin-top:4px;color:#6e7672;font-size:11px}
+
+    .join-btn{
+      width:100%;
+      min-height:58px;
+      border:0;border-radius:17px;
+      margin:0 0 13px;
+      background:linear-gradient(180deg,#63dd36,#4ccc28);
+      color:#102011;
+      font-size:17px;font-weight:950;
+      box-shadow:0 10px 24px rgba(86,213,46,.20);
     }
 
-    .ring-text strong{
-      display:block;
-      font-size:23px;
+    .status-card{
+      background:var(--white);
+      color:var(--dark);
+      border-radius:18px;
+      padding:15px 16px;
+      margin-bottom:14px;
+      box-shadow:0 10px 24px rgba(0,0,0,.10);
     }
 
-    .ring-text span{
-      display:block;
-      margin-top:3px;
-      color:#6e7472;
-      font-size:11px;
-    }
-
-    .status-card,
-.between{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:12px;
+    .between{
+      display:flex;align-items:center;justify-content:space-between;gap:12px;
     }
 
     .small-title{
-      font-size:11px;
-      font-weight:950;
-      text-transform:uppercase;
+      font-size:12px;font-weight:950;text-transform:uppercase;
     }
 
     .badge{
-      border-radius:999px;
-      padding:6px 10px;
-      background:var(--green);
-      color:#fff;
-      font-size:10px;
-      font-weight:950;
+      min-height:31px;
+      display:inline-flex;align-items:center;justify-content:center;
+      padding:7px 12px;border-radius:999px;
+      font-size:10px;font-weight:950;white-space:nowrap;
+      color:#fff;background:#77827d;
     }
 
-    .badge.pending{
-      background:var(--yellow);
-    }
-.quick-title{
-      margin:18px 0 10px;
-      color:#c7ceca;
-      font-size:11px;
-      font-weight:950;
-      text-transform:uppercase;
+    .badge.confirmed{background:var(--green)}
+    .badge.no{background:var(--red)}
+    .badge.maybe{background:var(--yellow)}
+
+    .quick-title{
+      margin:19px 0 10px;
+      color:#c7d0cb;
+      font-size:11px;font-weight:950;text-transform:uppercase;
     }
 
     .quick-grid{
@@ -408,191 +250,269 @@
 
     .quick{
       min-height:82px;
-      border-radius:14px;
       border:1px solid var(--line);
+      border-radius:14px;
       background:linear-gradient(180deg,#151f26,#10171d);
       color:#fff;
-      display:flex;
-      flex-direction:column;
-      justify-content:center;
-      align-items:center;
+      display:flex;flex-direction:column;
+      align-items:center;justify-content:center;
       gap:7px;
-      font-size:11px;
-      font-weight:850;
+      font-size:11px;font-weight:850;
     }
 
-    .quick b{
-      font-size:20px;
-      font-weight:500;
-    }
+    .quick b{font-size:20px;font-weight:500}
 
-    .footer-note{
-      text-align:center;
-      color:#73807a;
-      font-size:11px;
-      margin-top:18px;
-    }
-
-    .bottom-nav{
-      position:fixed;
-      left:50%;
-      bottom:0;
-      transform:translateX(-50%);
-      width:min(430px,100%);
-      min-height:82px;
-      padding:10px 10px calc(9px + env(safe-area-inset-bottom));
-      background:rgba(7,16,24,.98);
-      border-top:1px solid #202c34;
-      display:grid;
-      grid-template-columns:repeat(5,1fr);
-      align-items:end;
-      z-index:100;
-      backdrop-filter:blur(18px);
-    }
-
-    .nav-item{
-      position:relative;
-      height:58px;
-      border:0;
-      background:transparent;
-      color:#aab3af;
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      justify-content:center;
-      gap:4px;
-      font-size:10px;
-      padding:0;
-    }
-
-    .nav-item .icon{
-      font-size:21px;
-      line-height:1;
-      height:23px;
+    /* CONFIRMAÇÃO */
+    .page-head{
       display:flex;
       align-items:center;
-      justify-content:center;
-    }
-
-    .nav-item.active{
-      color:var(--green2);
-    }
-
-    .plus-wrap{
-      height:58px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      position:relative;
-    }
-
-    .plus{
-      position:absolute;
-      top:-22px;
-      width:58px;
-      height:58px;
-      border:0;
-      border-radius:50%;
-      background:var(--green);
-      color:#fff;
-      font-size:38px;
-      font-weight:300;
-      line-height:1;
-      box-shadow:0 8px 25px rgba(88,213,47,.35);
-    }
-
-    @media(max-width:360px){
-      .content{padding-left:14px;padding-right:14px}
-      .date-time{grid-template-columns:1fr}
-      .location-actions{grid-template-columns:1fr}
-      .match-info{grid-template-columns:1fr}
-      .capacity{grid-template-columns:1fr 82px 1fr}
-      .ring{width:78px;height:78px}
-      .ring::before{width:58px;height:58px}
-    }
-
-    @media(min-width:700px){
-      body{
-        background:#e9ece9;
-        padding:20px 0;
-      }
-      .phone{
-        min-height:calc(100vh - 40px);
-        border-radius:30px;
-        overflow:hidden;
-        box-shadow:0 30px 90px rgba(0,0,0,.25);
-      }
-      .bottom-nav{
-        border-radius:0 0 30px 30px;
-      }
-    }
-  
-    .admin-view{
-      display:none;
-    }
-
-    .phone.admin-mode #homeView,
-    .phone.admin-mode .bottom-nav{
-      display:none;
-    }
-
-    .phone.admin-mode #adminView{
-      display:block;
-    }
-
-    .admin-page-head{
-      display:flex;
-      align-items:flex-start;
-      gap:14px;
-      margin:6px 0 20px;
+      gap:12px;
+      margin:4px 0 18px;
     }
 
     .back-btn{
-      width:42px;
-      height:42px;
-      flex:0 0 42px;
+      width:42px;height:42px;flex:0 0 42px;
       border:1px solid var(--line);
       border-radius:13px;
-      background:#111a21;
-      color:#fff;
-      font-size:22px;
+      background:#111a21;color:#fff;
+      font-size:23px;
     }
 
-    .admin-kicker{
+    .page-kicker{
       color:var(--green2);
-      font-size:11px;
-      font-weight:950;
+      font-size:11px;font-weight:950;
       letter-spacing:.08em;
-      margin-bottom:4px;
     }
 
-    .admin-page-head h1{
-      margin:0;
-      font-size:26px;
+    .page-head h1{
+      margin:2px 0 0;
+      font-size:24px;
       line-height:1.1;
     }
 
-    .admin-page-head p{
-      margin:6px 0 0;
+    .confirm-card{
+      border:1px solid var(--line);
+      border-radius:20px;
+      background:#101920;
+      padding:17px;
+      margin-bottom:14px;
+    }
+
+    .confirm-card h2{
+      margin:0 0 5px;
+      font-size:16px;
+    }
+
+    .confirm-card p{
+      margin:0;
       color:var(--muted);
+      font-size:12px;
+    }
+
+    .decision-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+      margin-top:16px;
+    }
+
+    .decision{
+      min-height:54px;
+      border:1px solid #35434c;
+      border-radius:13px;
+      background:#172128;
+      color:#fff;
+      font-size:12px;font-weight:950;
+    }
+
+    .decision.yes{
+      grid-column:1/-1;
+      background:var(--green);
+      color:#102011;
+      border-color:transparent;
+      font-size:14px;
+    }
+
+    .decision.selected.yes{box-shadow:0 0 0 3px rgba(86,213,46,.2)}
+    .decision.selected.no{border-color:var(--red);color:#ff9d9d}
+    .decision.selected.maybe{border-color:var(--yellow);color:#ffd875}
+
+    .confirmation-note{
+      margin-top:12px;
+      color:#87958e;
+      font-size:11px;
+      line-height:1.45;
+    }
+
+    /* ADMIN */
+    .admin-card{
+      border:1px solid var(--line);
+      background:#101920;
+      border-radius:22px;
+      padding:18px;
+      margin-bottom:16px;
+    }
+
+    .admin-head{
+      display:flex;align-items:center;justify-content:space-between;gap:12px;
+      margin-bottom:18px;
+    }
+
+    .admin-head h2{margin:0;font-size:18px}
+    .admin-tag{color:var(--green2);font-size:11px;font-weight:950}
+
+    .fields{display:grid;gap:14px}
+
+    .date-time{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+    }
+
+    .field{min-width:0}
+
+    .field label{
+      display:block;
+      margin:0 0 7px;
+      color:#b6c0bb;
+      font-size:11px;font-weight:900;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+    }
+
+    .field input{
+      width:100%;
+      min-width:0;
+      height:54px;
+      border:1px solid #35434c;
+      border-radius:15px;
+      background:#111a21;
+      color:#fff;
+      outline:none;
+      padding:0 14px;
+    }
+
+    .field input:focus{border-color:var(--green)}
+
+    #matchDate,#matchTime,#maxPlayers{
+      text-align:center;
+      text-align-last:center;
+      font-size:16px;
+    }
+
+    #matchDate::-webkit-date-and-time-value,
+    #matchTime::-webkit-date-and-time-value{
+      text-align:center;
+    }
+
+    .location-block{
+      position:relative;
+      width:100%;
+    }
+
+    .location-row{
+      display:grid;
+      grid-template-columns:minmax(0,1fr) 54px;
+      gap:10px;
+      align-items:stretch;
+    }
+
+    #matchLocation{
+      font-size:15px;
+      text-align:left;
+    }
+
+    .gps-btn{
+      width:54px;height:54px;
+      border:0;border-radius:15px;
+      background:var(--green);
+      color:#102011;
+      font-size:22px;font-weight:950;
+    }
+
+    .suggestions{
+      display:none;
+      margin-top:8px;
+      width:100%;
+      overflow:hidden;
+      border:1px solid #34424b;
+      border-radius:14px;
+      background:#111a21;
+      box-shadow:0 15px 35px rgba(0,0,0,.25);
+    }
+
+    .suggestions.show{display:block}
+
+    .suggestion{
+      width:100%;
+      border:0;
+      border-bottom:1px solid #26343b;
+      background:transparent;
+      color:#fff;
+      text-align:left;
+      padding:12px 13px;
+      display:grid;
+      grid-template-columns:30px 1fr;
+      gap:10px;
+      align-items:start;
+    }
+
+    .suggestion:last-child{border-bottom:0}
+
+    .suggestion-pin{
+      width:30px;height:30px;border-radius:9px;
+      display:grid;place-items:center;
+      background:rgba(86,213,46,.12);
+      color:var(--green2);
+    }
+
+    .suggestion strong{
+      display:block;
       font-size:13px;
+      line-height:1.25;
+    }
+
+    .suggestion small{
+      display:block;
+      margin-top:3px;
+      color:#9aa6a0;
+      font-size:11px;
+      line-height:1.3;
+    }
+
+    .search-state{
+      display:none;
+      padding:12px 13px;
+      color:#9aa6a0;
+      font-size:11px;
+    }
+
+    .search-state.show{display:block}
+
+    .map-btn,.save-admin{
+      width:100%;
+      min-height:50px;
+      border:0;border-radius:14px;
+      font-weight:950;
+    }
+
+    .map-btn{
+      margin-top:11px;
+      background:#18232a;
+      color:#fff;
+      border:1px solid #35434c;
     }
 
     .save-admin{
-      width:100%;
-      min-height:50px;
-      margin-top:14px;
-      border:0;
-      border-radius:14px;
+      margin-top:10px;
       background:var(--green);
-      color:#112012;
-      font-weight:950;
+      color:#102011;
     }
 
     .admin-options{
       display:grid;
       gap:10px;
-      padding-bottom:20px;
+      margin-top:14px;
     }
 
     .admin-option{
@@ -605,784 +525,1638 @@
       padding:15px 16px;
     }
 
-    .admin-option span{
-      display:block;
-      font-size:14px;
-      font-weight:900;
-    }
-
-    .admin-option small{
-      display:block;
-      margin-top:4px;
-      color:var(--muted);
-      font-size:11px;
-    }
-
-  
-    .status-card{
-      background:#f4f5f2;
-      color:#111516;
-      border-radius:18px;
-      padding:15px 16px;
-      margin:0 0 13px;
-      box-shadow:0 10px 24px rgba(0,0,0,.10);
-    }
-
-    .status-card .between{
-      min-height:34px;
-    }
-
-    .status-card .small-title{
-      font-size:12px;
-      font-weight:950;
-      letter-spacing:.01em;
-    }
-
-    .status-card .badge{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      min-height:31px;
-      padding:7px 12px;
-      border-radius:999px;
-      background:#58d52f;
-      color:#fff;
-      font-size:11px;
-      font-weight:950;
-      white-space:nowrap;
-      box-shadow:0 5px 12px rgba(88,213,47,.18);
-    }
-
-
-    .nav-item:last-child span:last-child{
-      font-size:9px;
-    }
+    .admin-option span{display:block;font-size:14px;font-weight:900}
+    .admin-option small{display:block;margin-top:4px;color:var(--muted);font-size:11px}
 
     .danger-zone{
-      margin:18px 0 30px;
+      margin:22px 0 28px;
       padding:16px;
-      border:1px solid rgba(216,78,78,.35);
-      background:rgba(216,78,78,.07);
+      border:1px solid rgba(217,78,78,.38);
+      background:rgba(217,78,78,.07);
       border-radius:17px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:14px;
     }
 
-    .danger-zone strong{
-      display:block;
-      color:#fff;
-      font-size:14px;
-    }
-
+    .danger-zone strong{display:block;font-size:14px}
     .danger-zone small{
       display:block;
-      color:#9ca7a2;
-      font-size:11px;
-      line-height:1.4;
-      margin-top:4px;
+      margin:5px 0 13px;
+      color:#9ca8a2;
+      font-size:11px;line-height:1.4;
     }
 
-    .danger-zone button{
-      flex:0 0 auto;
-      border:1px solid #d84e4e;
-      background:#d84e4e;
+    .reset-btn{
+      width:100%;
+      min-height:45px;
+      border:0;border-radius:12px;
+      background:var(--red);
+      color:#fff;font-weight:950;
+    }
+
+    /* MENU */
+    .bottom-nav{
+      position:fixed;
+      left:50%;bottom:0;
+      transform:translateX(-50%);
+      width:min(430px,100%);
+      min-height:82px;
+      padding:10px 8px calc(9px + env(safe-area-inset-bottom));
+      display:grid;
+      grid-template-columns:repeat(5,1fr);
+      align-items:end;
+      z-index:100;
+      background:rgba(7,16,24,.98);
+      border-top:1px solid #202d35;
+      backdrop-filter:blur(18px);
+    }
+
+    .nav-item{
+      height:58px;
+      border:0;background:transparent;
+      color:#aab4af;
+      display:flex;flex-direction:column;
+      align-items:center;justify-content:center;
+      gap:4px;padding:0;
+      font-size:10px;
+    }
+
+    .nav-item .icon{
+      height:23px;
+      display:flex;align-items:center;justify-content:center;
+      font-size:21px;line-height:1;
+    }
+
+    .nav-item.active{color:var(--green2)}
+    #adminNavButton span:last-child{font-size:9px}
+
+    .plus-wrap{
+      height:58px;
+      display:flex;align-items:center;justify-content:center;
+      position:relative;
+    }
+
+    .plus{
+      position:absolute;
+      top:-22px;
+      width:58px;height:58px;
+      border:0;border-radius:50%;
+      background:var(--green);
       color:#fff;
-      border-radius:11px;
-      padding:10px 12px;
+      font-size:37px;
+      box-shadow:0 8px 25px rgba(86,213,46,.34);
+    }
+
+    .hide-nav .bottom-nav{display:none}
+
+    @media(max-width:360px){
+      .content{padding-left:14px;padding-right:14px}
+      .date-time{grid-template-columns:1fr}
+      .match-info{grid-template-columns:1fr}
+      .capacity{grid-template-columns:1fr 82px 1fr}
+      .ring{width:78px;height:78px}
+      .ring::before{width:58px;height:58px}
+      .decision-grid{grid-template-columns:1fr}
+      .decision.yes{grid-column:auto}
+    }
+
+    @media(min-width:700px){
+      body{background:#e9ece9;padding:20px 0}
+      .phone{
+        min-height:calc(100vh - 40px);
+        border-radius:30px;
+        box-shadow:0 30px 90px rgba(0,0,0,.25);
+      }
+      .bottom-nav{border-radius:0 0 30px 30px}
+    }
+  
+    .badge.requested{
+      background:var(--yellow);
+      color:#fff;
+    }
+
+    .badge.rejected{
+      background:var(--red);
+      color:#fff;
+    }
+
+    .approval-empty{
+      padding:18px;
+      border:1px dashed #34424b;
+      border-radius:14px;
+      color:#8f9b95;
+      text-align:center;
+      font-size:12px;
+    }
+
+    .approval-item{
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:12px;
+      align-items:center;
+      padding:13px 0;
+      border-bottom:1px solid #25323a;
+    }
+
+    .approval-item:last-child{
+      border-bottom:0;
+      padding-bottom:0;
+    }
+
+    .approval-item:first-child{
+      padding-top:0;
+    }
+
+    .approval-name{
+      font-size:13px;
+      font-weight:900;
+    }
+
+    .approval-status{
+      margin-top:4px;
+      color:#9aa6a0;
+      font-size:11px;
+    }
+
+    .approval-actions{
+      display:flex;
+      gap:7px;
+    }
+
+    .approval-actions button{
+      border:0;
+      border-radius:10px;
+      padding:9px 10px;
+      font-size:11px;
+      font-weight:900;
+    }
+
+    .approve-btn{
+      background:var(--green);
+      color:#102011;
+    }
+
+    .reject-btn{
+      background:#2a2022;
+      color:#ff9e9e;
+      border:1px solid rgba(217,78,78,.35)!important;
+    }
+
+
+    /* CADASTRO RÁPIDO */
+    .register-card{
+      border:1px solid var(--line);
+      border-radius:20px;
+      background:#101920;
+      padding:18px;
+    }
+
+    .register-card h2{
+      margin:0 0 5px;
+      font-size:17px;
+    }
+
+    .register-card > p{
+      margin:0 0 18px;
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.45;
+    }
+
+    .selfie-area{
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:11px;
+      margin-bottom:18px;
+    }
+
+    .selfie-preview{
+      width:108px;
+      height:108px;
+      border-radius:50%;
+      overflow:hidden;
+      border:3px solid #2d3b43;
+      background:#121c22;
+      display:grid;
+      place-items:center;
+      position:relative;
+      color:#89968f;
+      font-size:35px;
+    }
+
+    .selfie-preview.has-photo{
+      border-color:var(--green);
+    }
+
+    .selfie-preview img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:none;
+    }
+
+    .selfie-preview.has-photo img{
+      display:block;
+    }
+
+    .selfie-preview.has-photo .selfie-placeholder{
+      display:none;
+    }
+
+    .selfie-btn{
+      min-height:43px;
+      border:1px solid #35434c;
+      border-radius:12px;
+      background:#18232a;
+      color:#fff;
+      padding:10px 15px;
       font-size:12px;
       font-weight:900;
     }
 
+    #selfieInput{
+      display:none;
+    }
 
-    .join-racha{
+    .register-fields{
+      display:grid;
+      gap:13px;
+    }
+
+    .register-field label{
+      display:block;
+      margin-bottom:7px;
+      color:#b6c0bb;
+      font-size:11px;
+      font-weight:900;
+      text-transform:uppercase;
+      letter-spacing:.07em;
+    }
+
+    .register-field input{
       width:100%;
-      min-height:58px;
-      margin:0 0 13px;
+      height:54px;
+      border:1px solid #35434c;
+      border-radius:15px;
+      background:#111a21;
+      color:#fff;
+      padding:0 14px;
+      outline:none;
+    }
+
+    .register-field input:focus{
+      border-color:var(--green);
+    }
+
+    .register-submit{
+      width:100%;
+      min-height:54px;
+      margin-top:16px;
       border:0;
-      border-radius:17px;
-      background:linear-gradient(180deg,#63dc36,#4dcc29);
+      border-radius:14px;
+      background:var(--green);
       color:#102011;
-      font-size:17px;
+      font-size:14px;
       font-weight:950;
-      letter-spacing:-.2px;
-      box-shadow:0 10px 24px rgba(88,213,47,.22);
+    }
+
+    .register-help{
+      margin-top:10px;
+      color:#839089;
+      font-size:10px;
+      line-height:1.4;
+      text-align:center;
+    }
+
+    .approval-player{
       display:flex;
       align-items:center;
-      justify-content:center;
-      gap:9px;
+      gap:10px;
     }
 
-    .join-racha:active{
-      transform:scale(.985);
-    }
-
-    .join-racha.joined{
-      background:#f4f5f2;
-      color:#2eaa28;
-      border:1px solid #dce5dc;
-      box-shadow:none;
-    }
-
-
-    /* Ajuste visual dos campos de data e horário */
-    #matchDate,
-    #matchTime{
-      text-align:center;
-      text-align-last:center;
-      font-size:17px;
-      padding-left:8px;
-      padding-right:8px;
-    }
-
-    #matchDate::-webkit-date-and-time-value,
-    #matchTime::-webkit-date-and-time-value{
-      text-align:center;
-      min-height:1.2em;
-    }
-
-    #matchDate::-webkit-calendar-picker-indicator,
-    #matchTime::-webkit-calendar-picker-indicator{
-      margin-left:0;
-    }
-
-    .location-autocomplete{
-      position:relative;
-      min-width:0;
-    }
-
-    .location-suggestions{
-      display:none;
-      position:absolute;
-      left:0;
-      right:0;
-      top:calc(100% + 7px);
-      z-index:200;
+    .approval-avatar{
+      width:38px;
+      height:38px;
+      flex:0 0 38px;
+      border-radius:50%;
       overflow:hidden;
-      border:1px solid #34424b;
-      border-radius:14px;
-      background:#111a21;
-      box-shadow:0 15px 35px rgba(0,0,0,.28);
-    }
-
-    .location-suggestions.show{
-      display:block;
-    }
-
-    .location-suggestion{
-      width:100%;
-      border:0;
-      border-bottom:1px solid #26343c;
-      background:transparent;
-      color:#fff;
-      text-align:left;
-      padding:13px 14px;
-      display:flex;
-      align-items:flex-start;
-      gap:11px;
-    }
-
-    .location-suggestion:last-child{
-      border-bottom:0;
-    }
-
-    .location-suggestion:active{
-      background:#18242b;
-    }
-
-    .location-pin{
-      width:30px;
-      height:30px;
-      border-radius:9px;
-      background:rgba(88,213,47,.13);
-      color:var(--green2);
+      background:#18232a;
       display:grid;
       place-items:center;
-      flex:0 0 30px;
-      font-size:15px;
+      color:#b6c0bb;
+      font-size:12px;
+      font-weight:900;
     }
 
-    .location-suggestion strong{
-      display:block;
+    .approval-avatar img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+    }
+
+
+    .confirmation-summary{
+      margin:10px 0 16px;
+      padding:12px 13px;
+      border-radius:13px;
+      background:#151f26;
+      border:1px solid #2b3941;
+      color:#dce3df;
       font-size:13px;
-      line-height:1.25;
+      font-weight:800;
+      text-align:center;
     }
 
-    .location-suggestion small{
-      display:block;
-      margin-top:3px;
-      color:#9ea9a4;
-      font-size:11px;
-      line-height:1.3;
-    }
-
-    .selected-location{
-      margin-top:8px;
-      color:#8fa19a;
-      font-size:11px;
-      line-height:1.35;
+    .payment-flow{
       display:none;
+      margin-top:18px;
+      padding-top:18px;
+      border-top:1px solid #293740;
     }
 
-    .selected-location.show{
+    .payment-flow.show{
       display:block;
+    }
+
+    .flow-label{
+      margin-bottom:10px;
+      color:#c9d1cd;
+      font-size:11px;
+      font-weight:950;
+      text-transform:uppercase;
+      letter-spacing:.06em;
+    }
+
+    .payment-types{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+      margin-bottom:18px;
+    }
+
+    .payment-type{
+      min-height:92px;
+      border:1px solid #35434c;
+      border-radius:15px;
+      background:#151f26;
+      color:#fff;
+      padding:13px;
+      text-align:left;
+    }
+
+    .payment-type.selected{
+      border-color:var(--green);
+      box-shadow:0 0 0 2px rgba(86,213,46,.12);
+      background:#17231c;
+    }
+
+    .payment-type strong{
+      display:block;
+      font-size:20px;
+      line-height:1;
+      color:var(--green2);
+    }
+
+    .payment-type span{
+      display:block;
+      margin-top:7px;
+      font-size:12px;
+      font-weight:850;
+    }
+
+    .pix-box{
+      border:1px solid #35434c;
+      border-radius:17px;
+      background:#111a21;
+      padding:16px;
+    }
+
+    .pix-title{
+      font-size:13px;
+      font-weight:950;
+      text-transform:uppercase;
+    }
+
+    .pix-sub{
+      margin-top:4px;
+      color:#9aa6a0;
+      font-size:11px;
+      line-height:1.4;
+    }
+
+    .qr-placeholder{
+      width:148px;
+      height:148px;
+      margin:16px auto;
+      border-radius:14px;
+      background:
+        linear-gradient(90deg,#111 10px,transparent 10px) 0 0/24px 24px,
+        linear-gradient(#111 10px,transparent 10px) 0 0/24px 24px,
+        #fff;
+      border:10px solid #fff;
+      box-shadow:0 8px 25px rgba(0,0,0,.18);
+      display:grid;
+      place-items:center;
+      color:#111;
+      font-size:11px;
+      font-weight:950;
+      text-align:center;
+    }
+
+    .pix-key-label{
+      color:#9aa6a0;
+      font-size:10px;
+      font-weight:900;
+      text-transform:uppercase;
+      letter-spacing:.05em;
+    }
+
+    .pix-key-row{
+      display:grid;
+      grid-template-columns:minmax(0,1fr) auto;
+      gap:8px;
+      margin-top:7px;
+      align-items:center;
+    }
+
+    .pix-key{
+      min-width:0;
+      min-height:46px;
+      border:1px solid #34424b;
+      border-radius:12px;
+      background:#172128;
+      color:#fff;
+      padding:12px;
+      font-size:12px;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+    }
+
+    .copy-pix{
+      min-height:46px;
+      border:0;
+      border-radius:12px;
+      background:#26343b;
+      color:#fff;
+      padding:0 13px;
+      font-size:11px;
+      font-weight:950;
+    }
+
+    .paid-done{
+      width:100%;
+      min-height:52px;
+      margin-top:14px;
+      border:0;
+      border-radius:14px;
+      background:var(--green);
+      color:#102011;
+      font-size:13px;
+      font-weight:950;
+    }
+
+    .payment-admin-note{
+      margin-top:10px;
+      color:#8f9b95;
+      font-size:10px;
+      text-align:center;
+      line-height:1.4;
+    }
+
+    @media(max-width:360px){
+      .payment-types{grid-template-columns:1fr}
     }
 
 </style>
 </head>
 
 <body>
-  <div class="phone">
+<div class="phone" id="app">
 
-    <header class="topbar">
-      <button class="top-icon" id="adminButton" aria-label="Painel do administrador">☰</button>
+  <header class="topbar">
+    <button class="top-icon" id="menuButton" aria-label="Administrador">☰</button>
+    <div class="brand"><span class="green">GREEN</span> PARK FC</div>
+    <button class="top-icon bell" aria-label="Notificações">♧</button>
+  </header>
 
-      <div class="brand">
-        <span class="green">GREEN</span> PARK FC
+  <!-- HOME -->
+  <main class="content view active" id="homeView">
+    <section class="match-card">
+      <div class="eyebrow">Próximo racha</div>
+      <div class="match-date" id="homeDate">Defina a data no painel do administrador</div>
+
+      <div class="match-info">
+        <div class="info">
+          <div class="info-icon">◷</div>
+          <div>
+            <strong id="homeTime">--:--</strong>
+            <small>Horário</small>
+          </div>
+        </div>
+
+        <div class="info">
+          <div class="info-icon">⌖</div>
+          <div>
+            <strong id="homeLocation">Local não definido</strong>
+            <small>Local</small>
+          </div>
+        </div>
       </div>
 
-      <button class="top-icon bell" aria-label="Notificações">♧</button>
-    </header>
+      <div class="capacity">
+        <div class="cap">
+          <strong id="confirmedCount">0</strong>
+          <span>Confirmados</span>
+        </div>
 
-    <main class="content" id="homeView">
-<section class="match-card">
-        <div class="eyebrow">Próximo racha</div>
-        <div class="match-date" id="displayDate">Quinta-feira</div>
-
-        <div class="match-info">
-          <div class="info">
-            <div class="info-icon">◷</div>
-            <div>
-              <strong id="displayTime">20:00</strong>
-              <small>Horário</small>
-            </div>
-          </div>
-
-          <div class="info">
-            <div class="info-icon">⌖</div>
-            <div>
-              <strong id="displayLocation">Arena Green Park</strong>
-              <small>Local</small>
-            </div>
+        <div class="ring" id="capacityRing">
+          <div class="ring-text">
+            <strong id="ringConfirmed">0</strong>
+            <span id="ringMax">/ 40</span>
           </div>
         </div>
 
-        <div class="capacity">
-          <div class="cap">
-            <strong>32</strong>
-            <span>Confirmados</span>
+        <div class="cap">
+          <strong id="remainingCount">40</strong>
+          <span>Vagas restantes</span>
+        </div>
+      </div>
+    </section>
+
+    <button class="join-btn" id="enterRacha">⚽ ENTRAR NO RACHA</button>
+
+    <section class="status-card">
+      <div class="between">
+        <span class="small-title">Sua situação</span>
+        <span class="badge" id="playerStatus">NÃO RESPONDEU</span>
+      </div>
+    </section>
+
+    <div class="quick-title">Acessos rápidos</div>
+    <div class="quick-grid">
+      <button class="quick"><b>⚽</b>Times</button>
+      <button class="quick"><b>♛</b>Ranking</button>
+      <button class="quick"><b>▥</b>Estatísticas</button>
+      <button class="quick"><b>▣</b>Galeria</button>
+      <button class="quick"><b>▤</b>Comunicados</button>
+      <button class="quick"><b>◆</b>Patrocinadores</button>
+    </div>
+  </main>
+
+  <!-- CONFIRMAÇÃO -->
+  <main class="content view" id="confirmationView">
+    <div class="page-head">
+      <button class="back-btn" data-back-home>←</button>
+      <div>
+        <div class="page-kicker">CONFIRMAÇÃO</div>
+        <h1>Confirmar presença</h1>
+      </div>
+    </div>
+
+    <section class="confirm-card">
+      <div class="confirmation-summary" id="confirmMatchInfo">
+        Próximo racha
+      </div>
+
+      <div class="decision-grid">
+        <button class="decision yes" id="yesButton">✓ VOU JOGAR</button>
+        <button class="decision no" id="noButton">NÃO VOU</button>
+        <button class="decision maybe" id="maybeButton">AINDA NÃO SEI</button>
+      </div>
+
+      <div class="payment-flow" id="paymentFlow">
+        <div class="flow-label">Tipo de pagamento</div>
+
+        <div class="payment-types">
+          <button class="payment-type selected" id="dailyPayment" type="button">
+            <strong>R$ 15,00</strong>
+            <span>Pagamento diário</span>
+          </button>
+
+          <button class="payment-type" id="monthlyPayment" type="button">
+            <strong>R$ 70,00</strong>
+            <span>Mensalidade</span>
+          </button>
+        </div>
+
+        <div class="pix-box">
+          <div class="pix-title">Pagamento via Pix</div>
+          <div class="pix-sub">Escaneie o QR Code ou copie o código Pix</div>
+
+          <div class="qr-placeholder">
+            QR PIX
           </div>
 
-          <div class="ring">
-            <div class="ring-text">
-              <strong>32</strong>
-              <span>/ 40</span>
-            </div>
+          <div class="pix-key-label">Chave Pix</div>
+
+          <div class="pix-key-row">
+            <div class="pix-key" id="pixKey">greenparkfc@pix.com</div>
+            <button class="copy-pix" id="copyPix" type="button">COPIAR</button>
           </div>
 
-          <div class="cap">
-            <strong>8</strong>
-            <span>Vagas restantes</span>
+          <button class="paid-done" id="paymentDone" type="button">
+            JÁ REALIZEI O PAGAMENTO
+          </button>
+
+          <div class="payment-admin-note">
+            O pagamento será confirmado pelo administrador.
           </div>
         </div>
-      </section>
+      </div>
+    </section>
+  </main>
 
-      <button class="join-racha" id="joinRacha">
-        <span>⚽</span>
-        <span id="joinRachaText">ENTRAR NO RACHA</span>
+  <!-- CADASTRO RÁPIDO -->
+  <main class="content view" id="registerView">
+    <div class="page-head">
+      <button class="back-btn" id="backToConfirmation">←</button>
+      <div>
+        <div class="page-kicker">IDENTIFICAÇÃO</div>
+        <h1>Seu cadastro</h1>
+      </div>
+    </div>
+
+    <section class="register-card">
+      <h2>Antes de entrar no racha</h2>
+      <p>Precisamos identificar você para o administrador fazer a conferência.</p>
+
+      <div class="selfie-area">
+        <div class="selfie-preview" id="selfiePreview">
+          <span class="selfie-placeholder">◎</span>
+          <img id="selfieImage" alt="Sua foto">
+        </div>
+
+        <label class="selfie-btn" for="selfieInput">📷 Tirar selfie</label>
+        <input
+          id="selfieInput"
+          type="file"
+          accept="image/*"
+          capture="user"
+        >
+      </div>
+
+      <div class="register-fields">
+        <div class="register-field">
+          <label for="playerName">Nome ou apelido</label>
+          <input
+            id="playerName"
+            type="text"
+            placeholder="Como você é conhecido no racha?"
+            autocomplete="name"
+          >
+        </div>
+
+        <div class="register-field">
+          <label for="playerPhone">Telefone</label>
+          <input
+            id="playerPhone"
+            type="tel"
+            inputmode="tel"
+            placeholder="(64) 99999-9999"
+            autocomplete="tel"
+          >
+        </div>
+      </div>
+
+      <button class="register-submit" id="finishRegistration">
+        ENVIAR PARA CONFERÊNCIA
       </button>
 
-      <section class="status-card">
-        <div class="between">
-          <span class="small-title">Sua situação</span>
-          <span class="badge" id="playerStatus" style="background:#7d8782">NÃO CONFIRMADO</span>
-        </div>
-      </section>
-<div class="quick-title">Acessos rápidos</div>
+      <div class="register-help">
+        Depois do envio, sua situação ficará como “Aguardando conferência”.
+      </div>
+    </section>
+  </main>
 
-      <div class="quick-grid">
-        <button class="quick"><b>⚽</b>Times</button>
-        <button class="quick"><b>♛</b>Ranking</button>
-        <button class="quick"><b>▥</b>Estatísticas</button>
-        <button class="quick"><b>▣</b>Galeria</button>
-        <button class="quick"><b>▤</b>Comunicados</button>
-        <button class="quick"><b>◆</b>Patrocinadores</button>
+  <!-- ADMIN -->
+  <main class="content view" id="adminView">
+    <div class="page-head">
+      <button class="back-btn" data-back-home>←</button>
+      <div>
+        <div class="page-kicker">ADMINISTRAÇÃO</div>
+        <h1>Painel do Admin</h1>
+      </div>
+    </div>
+
+    <section class="admin-card">
+      <div class="admin-head">
+        <h2>Próximo racha</h2>
+        <span class="admin-tag">GREEN PARK FC</span>
       </div>
 
-      <div class="footer-note">Green Park FC • Racha Oficial</div>
-    </main>
-
-
-    <main class="content admin-view" id="adminView">
-      <div class="admin-page-head">
-        <button class="back-btn" id="backHome" aria-label="Voltar">←</button>
-        <div>
-          <div class="admin-kicker">ADMINISTRAÇÃO</div>
-          <h1>Painel do Admin</h1>
-          <p>Configure as informações do próximo racha.</p>
-        </div>
-      </div>
-
-      <section class="admin-card">
-        <div class="admin-head">
-          <h2>Próximo racha</h2>
-          <span class="admin-tag">GREEN PARK FC</span>
-        </div>
-
-        <div class="fields">
-          <div class="date-time">
-            <div class="field">
-              <label for="matchDate">Data</label>
-              <input id="matchDate" type="date">
-            </div>
-
-            <div class="field">
-              <label for="matchTime">Horário</label>
-              <input id="matchTime" type="time" value="20:00">
-            </div>
+      <div class="fields">
+        <div class="date-time">
+          <div class="field">
+            <label>Data</label>
+            <input id="matchDate" type="date">
           </div>
 
           <div class="field">
-            <label for="matchLocation">Local</label>
-
-            <div class="location-line">
-              <div class="location-autocomplete">
-                <input
-                  id="matchLocation"
-                  type="text"
-                  value="Green Park"
-                  placeholder="Comece a digitar o local..."
-                  autocomplete="off"
-                >
-
-                <div class="location-suggestions" id="locationSuggestions">
-                  <button
-                    type="button"
-                    class="location-suggestion"
-                    id="greenParkSuggestion"
-                  >
-                    <span class="location-pin">⌖</span>
-                    <span>
-                      <strong>Green Park — Rio Verde</strong>
-                      <small>Avenida Green Park, Residencial Green Park, Rio Verde - GO</small>
-                    </span>
-                  </button>
-                </div>
-
-                <div class="selected-location" id="selectedLocation">
-                  Avenida Green Park, Residencial Green Park, Rio Verde - GO
-                </div>
-              </div>
-
-              <button class="gps" id="gpsButton" aria-label="Usar GPS">⌖</button>
-            </div>
+            <label>Horário</label>
+            <input id="matchTime" type="time">
           </div>
         </div>
 
-        <div class="location-actions">
-          <button class="action" id="searchLocation">Buscar localização</button>
-          <button class="action primary" id="openMaps">Abrir no Google Maps</button>
+        <div class="field">
+          <label>Máximo de jogadores</label>
+          <input id="maxPlayers" type="number" inputmode="numeric" min="2" max="100" value="40">
         </div>
 
-        <button class="save-admin" id="saveRacha">Salvar informações do racha</button>
-      </section>
+        <div class="field location-block">
+          <label>Local</label>
 
-      <section class="admin-options">
-        <button class="admin-option">
-          <span>Jogadores</span>
-          <small>Cadastros, confirmados e lista de espera</small>
-        </button>
+          <div class="location-row">
+            <input
+              id="matchLocation"
+              type="text"
+              placeholder="Comece a digitar o nome do local..."
+              autocomplete="off"
+            >
+            <button class="gps-btn" id="gpsButton" aria-label="Usar GPS">⌖</button>
+          </div>
 
-        <button class="admin-option">
-          <span>Pagamentos</span>
-          <small>Confirmar Pix, diária e mensalidade</small>
-        </button>
+          <div class="suggestions" id="locationSuggestions"></div>
+          <div class="search-state" id="locationState"></div>
 
-        <button class="admin-option">
-          <span>Sorteio dos times</span>
-          <small>Time Verde x Time Preto</small>
-        </button>
-
-        <button class="admin-option">
-          <span>Estatísticas</span>
-          <small>Gols e ranking dos jogadores</small>
-        </button>
-      </section>
-
-      <section class="danger-zone">
-        <div>
-          <strong>Zerar aplicativo</strong>
-          <small>Apaga os dados salvos neste aparelho e restaura o aplicativo.</small>
+          <button class="map-btn" id="openMapsButton">Abrir local no Google Maps</button>
         </div>
-        <button id="resetApp">Zerar app</button>
-      </section>
-    </main>
-
-    <nav class="bottom-nav">
-      <button class="nav-item active">
-        <span class="icon">⌂</span>
-        <span>Início</span>
-      </button>
-
-      <button class="nav-item">
-        <span class="icon">◉</span>
-        <span>Racha</span>
-      </button>
-
-      <div class="plus-wrap">
-        <button class="plus" aria-label="Ação rápida">+</button>
       </div>
 
-      <button class="nav-item">
-        <span class="icon">♛</span>
-        <span>Ranking</span>
+      <button class="save-admin" id="saveRachaButton">Salvar informações do racha</button>
+    </section>
+
+
+    <section class="admin-card">
+      <div class="admin-head">
+        <h2>Conferência de presença</h2>
+        <span class="admin-tag" id="pendingApprovalCount">0 PENDENTES</span>
+      </div>
+
+      <div id="approvalList"></div>
+    </section>
+
+    <section class="admin-options">
+      <button class="admin-option">
+        <span>Jogadores</span>
+        <small>Cadastros, confirmados e lista de espera</small>
       </button>
 
-      <button class="nav-item" id="adminNavButton">
-        <span class="icon">⚙</span>
-        <span>Administrador</span>
+      <button class="admin-option">
+        <span>Pagamentos</span>
+        <small>Confirmar Pix, diária e mensalidade</small>
       </button>
-    </nav>
 
-  </div>
+      <button class="admin-option">
+        <span>Sorteio dos times</span>
+        <small>Time Verde x Time Preto</small>
+      </button>
 
-  <script>
-    const phone = document.querySelector('.phone');
-    const homeView = document.getElementById('homeView');
-    const adminView = document.getElementById('adminView');
+      <button class="admin-option">
+        <span>Estatísticas</span>
+        <small>Gols e ranking dos jogadores</small>
+      </button>
+    </section>
 
-    const adminButton = document.getElementById('adminButton');
-    const backHome = document.getElementById('backHome');
+    <section class="danger-zone">
+      <strong>Zerar aplicativo</strong>
+      <small>Apaga completamente configurações do racha, confirmações, jogadores, pagamentos, listas, sorteios e estatísticas salvos neste aparelho.</small>
+      <button class="reset-btn" id="resetAppButton">ZERAR APP</button>
+    </section>
+  </main>
 
-    const matchDate = document.getElementById('matchDate');
-    const matchTime = document.getElementById('matchTime');
-    const matchLocation = document.getElementById('matchLocation');
+  <nav class="bottom-nav">
+    <button class="nav-item active" data-nav="home">
+      <span class="icon">⌂</span><span>Início</span>
+    </button>
 
-    const displayDate = document.getElementById('displayDate');
-    const displayTime = document.getElementById('displayTime');
-    const displayLocation = document.getElementById('displayLocation');
+    <button class="nav-item" data-nav="racha">
+      <span class="icon">◉</span><span>Racha</span>
+    </button>
 
-    const locationSuggestions = document.getElementById('locationSuggestions');
-    const greenParkSuggestion = document.getElementById('greenParkSuggestion');
-    const selectedLocation = document.getElementById('selectedLocation');
+    <div class="plus-wrap">
+      <button class="plus" id="plusButton">+</button>
+    </div>
 
-    const GREEN_PARK_ADDRESS = 'Avenida Green Park, Residencial Green Park, Rio Verde - GO, 75909-620';
+    <button class="nav-item" data-nav="ranking">
+      <span class="icon">♛</span><span>Ranking</span>
+    </button>
 
-    function handleLocationSuggestions(){
-      const text = matchLocation.value.trim().toLowerCase();
+    <button class="nav-item" id="adminNavButton">
+      <span class="icon">⚙</span><span>Administrador</span>
+    </button>
+  </nav>
+</div>
+
+<script>
+(() => {
+  const STORAGE_KEY = 'greenpark_state_v2';
+
+  const freshState = () => ({
+    config: {
+      date: '',
+      time: '',
+      locationName: '',
+      locationAddress: '',
+      latitude: null,
+      longitude: null,
+      maxPlayers: 40
+    },
+    players: [],
+    confirmations: [],
+    currentUser: {
+      id: 'local-user',
+      status: 'unanswered',
+      name: '',
+      phone: '',
+      photo: '',
+      paymentType: '',
+      paymentReported: false
+    },
+    payments: [],
+    teams: [],
+    stats: []
+  });
+
+  let state;
+
+  try {
+    state = JSON.parse(localStorage.getItem(STORAGE_KEY)) || freshState();
+  } catch {
+    state = freshState();
+  }
+
+  // Garante campos novos em versões futuras.
+  state.config = {...freshState().config, ...(state.config || {})};
+  state.players = Array.isArray(state.players) ? state.players : [];
+  state.confirmations = Array.isArray(state.confirmations) ? state.confirmations : [];
+  state.currentUser = {...freshState().currentUser, ...(state.currentUser || {})};
+
+  const app = document.getElementById('app');
+  const views = document.querySelectorAll('.view');
+
+  const homeDate = document.getElementById('homeDate');
+  const homeTime = document.getElementById('homeTime');
+  const homeLocation = document.getElementById('homeLocation');
+  const confirmedCount = document.getElementById('confirmedCount');
+  const remainingCount = document.getElementById('remainingCount');
+  const ringConfirmed = document.getElementById('ringConfirmed');
+  const ringMax = document.getElementById('ringMax');
+  const capacityRing = document.getElementById('capacityRing');
+  const playerStatus = document.getElementById('playerStatus');
+  const approvalList = document.getElementById('approvalList');
+  const pendingApprovalCount = document.getElementById('pendingApprovalCount');
+  const confirmMatchInfo = document.getElementById('confirmMatchInfo');
+
+  const matchDate = document.getElementById('matchDate');
+  const matchTime = document.getElementById('matchTime');
+  const matchLocation = document.getElementById('matchLocation');
+  const maxPlayers = document.getElementById('maxPlayers');
+
+  const suggestionsBox = document.getElementById('locationSuggestions');
+  const locationState = document.getElementById('locationState');
+
+  const selfieInput = document.getElementById('selfieInput');
+  const selfiePreview = document.getElementById('selfiePreview');
+  const selfieImage = document.getElementById('selfieImage');
+  const playerName = document.getElementById('playerName');
+  const playerPhone = document.getElementById('playerPhone');
+  const finishRegistration = document.getElementById('finishRegistration');
+
+  const paymentFlow = document.getElementById('paymentFlow');
+  const dailyPayment = document.getElementById('dailyPayment');
+  const monthlyPayment = document.getElementById('monthlyPayment');
+  const copyPix = document.getElementById('copyPix');
+  const pixKey = document.getElementById('pixKey');
+  const paymentDone = document.getElementById('paymentDone');
+
+  let selectedPaymentType = state.currentUser.paymentType || 'daily';
+
+  let selfieData = state.currentUser.photo || '';
+
+  let selectedPlace = null;
+  let searchTimer = null;
+  let searchController = null;
+
+  function saveState(){
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  }
+
+  function showView(id){
+    views.forEach(v => v.classList.toggle('active', v.id === id));
+    app.classList.toggle('hide-nav', id !== 'homeView');
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+
+  function formatDateBR(value){
+    if(!value) return 'Defina a data no painel do administrador';
+    const d = new Date(value + 'T12:00:00');
+    const weekday = d.toLocaleDateString('pt-BR',{weekday:'long'});
+    const date = d.toLocaleDateString('pt-BR');
+    return weekday.charAt(0).toUpperCase() + weekday.slice(1) + ' • ' + date;
+  }
+
+  function confirmedTotal(){
+    return state.confirmations.filter(c => c.status === 'confirmed').length;
+  }
+
+
+  function renderApprovals(){
+    const pending = state.confirmations.filter(c => c.status === 'requested');
+
+    pendingApprovalCount.textContent =
+      pending.length + (pending.length === 1 ? ' PENDENTE' : ' PENDENTES');
+
+    if(!pending.length){
+      approvalList.innerHTML =
+        '<div class="approval-empty">Nenhum jogador aguardando conferência.</div>';
+      return;
+    }
+
+    approvalList.innerHTML = '';
+
+    pending.forEach(record => {
+      const row = document.createElement('div');
+      row.className = 'approval-item';
+
+      const info = document.createElement('div');
+      info.className = 'approval-player';
+
+      const avatar = document.createElement('div');
+      avatar.className = 'approval-avatar';
+
+      if(record.photo){
+        const img = document.createElement('img');
+        img.src = record.photo;
+        img.alt = record.name || 'Jogador';
+        avatar.appendChild(img);
+      }else{
+        avatar.textContent = (record.name || 'J').charAt(0).toUpperCase();
+      }
+
+      const textInfo = document.createElement('div');
+      const name = document.createElement('div');
+      const status = document.createElement('div');
+
+      name.className = 'approval-name';
+      name.textContent = record.name || 'Jogador';
+
+      status.className = 'approval-status';
+      const paymentText =
+        record.paymentType === 'monthly'
+          ? 'Mensal R$ 70'
+          : record.paymentType === 'daily'
+            ? 'Diária R$ 15'
+            : 'Pagamento não informado';
+
+      status.textContent =
+        (record.phone ? record.phone + ' • ' : '') +
+        paymentText +
+        ' • Aguardando conferência';
+
+      textInfo.appendChild(name);
+      textInfo.appendChild(status);
+
+      info.appendChild(avatar);
+      info.appendChild(textInfo);
+
+      const actions = document.createElement('div');
+      actions.className = 'approval-actions';
+
+      const approve = document.createElement('button');
+      approve.className = 'approve-btn';
+      approve.textContent = 'Confirmar';
+
+      approve.addEventListener('click', () => {
+        record.status = 'confirmed';
+
+        if(record.playerId === state.currentUser.id){
+          state.currentUser.status = 'confirmed';
+        }
+
+        saveState();
+        renderHome();
+        renderApprovals();
+      });
+
+      const reject = document.createElement('button');
+      reject.className = 'reject-btn';
+      reject.textContent = 'Recusar';
+
+      reject.addEventListener('click', () => {
+        state.confirmations = state.confirmations.filter(
+          c => c.playerId !== record.playerId
+        );
+
+        if(record.playerId === state.currentUser.id){
+          state.currentUser.status = 'rejected';
+        }
+
+        saveState();
+        renderHome();
+        renderApprovals();
+      });
+
+      actions.appendChild(approve);
+      actions.appendChild(reject);
+
+      row.appendChild(info);
+      row.appendChild(actions);
+
+      approvalList.appendChild(row);
+    });
+  }
+
+  function syncLocalUserConfirmation(){
+    const idx = state.confirmations.findIndex(c => c.playerId === state.currentUser.id);
+
+    if(state.currentUser.status === 'requested' || state.currentUser.status === 'confirmed'){
+      const record = {
+        playerId: state.currentUser.id,
+        status: state.currentUser.status,
+        name: state.currentUser.name || 'Jogador',
+        phone: state.currentUser.phone || '',
+        photo: state.currentUser.photo || '',
+        paymentType: state.currentUser.paymentType || '',
+        paymentReported: !!state.currentUser.paymentReported
+      };
+
+      if(idx >= 0) state.confirmations[idx] = record;
+      else state.confirmations.push(record);
+    }else if(idx >= 0){
+      state.confirmations.splice(idx, 1);
+    }
+  }
+
+  function renderHome(){
+    const max = Math.max(1, Number(state.config.maxPlayers) || 40);
+    const confirmed = confirmedTotal();
+    const remaining = Math.max(0, max - confirmed);
+    const percentage = Math.min(100, (confirmed / max) * 100);
+    const degrees = percentage * 3.6;
+
+    homeDate.textContent = formatDateBR(state.config.date);
+    homeTime.textContent = state.config.time || '--:--';
+    homeLocation.textContent =
+      state.config.locationName ||
+      state.config.locationAddress ||
+      'Local não definido';
+
+    confirmedCount.textContent = confirmed;
+    remainingCount.textContent = remaining;
+    ringConfirmed.textContent = confirmed;
+    ringMax.textContent = '/ ' + max;
+    capacityRing.style.background =
+      `conic-gradient(var(--green) 0deg ${degrees}deg,#dfe4df ${degrees}deg 360deg)`;
+
+    const status = state.currentUser.status;
+
+    playerStatus.className = 'badge';
+
+    if(status === 'confirmed'){
+      playerStatus.textContent = 'CONFIRMADO ✓';
+      playerStatus.classList.add('confirmed');
+    }else if(status === 'requested'){
+      playerStatus.textContent = 'AGUARDANDO CONFERÊNCIA';
+      playerStatus.classList.add('requested');
+    }else if(status === 'rejected'){
+      playerStatus.textContent = 'NÃO APROVADO';
+      playerStatus.classList.add('rejected');
+    }else if(status === 'no'){
+      playerStatus.textContent = 'NÃO VOU';
+      playerStatus.classList.add('no');
+    }else if(status === 'maybe'){
+      playerStatus.textContent = 'AINDA NÃO SEI';
+      playerStatus.classList.add('maybe');
+    }else{
+      playerStatus.textContent = 'NÃO RESPONDEU';
+    }
+
+    const dateText = state.config.date ? formatDateBR(state.config.date) : 'Data não definida';
+    const timeText = state.config.time || '--:--';
+    confirmMatchInfo.textContent = `${dateText.replace(' • ',' - ')} - ${timeText}`;
+
+    matchDate.value = state.config.date || '';
+    matchTime.value = state.config.time || '';
+    matchLocation.value =
+      state.config.locationName ||
+      state.config.locationAddress ||
+      '';
+    maxPlayers.value = state.config.maxPlayers || 40;
+  }
+
+  function setAttendance(status){
+    state.currentUser.status = status;
+    syncLocalUserConfirmation();
+    saveState();
+    renderHome();
+    renderApprovals();
+    showView('homeView');
+  }
+
+  document.getElementById('enterRacha').addEventListener('click', () => {
+    paymentFlow.classList.remove('show');
+    showView('confirmationView');
+  });
+
+  document.getElementById('yesButton').addEventListener('click', () => {
+    paymentFlow.classList.add('show');
+    selectedPaymentType = state.currentUser.paymentType || 'daily';
+    renderPaymentType();
+    paymentFlow.scrollIntoView({behavior:'smooth', block:'nearest'});
+  });
+  document.getElementById('noButton').addEventListener('click', () => setAttendance('no'));
+  document.getElementById('maybeButton').addEventListener('click', () => setAttendance('maybe'));
+
+
+  function renderPaymentType(){
+    dailyPayment.classList.toggle('selected', selectedPaymentType === 'daily');
+    monthlyPayment.classList.toggle('selected', selectedPaymentType === 'monthly');
+  }
+
+  dailyPayment.addEventListener('click', () => {
+    selectedPaymentType = 'daily';
+    renderPaymentType();
+  });
+
+  monthlyPayment.addEventListener('click', () => {
+    selectedPaymentType = 'monthly';
+    renderPaymentType();
+  });
+
+  copyPix.addEventListener('click', async () => {
+    const key = pixKey.textContent.trim();
+
+    try{
+      await navigator.clipboard.writeText(key);
+      copyPix.textContent = 'COPIADO ✓';
+
+      setTimeout(() => {
+        copyPix.textContent = 'COPIAR';
+      }, 1600);
+    }catch{
+      alert('Chave Pix: ' + key);
+    }
+  });
+
+  paymentDone.addEventListener('click', () => {
+    state.currentUser.paymentType = selectedPaymentType;
+    state.currentUser.paymentReported = true;
+    saveState();
+
+    playerName.value = state.currentUser.name || '';
+    playerPhone.value = state.currentUser.phone || '';
+    selfieData = state.currentUser.photo || '';
+
+    if(selfieData){
+      selfieImage.src = selfieData;
+      selfiePreview.classList.add('has-photo');
+    }else{
+      selfieImage.removeAttribute('src');
+      selfiePreview.classList.remove('has-photo');
+    }
+
+    showView('registerView');
+  });
+
+  document.querySelectorAll('[data-back-home]').forEach(btn => {
+    btn.addEventListener('click', () => showView('homeView'));
+  });
+
+
+  document.getElementById('backToConfirmation').addEventListener('click', () => {
+    showView('confirmationView');
+  });
+
+  function formatPhone(value){
+    const digits = value.replace(/\D/g,'').slice(0,11);
+
+    if(digits.length <= 2) return digits;
+    if(digits.length <= 7){
+      return `(${digits.slice(0,2)}) ${digits.slice(2)}`;
+    }
+    if(digits.length <= 10){
+      return `(${digits.slice(0,2)}) ${digits.slice(2,6)}-${digits.slice(6)}`;
+    }
+    return `(${digits.slice(0,2)}) ${digits.slice(2,7)}-${digits.slice(7)}`;
+  }
+
+  playerPhone.addEventListener('input', () => {
+    playerPhone.value = formatPhone(playerPhone.value);
+  });
+
+  function compressSelfie(file){
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+
+      reader.onload = event => {
+        const img = new Image();
+
+        img.onload = () => {
+          const size = 420;
+          const canvas = document.createElement('canvas');
+          canvas.width = size;
+          canvas.height = size;
+
+          const ctx = canvas.getContext('2d');
+
+          const scale = Math.max(size / img.width, size / img.height);
+          const width = img.width * scale;
+          const height = img.height * scale;
+          const x = (size - width) / 2;
+          const y = (size - height) / 2;
+
+          ctx.drawImage(img, x, y, width, height);
+
+          resolve(canvas.toDataURL('image/jpeg', 0.72));
+        };
+
+        img.onerror = reject;
+        img.src = event.target.result;
+      };
+
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  selfieInput.addEventListener('change', async () => {
+    const file = selfieInput.files?.[0];
+    if(!file) return;
+
+    try{
+      selfieData = await compressSelfie(file);
+      selfieImage.src = selfieData;
+      selfiePreview.classList.add('has-photo');
+    }catch{
+      alert('Não foi possível carregar essa foto. Tente novamente.');
+    }
+  });
+
+  finishRegistration.addEventListener('click', () => {
+    const name = playerName.value.trim();
+    const phoneDigits = playerPhone.value.replace(/\D/g,'');
+
+    if(!selfieData){
+      alert('Tire uma selfie para continuar.');
+      return;
+    }
+
+    if(!name){
+      alert('Informe seu nome ou apelido.');
+      playerName.focus();
+      return;
+    }
+
+    if(phoneDigits.length < 10){
+      alert('Informe um telefone válido com DDD.');
+      playerPhone.focus();
+      return;
+    }
+
+    if(!state.currentUser.paymentReported){
+      alert('Informe primeiro que realizou o pagamento.');
+      showView('confirmationView');
+      paymentFlow.classList.add('show');
+      return;
+    }
+
+    state.currentUser.name = name;
+    state.currentUser.phone = playerPhone.value.trim();
+    state.currentUser.photo = selfieData;
+    state.currentUser.status = 'requested';
+
+    const playerIndex = state.players.findIndex(
+      p => p.id === state.currentUser.id
+    );
+
+    const playerRecord = {
+      id: state.currentUser.id,
+      name: state.currentUser.name,
+      phone: state.currentUser.phone,
+      photo: state.currentUser.photo
+    };
+
+    if(playerIndex >= 0){
+      state.players[playerIndex] = playerRecord;
+    }else{
+      state.players.push(playerRecord);
+    }
+
+    syncLocalUserConfirmation();
+    saveState();
+    renderHome();
+    renderApprovals();
+    showView('homeView');
+  });
+
+  document.getElementById('menuButton').addEventListener('click', () => {
+    renderApprovals();
+    showView('adminView');
+  });
+  document.getElementById('adminNavButton').addEventListener('click', () => {
+    renderApprovals();
+    showView('adminView');
+  });
+  document.getElementById('plusButton').addEventListener('click', () => {
+    paymentFlow.classList.remove('show');
+    showView('confirmationView');
+  });
+
+  document.querySelector('[data-nav="home"]').addEventListener('click', () => showView('homeView'));
+  document.querySelector('[data-nav="racha"]').addEventListener('click', () => {
+    paymentFlow.classList.remove('show');
+    showView('confirmationView');
+  });
+
+  // -------------------------------
+  // AUTOCOMPLETE DE LOCAIS
+  // Busca ao digitar, priorizando Rio Verde - GO.
+  // Photon utiliza dados do OpenStreetMap.
+  // O local escolhido abre no Google Maps.
+  // -------------------------------
+
+  function formatPlace(feature){
+    const p = feature.properties || {};
+    const parts = [
+      p.street,
+      p.housenumber,
+      p.district,
+      p.city,
+      p.county,
+      p.state,
+      p.postcode
+    ].filter(Boolean);
+
+    const name = p.name || p.street || p.city || 'Local';
+    const address = [...new Set(parts)].join(', ');
+
+    return {
+      name,
+      address: address || [p.city,p.state,p.country].filter(Boolean).join(', '),
+      latitude: feature.geometry?.coordinates?.[1] ?? null,
+      longitude: feature.geometry?.coordinates?.[0] ?? null
+    };
+  }
+
+  function renderSuggestions(places){
+    suggestionsBox.innerHTML = '';
+
+    if(!places.length){
+      suggestionsBox.classList.remove('show');
+      locationState.textContent = 'Nenhum local encontrado. Tente outro nome.';
+      locationState.classList.add('show');
+      return;
+    }
+
+    locationState.classList.remove('show');
+
+    places.forEach(place => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'suggestion';
+
+      const pin = document.createElement('span');
+      pin.className = 'suggestion-pin';
+      pin.textContent = '⌖';
+
+      const text = document.createElement('span');
+      const strong = document.createElement('strong');
+      const small = document.createElement('small');
+
+      strong.textContent = place.name;
+      small.textContent = place.address || 'Rio Verde - GO';
+
+      text.appendChild(strong);
+      text.appendChild(small);
+      btn.appendChild(pin);
+      btn.appendChild(text);
+
+      btn.addEventListener('click', () => {
+        selectedPlace = place;
+        matchLocation.value = place.name;
+        suggestionsBox.classList.remove('show');
+        locationState.classList.remove('show');
+      });
+
+      suggestionsBox.appendChild(btn);
+    });
+
+    suggestionsBox.classList.add('show');
+  }
+
+  async function searchPlaces(query){
+    if(searchController) searchController.abort();
+    searchController = new AbortController();
+
+    locationState.textContent = 'Buscando locais...';
+    locationState.classList.add('show');
+    suggestionsBox.classList.remove('show');
+
+    try{
+      // Acrescenta Rio Verde para priorizar a cidade sem impedir nomes de ruas,
+      // condomínios, empresas, campos, bairros e pontos de interesse.
+      const searchText = `${query}, Rio Verde, Goiás, Brasil`;
+      const url =
+        'https://photon.komoot.io/api/?q=' +
+        encodeURIComponent(searchText) +
+        '&limit=7&lang=pt&countrycode=BR';
+
+      const response = await fetch(url, {signal: searchController.signal});
+
+      if(!response.ok) throw new Error('Falha na busca');
+
+      const data = await response.json();
+      const places = (data.features || []).map(formatPlace);
+      renderSuggestions(places);
+    }catch(error){
+      if(error.name === 'AbortError') return;
+
+      suggestionsBox.classList.remove('show');
+      locationState.textContent =
+        'Não foi possível carregar sugestões agora. Você ainda pode digitar o endereço e abrir no Google Maps.';
+      locationState.classList.add('show');
+    }
+  }
+
+  matchLocation.addEventListener('input', () => {
+    selectedPlace = null;
+
+    clearTimeout(searchTimer);
+    const query = matchLocation.value.trim();
+
+    if(query.length < 2){
+      suggestionsBox.classList.remove('show');
+      locationState.classList.remove('show');
+      return;
+    }
+
+    searchTimer = setTimeout(() => searchPlaces(query), 320);
+  });
+
+  document.addEventListener('click', event => {
+    if(!event.target.closest('.location-block')){
+      suggestionsBox.classList.remove('show');
+      locationState.classList.remove('show');
+    }
+  });
+
+  document.getElementById('gpsButton').addEventListener('click', () => {
+    if(!navigator.geolocation){
+      alert('GPS não disponível neste navegador.');
+      return;
+    }
+
+    locationState.textContent = 'Buscando sua localização...';
+    locationState.classList.add('show');
+
+    navigator.geolocation.getCurrentPosition(async pos => {
+      const lat = pos.coords.latitude;
+      const lon = pos.coords.longitude;
+
+      try{
+        const response = await fetch(
+          `https://photon.komoot.io/reverse?lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lon)}&lang=pt`
+        );
+        const data = await response.json();
+        const feature = data.features?.[0];
+
+        if(feature){
+          selectedPlace = formatPlace(feature);
+          matchLocation.value = selectedPlace.name || selectedPlace.address;
+        }else{
+          selectedPlace = {
+            name:'Localização atual',
+            address:`${lat}, ${lon}`,
+            latitude:lat,
+            longitude:lon
+          };
+          matchLocation.value = 'Localização atual';
+        }
+
+        locationState.classList.remove('show');
+      }catch{
+        selectedPlace = {
+          name:'Localização atual',
+          address:`${lat}, ${lon}`,
+          latitude:lat,
+          longitude:lon
+        };
+        matchLocation.value = 'Localização atual';
+        locationState.classList.remove('show');
+      }
+    }, () => {
+      locationState.classList.remove('show');
+      alert('Não foi possível acessar sua localização. Verifique a permissão de GPS.');
+    }, {
+      enableHighAccuracy:true,
+      timeout:10000,
+      maximumAge:60000
+    });
+  });
+
+  function mapsQuery(){
+    if(selectedPlace?.latitude != null && selectedPlace?.longitude != null){
+      return `${selectedPlace.latitude},${selectedPlace.longitude}`;
+    }
+
+    if(state.config.latitude != null && state.config.longitude != null &&
+       matchLocation.value.trim() === state.config.locationName){
+      return `${state.config.latitude},${state.config.longitude}`;
+    }
+
+    return matchLocation.value.trim() + ', Rio Verde, GO';
+  }
+
+  document.getElementById('openMapsButton').addEventListener('click', () => {
+    const query = mapsQuery();
+
+    if(!matchLocation.value.trim()){
+      alert('Digite e escolha um local primeiro.');
+      return;
+    }
+
+    window.open(
+      'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(query),
+      '_blank'
+    );
+  });
+
+  document.getElementById('saveRachaButton').addEventListener('click', () => {
+    const locationText = matchLocation.value.trim();
+
+    state.config.date = matchDate.value;
+    state.config.time = matchTime.value;
+    state.config.maxPlayers = Math.max(2, Number(maxPlayers.value) || 40);
+
+    if(selectedPlace){
+      state.config.locationName = selectedPlace.name;
+      state.config.locationAddress = selectedPlace.address;
+      state.config.latitude = selectedPlace.latitude;
+      state.config.longitude = selectedPlace.longitude;
+    }else{
+      state.config.locationName = locationText;
+      state.config.locationAddress = locationText;
+      state.config.latitude = null;
+      state.config.longitude = null;
+    }
+
+    saveState();
+    renderHome();
+    alert('Informações do racha salvas.');
+    showView('homeView');
+  });
+
+  // RESET TOTAL
+  document.getElementById('resetAppButton').addEventListener('click', () => {
+    if(!confirm('Apagar TODOS os dados do Green Park salvos neste aparelho?')) return;
+    if(!confirm('Confirma o RESET TOTAL? Esta ação não poderá ser desfeita.')) return;
+
+    // Limpa tudo que pertence ao projeto, inclusive versões antigas.
+    const removeLocal = [];
+    for(let i=0;i<localStorage.length;i++){
+      const key = localStorage.key(i);
+      if(!key) continue;
+      const k = key.toLowerCase();
 
       if(
-        text.length >= 2 &&
-        ('green park'.includes(text) || text.includes('green') || text.includes('park'))
+        k.includes('greenpark') ||
+        k.includes('green_park') ||
+        k.includes('racha')
       ){
-        locationSuggestions.classList.add('show');
-      }else{
-        locationSuggestions.classList.remove('show');
+        removeLocal.push(key);
       }
     }
+    removeLocal.forEach(key => localStorage.removeItem(key));
 
-    greenParkSuggestion.addEventListener('click',()=>{
-      matchLocation.value = GREEN_PARK_ADDRESS;
-      selectedLocation.textContent = GREEN_PARK_ADDRESS;
-      selectedLocation.classList.add('show');
-      locationSuggestions.classList.remove('show');
-      updateHome();
-    });
+    const removeSession = [];
+    for(let i=0;i<sessionStorage.length;i++){
+      const key = sessionStorage.key(i);
+      if(!key) continue;
+      const k = key.toLowerCase();
 
-    function openAdmin(){
-      phone.classList.add('admin-mode');
-      window.scrollTo({top:0, behavior:'smooth'});
-    }
-
-    function closeAdmin(){
-      phone.classList.remove('admin-mode');
-      window.scrollTo({top:0, behavior:'smooth'});
-    }
-
-    const adminNavButton = document.getElementById('adminNavButton');
-
-    adminButton.addEventListener('click', openAdmin);
-    adminNavButton.addEventListener('click', openAdmin);
-    backHome.addEventListener('click', closeAdmin);
-
-    function formatDate(value){
-      if(!value) return 'Data não definida';
-
-      const d = new Date(value + 'T12:00:00');
-      const weekday = d.toLocaleDateString('pt-BR',{weekday:'long'});
-      const date = d.toLocaleDateString('pt-BR');
-
-      return weekday.charAt(0).toUpperCase() + weekday.slice(1) + ' • ' + date;
-    }
-
-    function updateHome(){
-      displayDate.textContent = formatDate(matchDate.value);
-      displayTime.textContent = matchTime.value || '--:--';
-      displayLocation.textContent = matchLocation.value.trim() || 'Local não definido';
-    }
-
-    function saveRacha(){
-      localStorage.setItem('greenparkRacha', JSON.stringify({
-        date: matchDate.value,
-        time: matchTime.value,
-        location: matchLocation.value
-      }));
-
-      updateHome();
-    }
-
-    const saved = JSON.parse(localStorage.getItem('greenparkRacha') || 'null');
-
-    if(saved){
-      matchDate.value = saved.date || '';
-      matchTime.value = saved.time || '20:00';
-      matchLocation.value = saved.location || 'Green Park';
-    }
-
-    if(!matchDate.value){
-      const today = new Date();
-      const diff = (4 - today.getDay() + 7) % 7 || 7;
-      today.setDate(today.getDate() + diff);
-
-      const year = today.getFullYear();
-      const month = String(today.getMonth()+1).padStart(2,'0');
-      const day = String(today.getDate()).padStart(2,'0');
-
-      matchDate.value = `${year}-${month}-${day}`;
-    }
-
-    document.getElementById('saveRacha').addEventListener('click',()=>{
-      saveRacha();
-      alert('Informações do racha salvas.');
-      closeAdmin();
-    });
-
-    matchDate.addEventListener('change', updateHome);
-    matchTime.addEventListener('change', updateHome);
-    matchLocation.addEventListener('input', ()=>{
-      updateHome();
-      handleLocationSuggestions();
-
-      if(matchLocation.value.trim() !== GREEN_PARK_ADDRESS){
-        selectedLocation.classList.remove('show');
-      }
-    });
-
-    matchLocation.addEventListener('focus', handleLocationSuggestions);
-
-    document.addEventListener('click',(event)=>{
-      if(!event.target.closest('.location-autocomplete')){
-        locationSuggestions.classList.remove('show');
-      }
-    });
-
-    document.getElementById('searchLocation').addEventListener('click',()=>{
-      let local = matchLocation.value.trim();
-
-      if(!local){
-        alert('Digite um local ou endereço.');
-        return;
-      }
-
-      if(local.toLowerCase() === 'green park'){
-        local = GREEN_PARK_ADDRESS;
-        matchLocation.value = GREEN_PARK_ADDRESS;
-        selectedLocation.textContent = GREEN_PARK_ADDRESS;
-        selectedLocation.classList.add('show');
-        updateHome();
-      }
-
-      window.open(
-        'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(local),
-        '_blank'
-      );
-    });
-
-    document.getElementById('openMaps').addEventListener('click',()=>{
-      let local = matchLocation.value.trim();
-
-      if(!local){
-        alert('Digite um local ou endereço.');
-        return;
-      }
-
-      if(local.toLowerCase() === 'green park'){
-        local = GREEN_PARK_ADDRESS;
-        matchLocation.value = GREEN_PARK_ADDRESS;
-        selectedLocation.textContent = GREEN_PARK_ADDRESS;
-        selectedLocation.classList.add('show');
-        updateHome();
-      }
-
-      window.open(
-        'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(local),
-        '_blank'
-      );
-    });
-
-    document.getElementById('gpsButton').addEventListener('click',()=>{
-      if(!navigator.geolocation){
-        alert('GPS não disponível neste navegador.');
-        return;
-      }
-
-      navigator.geolocation.getCurrentPosition(
-        pos=>{
-          matchLocation.value =
-            pos.coords.latitude.toFixed(6) +
-            ', ' +
-            pos.coords.longitude.toFixed(6);
-
-          updateHome();
-        },
-        ()=>{
-          alert('Não foi possível acessar o GPS. Verifique a permissão de localização.');
-        },
-        {
-          enableHighAccuracy:true,
-          timeout:10000
-        }
-      );
-    });
-
-    document.querySelectorAll('.nav-item').forEach(item=>{
-      item.addEventListener('click',()=>{
-        document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-        item.classList.add('active');
-      });
-    });
-
-
-    document.getElementById('resetApp').addEventListener('click',()=>{
-      const first = confirm(
-        'ATENÇÃO: isso vai apagar TODOS os dados do racha salvos neste aparelho. Deseja continuar?'
-      );
-
-      if(!first) return;
-
-      const second = confirm(
-        'Confirma o RESET TOTAL do Green Park? Esta ação não poderá ser desfeita.'
-      );
-
-      if(!second) return;
-
-      /*
-        RESET TOTAL DO APP GREEN PARK
-        Remove:
-        - configurações do próximo racha
-        - presença / confirmação
-        - jogadores
-        - pagamentos
-        - sorteios
-        - ranking / estatísticas
-        - listas de espera
-        - qualquer chave antiga criada nas versões anteriores
-      */
-
-      const exactKeys = [
-        'greenparkRacha',
-        'greenparkJoined',
-        'greenpark_racha_v1',
-        'greenpark_match',
-        'greenparkPlayers',
-        'greenparkPayments',
-        'greenparkConfirmations',
-        'greenparkWaitlist',
-        'greenparkTeams',
-        'greenparkRanking',
-        'greenparkStats',
-        'greenparkSponsors',
-        'greenparkGallery',
-        'greenparkAdmin'
-      ];
-
-      exactKeys.forEach(key => localStorage.removeItem(key));
-
-      // Remove também qualquer chave futura/antiga ligada ao Green Park ou ao racha.
-      const keysToRemove = [];
-
-      for(let i = 0; i < localStorage.length; i++){
-        const key = localStorage.key(i);
-        if(!key) continue;
-
-        const normalized = key.toLowerCase();
-
-        if(
-          normalized.includes('greenpark') ||
-          normalized.includes('green_park') ||
-          normalized.startsWith('gp_racha') ||
-          normalized.startsWith('racha_')
-        ){
-          keysToRemove.push(key);
-        }
-      }
-
-      keysToRemove.forEach(key => localStorage.removeItem(key));
-
-      // Limpa estados temporários da sessão.
-      const sessionKeys = [];
-
-      for(let i = 0; i < sessionStorage.length; i++){
-        const key = sessionStorage.key(i);
-        if(!key) continue;
-
-        const normalized = key.toLowerCase();
-
-        if(
-          normalized.includes('greenpark') ||
-          normalized.includes('green_park') ||
-          normalized.includes('racha')
-        ){
-          sessionKeys.push(key);
-        }
-      }
-
-      sessionKeys.forEach(key => sessionStorage.removeItem(key));
-
-      alert('Todos os dados do racha foram apagados. O aplicativo será reiniciado.');
-      location.reload();
-    });
-
-
-    const joinRacha = document.getElementById('joinRacha');
-    const joinRachaText = document.getElementById('joinRachaText');
-    const playerStatus = document.getElementById('playerStatus');
-
-    function renderJoinStatus(){
-      const joined = localStorage.getItem('greenparkJoined') === 'true';
-
-      if(joined){
-        joinRacha.classList.add('joined');
-        joinRachaText.textContent = 'VOCÊ ESTÁ NO RACHA ✓';
-        playerStatus.textContent = 'CONFIRMADO ✓';
-        playerStatus.style.background = '#58d52f';
-      }else{
-        joinRacha.classList.remove('joined');
-        joinRachaText.textContent = 'ENTRAR NO RACHA';
-        playerStatus.textContent = 'NÃO CONFIRMADO';
-        playerStatus.style.background = '#7d8782';
+      if(
+        k.includes('greenpark') ||
+        k.includes('green_park') ||
+        k.includes('racha')
+      ){
+        removeSession.push(key);
       }
     }
+    removeSession.forEach(key => sessionStorage.removeItem(key));
 
-    joinRacha.addEventListener('click',()=>{
-      const joined = localStorage.getItem('greenparkJoined') === 'true';
+    state = freshState();
+    saveState();
 
-      if(!joined){
-        localStorage.setItem('greenparkJoined','true');
-        renderJoinStatus();
-      }else{
-        const leave = confirm('Deseja sair da lista deste racha?');
-        if(leave){
-          localStorage.removeItem('greenparkJoined');
-          renderJoinStatus();
-        }
-      }
-    });
+    alert('Aplicativo zerado. Confirmados voltaram para 0 e todos os dados do racha foram apagados.');
+    location.reload();
+  });
 
-    renderJoinStatus();
-
-    updateHome();
-  </script>
+  // Primeira renderização
+  syncLocalUserConfirmation();
+  saveState();
+  renderHome();
+  renderApprovals();
+})();
+</script>
 </body>
 </html>
