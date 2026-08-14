@@ -2570,14 +2570,39 @@ let messagingInstance = null;
 
       const data = snap.data();
 
-      if(data.status === 'confirmed' && state.currentUser.status !== 'confirmed'){
+      if(data.status === 'confirmed'){
         state.currentUser.status = 'confirmed';
         state.currentUser.paymentReported = true;
+        state.currentUser.pixStatus = 'paid';
+
         stopPixPolling();
+
+        // Limpa qualquer cobrança pendente que tenha ficado presa no telefone.
+        state.currentUser.pixOrderId = '';
+        state.currentUser.pixQrCode = '';
+        state.currentUser.pixQrCodeBase64 = '';
+        state.currentUser.pixProvider = '';
+        currentPixOrderId = '';
+
         saveState();
+        syncLocalUserConfirmation();
         renderHome();
-      }else if(data.status === 'rejected' && state.currentUser.status !== 'rejected'){
+
+        // Se o jogador estiver na tela do Pix, encerra o fluxo imediatamente.
+        if(confirmationView.classList.contains('active')){
+          if(pixPaymentStatus){
+            setPixStatus('PAGAMENTO CONFIRMADO ✓\nSua vaga está garantida.', 'ok');
+          }
+
+          setTimeout(() => {
+            paymentFlow.classList.remove('show');
+            confirmationView.classList.remove('payment-mode');
+            showView('homeView');
+          }, 900);
+        }
+      }else if(data.status === 'rejected'){
         state.currentUser.status = 'rejected';
+        stopPixPolling();
         saveState();
         renderHome();
       }
@@ -3168,8 +3193,8 @@ let messagingInstance = null;
   function startPixPolling(){
     stopPixPolling();
     if(!currentPixOrderId) return;
-    setTimeout(() => consultarPixAtual(), 2500);
-    pixPollTimer = setInterval(() => consultarPixAtual(), 8000);
+    setTimeout(() => consultarPixAtual(), 1200);
+    pixPollTimer = setInterval(() => consultarPixAtual(), 3000);
   }
 
   dailyPayment.addEventListener('click', () => {
