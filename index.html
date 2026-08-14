@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+  <!-- GREEN PARK BUILD: 2026-08-14-admin-local-v2 -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#071018">
@@ -1664,7 +1665,45 @@
       background:#132019;
     }
 
-</style>
+
+    /* ADMIN V2 - Data e horário nunca ficam lado a lado */
+    #adminView .date-time{
+      display:flex !important;
+      flex-direction:column !important;
+      align-items:stretch !important;
+      gap:14px !important;
+      width:100% !important;
+    }
+
+    #adminView .date-time > .field{
+      display:block !important;
+      width:100% !important;
+      min-width:0 !important;
+      max-width:100% !important;
+    }
+
+    #adminView #matchDate,
+    #adminView #matchTime{
+      display:block !important;
+      width:100% !important;
+      min-width:0 !important;
+      max-width:100% !important;
+      box-sizing:border-box !important;
+    }
+
+    /* Local: somente campo + sugestões, sem botão externo */
+    #adminView .location-row{
+      display:block !important;
+      width:100% !important;
+    }
+
+    #adminView #matchLocation{
+      width:100% !important;
+      max-width:100% !important;
+      box-sizing:border-box !important;
+    }
+
+  </style>
 </head>
 
 <body>
@@ -1969,10 +2008,9 @@
             <input
               id="matchLocation"
               type="text"
-              placeholder="Comece a digitar o nome do local..."
+              placeholder="Digite o nome do local ou endereço..."
               autocomplete="off"
             >
-            <button class="gps-btn" id="gpsButton" aria-label="Usar GPS">⌖</button>
           </div>
 
           <div class="suggestions" id="locationSuggestions"></div>
@@ -2090,6 +2128,7 @@ const db = getFirestore(firebaseApp);
 const functions = getFunctions(firebaseApp, 'southamerica-east1');
 const criarPagamentoPixCall = httpsCallable(functions, 'criarPagamentoPix');
 const consultarPagamentoPixCall = httpsCallable(functions, 'consultarPagamentoPix');
+const buscarLocalCall = httpsCallable(functions, 'buscarLocal');
 const ADMIN_UID = 'd3nVt6SbQlO6lYnOcCUDbLBhoU02';
 const VAPID_PUBLIC_KEY = 'BPBQyOZBpQS-uBaM5H0YhkyPNjQI2dNjrweS4zjvmB79e7TVQR-QuzkmpQyAGJgTCxxaFL_ZnRCelCsbK0T9Lg0';
 let messagingInstance = null;
@@ -2237,7 +2276,7 @@ let messagingInstance = null;
 
   let selectedPlace = null;
   let searchTimer = null;
-  let searchController = null;
+  let searchRequestSeq = 0;
 
   function saveState(){
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
@@ -3644,35 +3683,28 @@ let messagingInstance = null;
   }
 
   async function searchPlaces(query){
-    if(searchController) searchController.abort();
-    searchController = new AbortController();
+    const requestSeq = ++searchRequestSeq;
 
     locationState.textContent = 'Buscando locais...';
     locationState.classList.add('show');
     suggestionsBox.classList.remove('show');
 
     try{
-      // Acrescenta Rio Verde para priorizar a cidade sem impedir nomes de ruas,
-      // condomínios, empresas, campos, bairros e pontos de interesse.
-      const searchText = `${query}, Rio Verde, Goiás, Brasil`;
-      const url =
-        'https://photon.komoot.io/api/?q=' +
-        encodeURIComponent(searchText) +
-        '&limit=7&lang=pt&countrycode=BR';
+      const result = await buscarLocalCall({query});
+      if(requestSeq !== searchRequestSeq) return;
 
-      const response = await fetch(url, {signal: searchController.signal});
+      const places = Array.isArray(result.data?.places) ?
+        result.data.places :
+        [];
 
-      if(!response.ok) throw new Error('Falha na busca');
-
-      const data = await response.json();
-      const places = (data.features || []).map(formatPlace);
       renderSuggestions(places);
     }catch(error){
-      if(error.name === 'AbortError') return;
+      if(requestSeq !== searchRequestSeq) return;
 
+      console.warn('Busca de local:', error);
       suggestionsBox.classList.remove('show');
       locationState.textContent =
-        'Não foi possível carregar sugestões agora. Você ainda pode digitar o endereço manualmente.';
+        'Não consegui buscar agora. Aguarde alguns segundos e tente novamente.';
       locationState.classList.add('show');
     }
   }
@@ -3699,59 +3731,6 @@ let messagingInstance = null;
     }
   });
 
-  document.getElementById('gpsButton').addEventListener('click', () => {
-    if(!navigator.geolocation){
-      alert('GPS não disponível neste navegador.');
-      return;
-    }
-
-    locationState.textContent = 'Buscando sua localização...';
-    locationState.classList.add('show');
-
-    navigator.geolocation.getCurrentPosition(async pos => {
-      const lat = pos.coords.latitude;
-      const lon = pos.coords.longitude;
-
-      try{
-        const response = await fetch(
-          `https://photon.komoot.io/reverse?lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lon)}&lang=pt`
-        );
-        const data = await response.json();
-        const feature = data.features?.[0];
-
-        if(feature){
-          selectedPlace = formatPlace(feature);
-          matchLocation.value = selectedPlace.name || selectedPlace.address;
-        }else{
-          selectedPlace = {
-            name:'Localização atual',
-            address:`${lat}, ${lon}`,
-            latitude:lat,
-            longitude:lon
-          };
-          matchLocation.value = 'Localização atual';
-        }
-
-        locationState.classList.remove('show');
-      }catch{
-        selectedPlace = {
-          name:'Localização atual',
-          address:`${lat}, ${lon}`,
-          latitude:lat,
-          longitude:lon
-        };
-        matchLocation.value = 'Localização atual';
-        locationState.classList.remove('show');
-      }
-    }, () => {
-      locationState.classList.remove('show');
-      alert('Não foi possível acessar sua localização. Verifique a permissão de GPS.');
-    }, {
-      enableHighAccuracy:true,
-      timeout:10000,
-      maximumAge:60000
-    });
-  });
 
   document.getElementById('saveRachaButton').addEventListener('click', async () => {
     const locationText = matchLocation.value.trim();
