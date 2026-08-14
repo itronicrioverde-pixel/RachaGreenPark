@@ -1,0 +1,11 @@
+{
+  "id": "./",
+  "name": "Green Park FC",
+  "short_name": "Green Park",
+  "description": "Racha oficial Green Park FC",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#071018",
+  "theme_color": "#071018"
+}

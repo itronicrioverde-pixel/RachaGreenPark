@@ -4,6 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#071018">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Green Park FC">
+  <link rel="manifest" href="./manifest.webmanifest">
   <title>Green Park FC — Racha Oficial</title>
 
   <style>
@@ -1400,6 +1404,94 @@
       min-height:48px;
     }
 
+
+    .push-admin-box{
+      display:none;
+      margin-top:12px;
+      padding:12px;
+      border:1px solid #314048;
+      border-radius:13px;
+      background:#101920;
+    }
+
+    .push-admin-box.show{
+      display:block;
+    }
+
+    .push-admin-title{
+      font-size:11px;
+      font-weight:950;
+      text-transform:uppercase;
+      color:#fff;
+    }
+
+    .push-admin-help{
+      margin-top:5px;
+      color:#9ca7a2;
+      font-size:10px;
+      line-height:1.45;
+    }
+
+    .push-enable-btn,
+    .push-copy-btn{
+      width:100%;
+      min-height:44px;
+      margin-top:10px;
+      border:0;
+      border-radius:10px;
+      font-size:10px;
+      font-weight:950;
+    }
+
+    .push-enable-btn{
+      background:var(--green);
+      color:#102011;
+    }
+
+    .push-enable-btn:disabled{
+      opacity:.55;
+    }
+
+    .push-copy-btn{
+      display:none;
+      background:#26343b;
+      color:#fff;
+    }
+
+    .push-copy-btn.show{
+      display:block;
+    }
+
+    .push-token{
+      display:none;
+      width:100%;
+      height:72px;
+      margin-top:9px;
+      resize:none;
+      border:1px solid #34424b;
+      border-radius:10px;
+      background:#0d151b;
+      color:#aab5af;
+      padding:9px;
+      font-size:8px;
+      line-height:1.35;
+      outline:none;
+    }
+
+    .push-token.show{
+      display:block;
+    }
+
+    .push-state{
+      margin-top:9px;
+      font-size:9px;
+      color:#9ca7a2;
+      line-height:1.45;
+    }
+
+    .push-state.ok{color:var(--green2)}
+    .push-state.error{color:#ff8d8d}
+
 </style>
 </head>
 
@@ -1625,6 +1717,27 @@
           <button class="admin-logout-btn" id="adminLogoutButton">SAIR</button>
         </div>
       </div>
+
+      <div class="push-admin-box" id="pushAdminBox">
+        <div class="push-admin-title">Notificações do administrador</div>
+        <div class="push-admin-help">
+          Ative neste iPhone para receber avisos do Green Park FC.
+        </div>
+
+        <button class="push-enable-btn" id="enablePushButton" type="button">
+          ATIVAR NOTIFICAÇÕES NESTE IPHONE
+        </button>
+
+        <div class="push-state" id="pushState">
+          Notificações ainda não ativadas neste aparelho.
+        </div>
+
+        <textarea class="push-token" id="adminFcmToken" readonly></textarea>
+
+        <button class="push-copy-btn" id="copyFcmTokenButton" type="button">
+          COPIAR TOKEN FCM PARA TESTE
+        </button>
+      </div>
     </section>
 
     <section class="admin-card">
@@ -1757,6 +1870,12 @@ import {
   onSnapshot,
   serverTimestamp
 } from 'https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js';
+import {
+  getMessaging,
+  getToken,
+  onMessage,
+  isSupported as isMessagingSupported
+} from 'https://www.gstatic.com/firebasejs/12.11.0/firebase-messaging.js';
 
 const firebaseConfig = {
   apiKey: "AIzaSyDnafgCpOkeNcWKT8XO3b7g6sloX51Aiwo",
@@ -1771,6 +1890,8 @@ const firebaseApp = initializeApp(firebaseConfig);
 const auth = getAuth(firebaseApp);
 const db = getFirestore(firebaseApp);
 const ADMIN_UID = 'd3nVt6SbQlO6lYnOcCUDbLBhoU02';
+const VAPID_PUBLIC_KEY = 'BPBQyOZBpQS-uBaM5H0YhkyPNjQI2dNjrweS4zjvmB79e7TVQR-QuzkmpQyAGJgTCxxaFL_ZnRCelCsbK0T9Lg0';
+let messagingInstance = null;
 
 (() => {
   const STORAGE_KEY = 'greenpark_state_v2';
@@ -1861,6 +1982,11 @@ const ADMIN_UID = 'd3nVt6SbQlO6lYnOcCUDbLBhoU02';
   const adminPassword = document.getElementById('adminPassword');
   const adminLoginButton = document.getElementById('adminLoginButton');
   const adminLogoutButton = document.getElementById('adminLogoutButton');
+  const pushAdminBox = document.getElementById('pushAdminBox');
+  const enablePushButton = document.getElementById('enablePushButton');
+  const pushState = document.getElementById('pushState');
+  const adminFcmToken = document.getElementById('adminFcmToken');
+  const copyFcmTokenButton = document.getElementById('copyFcmTokenButton');
 
   let firebaseUser = null;
   let remotePendingPayments = null;
@@ -1889,6 +2015,110 @@ const ADMIN_UID = 'd3nVt6SbQlO6lYnOcCUDbLBhoU02';
     firebaseStatus.className = 'firebase-status' + (type ? ' ' + type : '');
   }
 
+
+  function setPushState(message, type = ''){
+    pushState.textContent = message;
+    pushState.className = 'push-state' + (type ? ' ' + type : '');
+  }
+
+  function isStandaloneWebApp(){
+    return window.matchMedia('(display-mode: standalone)').matches
+      || window.navigator.standalone === true;
+  }
+
+  async function prepareMessaging(){
+    const supported = await isMessagingSupported();
+
+    if(!supported){
+      throw new Error('Este navegador não oferece suporte ao Firebase Cloud Messaging.');
+    }
+
+    if(!messagingInstance){
+      messagingInstance = getMessaging(firebaseApp);
+    }
+
+    return messagingInstance;
+  }
+
+  async function activateAdminPush(){
+    if(!isAdminUser()){
+      throw new Error('Entre como administrador antes de ativar as notificações.');
+    }
+
+    if(!('Notification' in window) || !('serviceWorker' in navigator)){
+      throw new Error('Este aparelho/navegador não oferece suporte a notificações Web Push.');
+    }
+
+    if(/iPhone|iPad|iPod/i.test(navigator.userAgent) && !isStandaloneWebApp()){
+      throw new Error('No iPhone, adicione o Green Park FC à Tela de Início e abra pelo ícone antes de ativar as notificações.');
+    }
+
+    const permission = await Notification.requestPermission();
+
+    if(permission !== 'granted'){
+      throw new Error('Permissão de notificações não foi concedida.');
+    }
+
+    const registration = await navigator.serviceWorker.register('./firebase-messaging-sw.js');
+    await navigator.serviceWorker.ready;
+
+    const messaging = await prepareMessaging();
+
+    const token = await getToken(messaging, {
+      vapidKey: VAPID_PUBLIC_KEY,
+      serviceWorkerRegistration: registration
+    });
+
+    if(!token){
+      throw new Error('O Firebase não retornou um token FCM para este aparelho.');
+    }
+
+    await setDoc(doc(db, 'players', ADMIN_UID), {
+      uid: ADMIN_UID,
+      role: 'admin',
+      fcmToken: token,
+      notificationsEnabled: true,
+      notificationUpdatedAt: serverTimestamp()
+    }, { merge: true });
+
+    localStorage.setItem('greenpark_admin_fcm_token', token);
+
+    adminFcmToken.value = token;
+    adminFcmToken.classList.add('show');
+    copyFcmTokenButton.classList.add('show');
+
+    enablePushButton.textContent = 'NOTIFICAÇÕES ATIVADAS ✓';
+    setPushState('Este iPhone está registrado para receber notificações do Green Park FC.', 'ok');
+
+    return token;
+  }
+
+  async function restorePushUI(){
+    if(!isAdminUser()){
+      pushAdminBox.classList.remove('show');
+      return;
+    }
+
+    pushAdminBox.classList.add('show');
+
+    const savedToken = localStorage.getItem('greenpark_admin_fcm_token');
+
+    if(savedToken){
+      adminFcmToken.value = savedToken;
+      adminFcmToken.classList.add('show');
+      copyFcmTokenButton.classList.add('show');
+
+      if(Notification.permission === 'granted'){
+        enablePushButton.textContent = 'NOTIFICAÇÕES ATIVADAS ✓';
+        setPushState('Notificações já foram ativadas neste aparelho.', 'ok');
+      }
+    }
+
+    if(/iPhone|iPad|iPod/i.test(navigator.userAgent) && !isStandaloneWebApp()){
+      setPushState('No iPhone: primeiro adicione este site à Tela de Início e abra pelo ícone para ativar o Push.');
+    }
+  }
+
   function updateAdminAuthUI(){
     const admin = isAdminUser();
 
@@ -1905,6 +2135,10 @@ const ADMIN_UID = 'd3nVt6SbQlO6lYnOcCUDbLBhoU02';
     }else if(firebaseUser){
       setFirebaseStatus('Modo jogador conectado ao Firebase. Entre como administrador para visualizar todos os pagamentos.');
     }
+
+    restorePushUI().catch(error => {
+      console.warn('Falha ao restaurar estado do Push:', error);
+    });
   }
 
   function startPlayerListener(uid){
@@ -2549,6 +2783,52 @@ const ADMIN_UID = 'd3nVt6SbQlO6lYnOcCUDbLBhoU02';
     }
   });
 
+
+
+  enablePushButton.addEventListener('click', async () => {
+    enablePushButton.disabled = true;
+    const originalText = enablePushButton.textContent;
+    enablePushButton.textContent = 'ATIVANDO...';
+
+    try{
+      await activateAdminPush();
+    }catch(error){
+      console.error(error);
+      enablePushButton.textContent = originalText;
+      setPushState(error.message || 'Não foi possível ativar as notificações.', 'error');
+      alert(error.message || 'Não foi possível ativar as notificações.');
+    }finally{
+      enablePushButton.disabled = false;
+    }
+  });
+
+  copyFcmTokenButton.addEventListener('click', async () => {
+    const token = adminFcmToken.value.trim();
+
+    if(!token) return;
+
+    try{
+      await navigator.clipboard.writeText(token);
+      copyFcmTokenButton.textContent = 'TOKEN COPIADO ✓';
+
+      setTimeout(() => {
+        copyFcmTokenButton.textContent = 'COPIAR TOKEN FCM PARA TESTE';
+      }, 1600);
+    }catch{
+      adminFcmToken.focus();
+      adminFcmToken.select();
+      alert('Selecione e copie o token exibido.');
+    }
+  });
+
+  // Quando uma mensagem chega com o app aberto, mostramos um aviso na própria tela.
+  prepareMessaging().then(messaging => {
+    onMessage(messaging, payload => {
+      const title = payload.notification?.title || payload.data?.title || 'Green Park FC';
+      const body = payload.notification?.body || payload.data?.body || 'Você recebeu uma nova notificação.';
+      alert(title + '\\n\\n' + body);
+    });
+  }).catch(() => {});
 
   adminLoginButton.addEventListener('click', async () => {
     const email = adminEmail.value.trim();
