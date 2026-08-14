@@ -1492,6 +1492,74 @@
     .push-state.ok{color:var(--green2)}
     .push-state.error{color:#ff8d8d}
 
+
+    .player-push-card{
+      display:none;
+      margin-top:10px;
+      padding:13px 14px;
+      border:1px solid #2d3d45;
+      border-radius:14px;
+      background:#101920;
+      color:#fff;
+    }
+
+    .player-push-card.show{
+      display:block;
+    }
+
+    .player-push-title{
+      font-size:11px;
+      font-weight:950;
+      text-transform:uppercase;
+    }
+
+    .player-push-help{
+      margin-top:5px;
+      color:#9ca7a2;
+      font-size:10px;
+      line-height:1.45;
+    }
+
+    .player-push-btn{
+      width:100%;
+      min-height:43px;
+      margin-top:10px;
+      border:0;
+      border-radius:10px;
+      background:var(--green);
+      color:#102011;
+      font-size:10px;
+      font-weight:950;
+    }
+
+    .player-push-btn:disabled{
+      opacity:.55;
+    }
+
+    .player-push-state{
+      margin-top:8px;
+      color:#9ca7a2;
+      font-size:9px;
+      line-height:1.4;
+    }
+
+    .player-push-state.ok{
+      color:var(--green2);
+    }
+
+    .player-push-state.error{
+      color:#ff9292;
+    }
+
+    .approval-item.target-payment{
+      border:1px solid var(--green);
+      border-radius:13px;
+      padding:12px;
+      margin:5px 0;
+      box-shadow:0 0 0 3px rgba(89,212,50,.10);
+      background:#132019;
+    }
+
 </style>
 </head>
 
@@ -1554,6 +1622,21 @@
       <div class="between">
         <span class="small-title">Sua situação</span>
         <span class="badge" id="playerStatus">NÃO RESPONDEU</span>
+      </div>
+    </section>
+
+    <section class="player-push-card" id="playerPushCard">
+      <div class="player-push-title">Aviso da confirmação</div>
+      <div class="player-push-help">
+        Ative para receber no telefone quando o administrador confirmar ou recusar seu pagamento.
+      </div>
+
+      <button class="player-push-btn" id="enablePlayerPushButton" type="button">
+        ATIVAR AVISOS NESTE TELEFONE
+      </button>
+
+      <div class="player-push-state" id="playerPushState">
+        Notificações ainda não ativadas neste aparelho.
       </div>
     </section>
 
@@ -1788,7 +1871,7 @@
     </section>
 
 
-    <section class="admin-card">
+    <section class="admin-card" id="adminPendingPaymentsSection">
       <div class="admin-head">
         <h2>Conferência de presença</h2>
         <span class="admin-tag" id="pendingApprovalCount">0 PENDENTES</span>
@@ -1948,6 +2031,10 @@ let messagingInstance = null;
   const ringMax = document.getElementById('ringMax');
   const capacityRing = document.getElementById('capacityRing');
   const playerStatus = document.getElementById('playerStatus');
+  const playerPushCard = document.getElementById('playerPushCard');
+  const enablePlayerPushButton = document.getElementById('enablePlayerPushButton');
+  const playerPushState = document.getElementById('playerPushState');
+  const adminPendingPaymentsSection = document.getElementById('adminPendingPaymentsSection');
   const approvalList = document.getElementById('approvalList');
   const pendingApprovalCount = document.getElementById('pendingApprovalCount');
   const confirmMatchInfo = document.getElementById('confirmMatchInfo');
@@ -1987,6 +2074,11 @@ let messagingInstance = null;
   const pushState = document.getElementById('pushState');
   const adminFcmToken = document.getElementById('adminFcmToken');
   const copyFcmTokenButton = document.getElementById('copyFcmTokenButton');
+
+  const launchParams = new URLSearchParams(window.location.search);
+  const launchTarget = launchParams.get('open') || '';
+  let targetPaymentId = launchParams.get('paymentId') || '';
+  const wantsAdminPayment = launchTarget === 'admin-payment';
 
   let firebaseUser = null;
   let remotePendingPayments = null;
@@ -2038,6 +2130,122 @@ let messagingInstance = null;
     }
 
     return messagingInstance;
+  }
+
+
+  function setPlayerPushState(message, type = ''){
+    playerPushState.textContent = message;
+    playerPushState.className = 'player-push-state' + (type ? ' ' + type : '');
+  }
+
+  function shouldShowPlayerPush(){
+    if(!firebaseUser || isAdminUser()) return false;
+
+    return (
+      state.currentUser.paymentReported ||
+      state.currentUser.status === 'requested' ||
+      state.currentUser.status === 'confirmed' ||
+      state.currentUser.status === 'rejected'
+    );
+  }
+
+  function refreshPlayerPushUI(){
+    const show = shouldShowPlayerPush();
+    playerPushCard.classList.toggle('show', show);
+
+    if(!show) return;
+
+    const key = 'greenpark_player_fcm_token_' + firebaseUser.uid;
+    const saved = localStorage.getItem(key);
+
+    if(saved && 'Notification' in window && Notification.permission === 'granted'){
+      enablePlayerPushButton.textContent = 'AVISOS ATIVADOS ✓';
+      setPlayerPushState('Este telefone receberá o resultado da conferência.', 'ok');
+      return;
+    }
+
+    if(/iPhone|iPad|iPod/i.test(navigator.userAgent) && !isStandaloneWebApp()){
+      setPlayerPushState('No iPhone, adicione o Green Park à Tela de Início e abra pelo ícone para ativar os avisos.');
+      return;
+    }
+
+    setPlayerPushState('Ative para ser avisado assim que o administrador conferir seu pagamento.');
+  }
+
+  async function activatePlayerPush(){
+    const user = await ensureFirebasePlayer();
+
+    if(user.uid === ADMIN_UID){
+      throw new Error('Saia do modo administrador antes de ativar avisos de jogador.');
+    }
+
+    if(!('Notification' in window) || !('serviceWorker' in navigator)){
+      throw new Error('Este aparelho/navegador não oferece suporte a notificações Web Push.');
+    }
+
+    if(/iPhone|iPad|iPod/i.test(navigator.userAgent) && !isStandaloneWebApp()){
+      throw new Error('No iPhone, adicione o Green Park à Tela de Início e abra pelo ícone antes de ativar os avisos.');
+    }
+
+    const permission = await Notification.requestPermission();
+
+    if(permission !== 'granted'){
+      throw new Error('A permissão de notificações não foi concedida.');
+    }
+
+    const registration = await navigator.serviceWorker.register('./firebase-messaging-sw.js');
+    await navigator.serviceWorker.ready;
+
+    const messaging = await prepareMessaging();
+
+    const token = await getToken(messaging, {
+      vapidKey: VAPID_PUBLIC_KEY,
+      serviceWorkerRegistration: registration
+    });
+
+    if(!token){
+      throw new Error('O Firebase não retornou um token para este telefone.');
+    }
+
+    await setDoc(doc(db, 'players', user.uid), {
+      uid: user.uid,
+      fcmToken: token,
+      notificationsEnabled: true,
+      notificationUpdatedAt: serverTimestamp()
+    }, { merge:true });
+
+    localStorage.setItem('greenpark_player_fcm_token_' + user.uid, token);
+
+    enablePlayerPushButton.textContent = 'AVISOS ATIVADOS ✓';
+    setPlayerPushState('Pronto. Você receberá a resposta do administrador neste telefone.', 'ok');
+
+    return token;
+  }
+
+  function clearAdminPaymentDeepLink(){
+    targetPaymentId = '';
+    if(window.history && window.history.replaceState){
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }
+
+  function openAdminPaymentTarget(){
+    if(!wantsAdminPayment) return;
+
+    showView('adminView');
+
+    setTimeout(() => {
+      if(adminPendingPaymentsSection){
+        adminPendingPaymentsSection.scrollIntoView({behavior:'smooth', block:'start'});
+      }
+
+      if(targetPaymentId){
+        const target = approvalList.querySelector('[data-payment-id="' + targetPaymentId + '"]');
+        if(target){
+          target.scrollIntoView({behavior:'smooth', block:'center'});
+        }
+      }
+    }, 400);
   }
 
   async function activateAdminPush(){
@@ -2297,6 +2505,11 @@ let messagingInstance = null;
       remotePendingPayments.forEach(record => {
         const row = document.createElement('div');
         row.className = 'approval-item';
+        row.dataset.paymentId = record.id;
+
+        if(targetPaymentId && record.id === targetPaymentId){
+          row.classList.add('target-payment');
+        }
 
         const info = document.createElement('div');
         info.className = 'approval-player';
@@ -2339,15 +2552,7 @@ let messagingInstance = null;
               approvedBy: ADMIN_UID
             });
 
-            try{
-              await updateDoc(doc(db, 'players', record.userId), {
-                status: 'confirmed',
-                paymentStatus: 'approved',
-                updatedAt: serverTimestamp()
-              });
-            }catch(playerError){
-              console.warn('Pagamento aprovado, mas não foi possível atualizar jogador:', playerError);
-            }
+            clearAdminPaymentDeepLink();
           }catch(error){
             alert('Não foi possível confirmar o pagamento: ' + error.message);
             approve.disabled = false;
@@ -2367,15 +2572,7 @@ let messagingInstance = null;
               reviewedBy: ADMIN_UID
             });
 
-            try{
-              await updateDoc(doc(db, 'players', record.userId), {
-                status: 'rejected',
-                paymentStatus: 'rejected',
-                updatedAt: serverTimestamp()
-              });
-            }catch(playerError){
-              console.warn('Pagamento recusado, mas não foi possível atualizar jogador:', playerError);
-            }
+            clearAdminPaymentDeepLink();
           }catch(error){
             alert('Não foi possível recusar o pagamento: ' + error.message);
             reject.disabled = false;
@@ -2573,6 +2770,7 @@ let messagingInstance = null;
       state.config.locationAddress ||
       '';
     maxPlayers.value = state.config.maxPlayers || 40;
+    refreshPlayerPushUI();
   }
 
   function setAttendance(status){
@@ -2784,6 +2982,24 @@ let messagingInstance = null;
   });
 
 
+
+
+  enablePlayerPushButton.addEventListener('click', async () => {
+    enablePlayerPushButton.disabled = true;
+    const originalText = enablePlayerPushButton.textContent;
+    enablePlayerPushButton.textContent = 'ATIVANDO...';
+
+    try{
+      await activatePlayerPush();
+    }catch(error){
+      console.error(error);
+      enablePlayerPushButton.textContent = originalText;
+      setPlayerPushState(error.message || 'Não foi possível ativar os avisos.', 'error');
+      alert(error.message || 'Não foi possível ativar os avisos.');
+    }finally{
+      enablePlayerPushButton.disabled = false;
+    }
+  });
 
   enablePushButton.addEventListener('click', async () => {
     enablePushButton.disabled = true;
@@ -3205,6 +3421,10 @@ let messagingInstance = null;
 
       updateAdminAuthUI();
       startAdminPaymentsListener();
+
+      if(wantsAdminPayment){
+        openAdminPaymentTarget();
+      }
     }else{
       state.currentUser.id = user.uid;
       state.confirmations = state.confirmations.filter(
@@ -3221,6 +3441,11 @@ let messagingInstance = null;
       updateAdminAuthUI();
       startPlayerListener(user.uid);
       renderApprovals();
+      refreshPlayerPushUI();
+
+      if(wantsAdminPayment){
+        showView('adminView');
+      }
     }
 
     renderHome();
@@ -3231,6 +3456,10 @@ let messagingInstance = null;
   saveState();
   renderHome();
   renderApprovals();
+
+  if(wantsAdminPayment){
+    showView('adminView');
+  }
 })();
 </script>
 </body>
