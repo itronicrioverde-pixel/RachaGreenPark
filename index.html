@@ -1950,6 +1950,7 @@ import {
   addDoc,
   query,
   where,
+  getDocs,
   onSnapshot,
   serverTimestamp
 } from 'https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js';
@@ -2082,8 +2083,10 @@ let messagingInstance = null;
 
   let firebaseUser = null;
   let remotePendingPayments = null;
+  let remoteRacha = null;
   let pendingPaymentsUnsubscribe = null;
   let playerDocUnsubscribe = null;
+  let rachaDocUnsubscribe = null;
 
   let selectedPaymentType = state.currentUser.paymentType || 'daily';
 
@@ -2349,6 +2352,84 @@ let messagingInstance = null;
     });
   }
 
+
+  async function ensureRachaAggregate(){
+    if(!isAdminUser()) return;
+
+    try{
+      const confirmedQuery = query(
+        collection(db, 'players'),
+        where('status', '==', 'confirmed')
+      );
+
+      const confirmedSnapshot = await getDocs(confirmedQuery);
+
+      await setDoc(doc(db, 'racha', 'current'), {
+        confirmedCount: confirmedSnapshot.size,
+        date: state.config.date || '',
+        time: state.config.time || '',
+        maxPlayers: Math.max(2, Number(state.config.maxPlayers) || 40),
+        locationName: state.config.locationName || '',
+        locationAddress: state.config.locationAddress || '',
+        latitude: state.config.latitude ?? null,
+        longitude: state.config.longitude ?? null,
+        updatedAt: serverTimestamp()
+      }, { merge:true });
+    }catch(error){
+      console.warn('Não foi possível inicializar a contagem online do racha:', error);
+    }
+  }
+
+  function startRachaListener(){
+    if(rachaDocUnsubscribe){
+      rachaDocUnsubscribe();
+      rachaDocUnsubscribe = null;
+    }
+
+    if(!firebaseUser) return;
+
+    const rachaRef = doc(db, 'racha', 'current');
+
+    rachaDocUnsubscribe = onSnapshot(rachaRef, snap => {
+      if(!snap.exists()){
+        remoteRacha = null;
+        renderHome();
+        return;
+      }
+
+      const data = snap.data();
+      remoteRacha = data;
+
+      if(typeof data.date === 'string') state.config.date = data.date;
+      if(typeof data.time === 'string') state.config.time = data.time;
+
+      if(Number(data.maxPlayers) > 0){
+        state.config.maxPlayers = Number(data.maxPlayers);
+      }
+
+      if(typeof data.locationName === 'string'){
+        state.config.locationName = data.locationName;
+      }
+
+      if(typeof data.locationAddress === 'string'){
+        state.config.locationAddress = data.locationAddress;
+      }
+
+      if('latitude' in data){
+        state.config.latitude = data.latitude;
+      }
+
+      if('longitude' in data){
+        state.config.longitude = data.longitude;
+      }
+
+      saveState();
+      renderHome();
+    }, error => {
+      console.warn('Listener do racha online:', error);
+    });
+  }
+
   function startPlayerListener(uid){
     if(playerDocUnsubscribe){
       playerDocUnsubscribe();
@@ -2483,6 +2564,12 @@ let messagingInstance = null;
   }
 
   function confirmedTotal(){
+    const online = Number(remoteRacha?.confirmedCount);
+
+    if(Number.isFinite(online) && online >= 0){
+      return online;
+    }
+
     return state.confirmations.filter(c => c.status === 'confirmed').length;
   }
 
@@ -3319,7 +3406,7 @@ let messagingInstance = null;
     );
   });
 
-  document.getElementById('saveRachaButton').addEventListener('click', () => {
+  document.getElementById('saveRachaButton').addEventListener('click', async () => {
     const locationText = matchLocation.value.trim();
 
     state.config.date = matchDate.value;
@@ -3340,7 +3427,27 @@ let messagingInstance = null;
 
     saveState();
     renderHome();
-    alert('Informações do racha salvas.');
+
+    if(isAdminUser()){
+      try{
+        await setDoc(doc(db, 'racha', 'current'), {
+          date: state.config.date || '',
+          time: state.config.time || '',
+          maxPlayers: state.config.maxPlayers,
+          locationName: state.config.locationName || '',
+          locationAddress: state.config.locationAddress || '',
+          latitude: state.config.latitude ?? null,
+          longitude: state.config.longitude ?? null,
+          updatedAt: serverTimestamp()
+        }, { merge:true });
+      }catch(error){
+        console.error(error);
+        alert('Salvou neste aparelho, mas não conseguiu sincronizar o racha no Firebase: ' + error.message);
+        return;
+      }
+    }
+
+    alert('Informações do racha salvas e sincronizadas.');
     showView('homeView');
   });
 
@@ -3421,6 +3528,8 @@ let messagingInstance = null;
 
       updateAdminAuthUI();
       startAdminPaymentsListener();
+      await ensureRachaAggregate();
+      startRachaListener();
 
       if(wantsAdminPayment){
         openAdminPaymentTarget();
@@ -3440,6 +3549,7 @@ let messagingInstance = null;
       remotePendingPayments = null;
       updateAdminAuthUI();
       startPlayerListener(user.uid);
+      startRachaListener();
       renderApprovals();
       refreshPlayerPushUI();
 
