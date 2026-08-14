@@ -1082,6 +1082,21 @@
       background:#102016;
     }
 
+    .pix-cancel{
+      display:none;
+      width:100%;
+      min-height:44px;
+      margin-top:10px;
+      border:1px solid #46545c;
+      border-radius:12px;
+      background:transparent;
+      color:#dce4df;
+      font-size:11px;
+      font-weight:850;
+    }
+
+    .pix-cancel.show{display:block}
+
     #confirmationView.payment-mode > .confirm-card{display:none}
 
     #confirmationView.payment-mode .page-head-title{font-size:0}
@@ -1791,6 +1806,9 @@
           <div class="pix-status waiting" id="pixPaymentStatus">
             Aguardando pagamento...
           </div>
+          <button class="pix-cancel" id="cancelPixButton" type="button">
+            CANCELAR ESTE PIX E GERAR OUTRO
+          </button>
         </div>
 
         <div class="payment-admin-note">
@@ -2153,6 +2171,7 @@ let messagingInstance = null;
   const pixGeneratedArea = document.getElementById('pixGeneratedArea');
   const pixQrImage = document.getElementById('pixQrImage');
   const pixPaymentStatus = document.getElementById('pixPaymentStatus');
+  const cancelPixButton = document.getElementById('cancelPixButton');
   const confirmationView = document.getElementById('confirmationView');
 
   const firebaseStatus = document.getElementById('firebaseStatus');
@@ -2180,6 +2199,18 @@ let messagingInstance = null;
   let rachaDocUnsubscribe = null;
 
   let selectedPaymentType = state.currentUser.paymentType || 'daily';
+
+  // Remove automaticamente cobrança antiga criada pela integração QR presencial,
+  // que não serve como Pix universal de banco.
+  if(state.currentUser.pixProvider === 'mercadopago_qr'){
+    state.currentUser.pixOrderId = '';
+    state.currentUser.pixQrCode = '';
+    state.currentUser.pixQrCodeBase64 = '';
+    state.currentUser.pixStatus = '';
+    state.currentUser.pixProvider = '';
+    saveState();
+  }
+
   let currentPixOrderId = state.currentUser.pixOrderId || '';
   let pixPollTimer = null;
   let pixCheckRunning = false;
@@ -3021,6 +3052,7 @@ let messagingInstance = null;
       pixQrImage.removeAttribute('src');
       generatePixButton.disabled = false;
       generatePixButton.textContent = 'GERAR PIX';
+      cancelPixButton.classList.remove('show');
       confirmationView.classList.toggle('payment-mode', paymentFlow.classList.contains('show'));
       renderPaymentType();
       return;
@@ -3029,6 +3061,7 @@ let messagingInstance = null;
     pixGeneratedArea.classList.add('show');
     generatePixButton.disabled = true;
     generatePixButton.textContent = 'PIX GERADO';
+    cancelPixButton.classList.add('show');
     pixKey.textContent = state.currentUser.pixQrCode || 'Pix gerado';
 
     const qrBase64 = state.currentUser.pixQrCodeBase64 || '';
@@ -3043,6 +3076,28 @@ let messagingInstance = null;
 
     setPixStatus('Aguardando pagamento... Assim que o Mercado Pago confirmar, sua vaga será liberada automaticamente.', 'waiting');
     confirmationView.classList.add('payment-mode');
+    renderPaymentType();
+  }
+
+  function descartarPixPendente(){
+    stopPixPolling();
+
+    state.currentUser.pixOrderId = '';
+    state.currentUser.pixQrCode = '';
+    state.currentUser.pixQrCodeBase64 = '';
+    state.currentUser.pixStatus = '';
+    state.currentUser.pixProvider = '';
+    currentPixOrderId = '';
+    saveState();
+
+    pixKey.textContent = 'Aguardando geração...';
+    pixQrImage.classList.remove('show');
+    pixQrImage.removeAttribute('src');
+    pixGeneratedArea.classList.remove('show');
+    cancelPixButton.classList.remove('show');
+
+    generatePixButton.disabled = false;
+    generatePixButton.textContent = 'GERAR PIX';
     renderPaymentType();
   }
 
@@ -3076,6 +3131,7 @@ let messagingInstance = null;
           state.currentUser.pixOrderId = '';
           state.currentUser.pixQrCode = '';
           state.currentUser.pixQrCodeBase64 = '';
+          state.currentUser.pixProvider = '';
           currentPixOrderId = '';
           saveState();
           paymentFlow.classList.remove('show');
@@ -3092,6 +3148,7 @@ let messagingInstance = null;
         state.currentUser.pixOrderId = '';
         state.currentUser.pixQrCode = '';
         state.currentUser.pixQrCodeBase64 = '';
+        state.currentUser.pixProvider = '';
         state.currentUser.pixStatus = 'expired';
         currentPixOrderId = '';
         saveState();
@@ -3125,6 +3182,16 @@ let messagingInstance = null;
     if(currentPixOrderId) return;
     selectedPaymentType = 'monthly';
     renderPaymentType();
+  });
+
+  cancelPixButton.addEventListener('click', () => {
+    const ok = confirm(
+      'Cancelar este Pix e gerar outro? Não pague o código Pix antigo depois de descartá-lo.'
+    );
+    if(!ok) return;
+
+    descartarPixPendente();
+    setPixStatus('Pix anterior descartado. Você já pode gerar um novo.', 'waiting');
   });
 
   copyPix.addEventListener('click', async () => {
@@ -3184,6 +3251,7 @@ let messagingInstance = null;
       state.currentUser.pixQrCode = data.qrCode;
       state.currentUser.pixQrCodeBase64 = data.qrCodeBase64 || '';
       state.currentUser.pixStatus = 'waiting';
+      state.currentUser.pixProvider = 'mercadopago_pix';
       saveState();
 
       renderPixFromState();
@@ -3198,10 +3266,6 @@ let messagingInstance = null;
 
   document.querySelectorAll('[data-back-home]').forEach(btn => {
     btn.addEventListener('click', () => {
-      if(btn.closest('#confirmationView') && currentPixOrderId && state.currentUser.status !== 'confirmed'){
-        alert('Seu Pix está aguardando pagamento. A vaga só será liberada depois da confirmação do Mercado Pago.');
-        return;
-      }
       showView('homeView');
     });
   });
