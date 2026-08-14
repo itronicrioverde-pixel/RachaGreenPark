@@ -1020,34 +1020,6 @@
       font-weight:950;
     }
 
-    .pix-email-field{
-      margin-top:14px;
-      border:1px solid #34424b;
-      border-radius:12px;
-      background:#172128;
-      padding:9px 12px 8px;
-    }
-
-    .pix-email-field label{
-      display:block;
-      color:#9aa6a0;
-      font-size:9px;
-      font-weight:900;
-      text-transform:uppercase;
-      letter-spacing:.05em;
-      margin-bottom:2px;
-    }
-
-    .pix-email-field input{
-      width:100%;
-      height:36px;
-      border:0;
-      outline:none;
-      background:transparent;
-      color:#fff;
-      font-size:15px;
-    }
-
     .pix-generate{
       width:100%;
       min-height:52px;
@@ -1801,12 +1773,7 @@
 
       <section class="pix-box">
         <div class="pix-title">PAGAMENTO VIA PIX</div>
-        <div class="pix-sub">O Pix é gerado pelo Mercado Pago. Sua vaga só será confirmada depois que o pagamento for identificado.</div>
-
-        <div class="pix-email-field" id="pixEmailField">
-          <label for="paymentEmail">E-mail do pagador</label>
-          <input id="paymentEmail" type="email" inputmode="email" autocomplete="email" placeholder="seuemail@exemplo.com">
-        </div>
+        <div class="pix-sub">Gere o Pix e faça o pagamento. Sua vaga só será confirmada quando o Mercado Pago identificar o recebimento.</div>
 
         <button class="pix-generate" id="generatePixButton" type="button">
           GERAR PIX
@@ -1827,7 +1794,7 @@
         </div>
 
         <div class="payment-admin-note">
-          Não existe botão para informar pagamento. O próprio sistema libera sua vaga quando o Mercado Pago confirmar o Pix.
+          A confirmação é automática. Não é necessário enviar comprovante.
         </div>
       </section>
     </div>
@@ -2080,8 +2047,8 @@ const firebaseApp = initializeApp(firebaseConfig);
 const auth = getAuth(firebaseApp);
 const db = getFirestore(firebaseApp);
 const functions = getFunctions(firebaseApp, 'southamerica-east1');
-const criarPagamentoPixCall = httpsCallable(functions, 'criarPagamentoPix');
-const consultarPagamentoPixCall = httpsCallable(functions, 'consultarPagamentoPix');
+const criarPagamentoQrCall = httpsCallable(functions, 'criarPagamentoQr');
+const consultarPagamentoQrCall = httpsCallable(functions, 'consultarPagamentoQr');
 const ADMIN_UID = 'd3nVt6SbQlO6lYnOcCUDbLBhoU02';
 const VAPID_PUBLIC_KEY = 'BPBQyOZBpQS-uBaM5H0YhkyPNjQI2dNjrweS4zjvmB79e7TVQR-QuzkmpQyAGJgTCxxaFL_ZnRCelCsbK0T9Lg0';
 let messagingInstance = null;
@@ -2113,7 +2080,8 @@ let messagingInstance = null;
       pixOrderId: '',
       pixQrCode: '',
       pixQrCodeBase64: '',
-      pixStatus: '' 
+      pixStatus: '',
+      pixProvider: '' 
     },
     payments: [],
     teams: [],
@@ -2176,7 +2144,6 @@ let messagingInstance = null;
   const monthlyPayment = document.getElementById('monthlyPayment');
   const copyPix = document.getElementById('copyPix');
   const pixKey = document.getElementById('pixKey');
-  const paymentEmail = document.getElementById('paymentEmail');
   const generatePixButton = document.getElementById('generatePixButton');
   const pixGeneratedArea = document.getElementById('pixGeneratedArea');
   const pixQrImage = document.getElementById('pixQrImage');
@@ -3035,12 +3002,20 @@ let messagingInstance = null;
     const locked = !!currentPixOrderId && state.currentUser.status !== 'confirmed';
     dailyPayment.disabled = locked;
     monthlyPayment.disabled = locked;
-    paymentEmail.disabled = locked;
   }
 
   function renderPixFromState(){
+    // Limpa qualquer Pix antigo criado pela integração anterior com e-mail.
+    if(state.currentUser.pixOrderId && state.currentUser.pixProvider !== 'mercadopago_qr'){
+      state.currentUser.pixOrderId = '';
+      state.currentUser.pixQrCode = '';
+      state.currentUser.pixQrCodeBase64 = '';
+      state.currentUser.pixStatus = '';
+      currentPixOrderId = '';
+      saveState();
+    }
+
     currentPixOrderId = state.currentUser.pixOrderId || '';
-    paymentEmail.value = state.currentUser.email || '';
 
     if(!currentPixOrderId){
       pixGeneratedArea.classList.remove('show');
@@ -3058,17 +3033,16 @@ let messagingInstance = null;
     generatePixButton.textContent = 'PIX GERADO';
     pixKey.textContent = state.currentUser.pixQrCode || 'Pix gerado';
 
-    const qrBase64 = state.currentUser.pixQrCodeBase64 || '';
-    if(qrBase64){
-      pixQrImage.src = qrBase64.startsWith('data:')
-        ? qrBase64
-        : 'data:image/png;base64,' + qrBase64;
-      pixQrImage.classList.add('show');
-    }else{
-      pixQrImage.classList.remove('show');
-    }
+    // Nesta integração o QR dinâmico chega como Pix Copia e Cola (qr_data).
+    // Mantemos o foco no copiar/colar, que funciona melhor no próprio telefone.
+    pixQrImage.classList.remove('show');
+    pixQrImage.removeAttribute('src');
 
-    setPixStatus('Aguardando pagamento... Assim que o Mercado Pago confirmar, sua vaga será liberada automaticamente.', 'waiting');
+    setPixStatus(
+      'Aguardando pagamento... Assim que o Mercado Pago confirmar, sua vaga será liberada automaticamente.',
+      'waiting'
+    );
+
     confirmationView.classList.add('payment-mode');
     renderPaymentType();
   }
@@ -3085,7 +3059,7 @@ let messagingInstance = null;
     pixCheckRunning = true;
 
     try{
-      const result = await consultarPagamentoPixCall({orderId: currentPixOrderId});
+      const result = await consultarPagamentoQrCall({orderId: currentPixOrderId});
       const data = result.data || {};
 
       if(data.paid){
@@ -3103,6 +3077,7 @@ let messagingInstance = null;
           state.currentUser.pixOrderId = '';
           state.currentUser.pixQrCode = '';
           state.currentUser.pixQrCodeBase64 = '';
+          state.currentUser.pixProvider = '';
           currentPixOrderId = '';
           saveState();
           paymentFlow.classList.remove('show');
@@ -3119,6 +3094,7 @@ let messagingInstance = null;
         state.currentUser.pixOrderId = '';
         state.currentUser.pixQrCode = '';
         state.currentUser.pixQrCodeBase64 = '';
+        state.currentUser.pixProvider = '';
         state.currentUser.pixStatus = 'expired';
         currentPixOrderId = '';
         saveState();
@@ -3170,48 +3146,41 @@ let messagingInstance = null;
   generatePixButton.addEventListener('click', async () => {
     if(currentPixOrderId) return;
 
-    const email = paymentEmail.value.trim().toLowerCase();
-    if(!email || !/^\S+@\S+\.\S+$/.test(email)){
-      alert('Informe um e-mail válido para gerar o Pix.');
-      paymentEmail.focus();
-      return;
-    }
-
     generatePixButton.disabled = true;
     generatePixButton.textContent = 'GERANDO PIX...';
 
     try{
       const user = await ensureFirebasePlayer();
+
       if(user.uid === ADMIN_UID){
         throw new Error('Saia do modo administrador antes de gerar um Pix de jogador.');
       }
 
       state.currentUser.id = user.uid;
-      state.currentUser.email = email;
       state.currentUser.paymentType = selectedPaymentType;
 
       await setDoc(doc(db, 'players', user.uid), {
         uid: user.uid,
-        email,
         paymentType: selectedPaymentType,
         updatedAt: serverTimestamp()
       }, {merge:true});
 
-      const result = await criarPagamentoPixCall({
-        type: selectedPaymentType,
-        email
+      const result = await criarPagamentoQrCall({
+        type: selectedPaymentType
       });
+
       const data = result.data || {};
 
-      if(!data.orderId || !data.qrCode){
-        throw new Error('O Mercado Pago não retornou o código Pix. Tente novamente.');
+      if(!data.orderId || !data.qrData){
+        throw new Error('O Mercado Pago não retornou o Pix. Tente novamente.');
       }
 
       currentPixOrderId = data.orderId;
       state.currentUser.pixOrderId = data.orderId;
-      state.currentUser.pixQrCode = data.qrCode;
-      state.currentUser.pixQrCodeBase64 = data.qrCodeBase64 || '';
+      state.currentUser.pixQrCode = data.qrData;
+      state.currentUser.pixQrCodeBase64 = '';
       state.currentUser.pixStatus = 'waiting';
+      state.currentUser.pixProvider = 'mercadopago_qr';
       saveState();
 
       renderPixFromState();
@@ -3340,7 +3309,6 @@ let messagingInstance = null;
 
       saveState();
       selectedPaymentType = state.currentUser.paymentType || 'daily';
-      paymentEmail.value = state.currentUser.email || '';
       paymentFlow.classList.add('show');
       confirmationView.classList.add('payment-mode');
       renderPixFromState();
