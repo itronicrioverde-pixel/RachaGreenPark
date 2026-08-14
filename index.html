@@ -1361,6 +1361,45 @@
       vertical-align:middle;
     }
 
+
+    #confirmationView .pix-content.pix-key-only{
+      display:block;
+      margin-top:14px;
+    }
+
+    #confirmationView .pix-content.pix-key-only .pix-side{
+      width:100%;
+    }
+
+    #confirmationView .pix-content.pix-key-only .pix-key-row{
+      display:grid;
+      grid-template-columns:minmax(0,1fr) auto;
+      gap:8px;
+      align-items:center;
+      margin-top:7px;
+    }
+
+    #confirmationView .pix-content.pix-key-only .pix-key{
+      min-height:48px;
+      display:flex;
+      align-items:center;
+      padding:0 13px;
+      margin:0;
+      border:1px solid #34424b;
+      border-radius:10px;
+      background:#172128;
+      color:#fff;
+      font-size:15px;
+      font-weight:900;
+      white-space:nowrap;
+    }
+
+    #confirmationView .pix-content.pix-key-only .copy-pix{
+      width:auto;
+      min-width:88px;
+      min-height:48px;
+    }
+
 </style>
 </head>
 
@@ -1488,16 +1527,14 @@
 
       <section class="pix-box">
         <div class="pix-title">PAGAMENTO VIA PIX</div>
-        <div class="pix-sub">Escaneie o QR Code ou copie o código Pix</div>
+        <div class="pix-sub">Copie a chave Pix para realizar o pagamento</div>
 
-        <div class="pix-content">
-          <div class="qr-placeholder">QR PIX</div>
-
+        <div class="pix-content pix-key-only">
           <div class="pix-side">
             <div class="pix-key-label">CHAVE PIX</div>
 
             <div class="pix-key-row">
-              <div class="pix-key" id="pixKey">greenparkfc@pix.com</div>
+              <div class="pix-key" id="pixKey">66 99638-2601</div>
               <button class="copy-pix" id="copyPix" type="button">COPIAR</button>
             </div>
           </div>
