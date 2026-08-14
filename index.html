@@ -695,6 +695,140 @@
       font-weight:900;
     }
 
+
+    .join-racha{
+      width:100%;
+      min-height:58px;
+      margin:0 0 13px;
+      border:0;
+      border-radius:17px;
+      background:linear-gradient(180deg,#63dc36,#4dcc29);
+      color:#102011;
+      font-size:17px;
+      font-weight:950;
+      letter-spacing:-.2px;
+      box-shadow:0 10px 24px rgba(88,213,47,.22);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:9px;
+    }
+
+    .join-racha:active{
+      transform:scale(.985);
+    }
+
+    .join-racha.joined{
+      background:#f4f5f2;
+      color:#2eaa28;
+      border:1px solid #dce5dc;
+      box-shadow:none;
+    }
+
+
+    /* Ajuste visual dos campos de data e horário */
+    #matchDate,
+    #matchTime{
+      text-align:center;
+      text-align-last:center;
+      font-size:17px;
+      padding-left:8px;
+      padding-right:8px;
+    }
+
+    #matchDate::-webkit-date-and-time-value,
+    #matchTime::-webkit-date-and-time-value{
+      text-align:center;
+      min-height:1.2em;
+    }
+
+    #matchDate::-webkit-calendar-picker-indicator,
+    #matchTime::-webkit-calendar-picker-indicator{
+      margin-left:0;
+    }
+
+    .location-autocomplete{
+      position:relative;
+      min-width:0;
+    }
+
+    .location-suggestions{
+      display:none;
+      position:absolute;
+      left:0;
+      right:0;
+      top:calc(100% + 7px);
+      z-index:200;
+      overflow:hidden;
+      border:1px solid #34424b;
+      border-radius:14px;
+      background:#111a21;
+      box-shadow:0 15px 35px rgba(0,0,0,.28);
+    }
+
+    .location-suggestions.show{
+      display:block;
+    }
+
+    .location-suggestion{
+      width:100%;
+      border:0;
+      border-bottom:1px solid #26343c;
+      background:transparent;
+      color:#fff;
+      text-align:left;
+      padding:13px 14px;
+      display:flex;
+      align-items:flex-start;
+      gap:11px;
+    }
+
+    .location-suggestion:last-child{
+      border-bottom:0;
+    }
+
+    .location-suggestion:active{
+      background:#18242b;
+    }
+
+    .location-pin{
+      width:30px;
+      height:30px;
+      border-radius:9px;
+      background:rgba(88,213,47,.13);
+      color:var(--green2);
+      display:grid;
+      place-items:center;
+      flex:0 0 30px;
+      font-size:15px;
+    }
+
+    .location-suggestion strong{
+      display:block;
+      font-size:13px;
+      line-height:1.25;
+    }
+
+    .location-suggestion small{
+      display:block;
+      margin-top:3px;
+      color:#9ea9a4;
+      font-size:11px;
+      line-height:1.3;
+    }
+
+    .selected-location{
+      margin-top:8px;
+      color:#8fa19a;
+      font-size:11px;
+      line-height:1.35;
+      display:none;
+    }
+
+    .selected-location.show{
+      display:block;
+    }
+
 </style>
 </head>
 
@@ -754,10 +888,15 @@
         </div>
       </section>
 
+      <button class="join-racha" id="joinRacha">
+        <span>⚽</span>
+        <span id="joinRachaText">ENTRAR NO RACHA</span>
+      </button>
+
       <section class="status-card">
         <div class="between">
           <span class="small-title">Sua situação</span>
-          <span class="badge">CONFIRMADO ✓</span>
+          <span class="badge" id="playerStatus" style="background:#7d8782">NÃO CONFIRMADO</span>
         </div>
       </section>
 <div class="quick-title">Acessos rápidos</div>
@@ -808,12 +947,34 @@
             <label for="matchLocation">Local</label>
 
             <div class="location-line">
-              <input
-                id="matchLocation"
-                type="text"
-                value="Arena Green Park"
-                placeholder="Digite o local ou endereço"
-              >
+              <div class="location-autocomplete">
+                <input
+                  id="matchLocation"
+                  type="text"
+                  value="Green Park"
+                  placeholder="Comece a digitar o local..."
+                  autocomplete="off"
+                >
+
+                <div class="location-suggestions" id="locationSuggestions">
+                  <button
+                    type="button"
+                    class="location-suggestion"
+                    id="greenParkSuggestion"
+                  >
+                    <span class="location-pin">⌖</span>
+                    <span>
+                      <strong>Green Park — Rio Verde</strong>
+                      <small>Avenida Green Park, Residencial Green Park, Rio Verde - GO</small>
+                    </span>
+                  </button>
+                </div>
+
+                <div class="selected-location" id="selectedLocation">
+                  Avenida Green Park, Residencial Green Park, Rio Verde - GO
+                </div>
+              </div>
+
               <button class="gps" id="gpsButton" aria-label="Usar GPS">⌖</button>
             </div>
           </div>
@@ -902,6 +1063,33 @@
     const displayTime = document.getElementById('displayTime');
     const displayLocation = document.getElementById('displayLocation');
 
+    const locationSuggestions = document.getElementById('locationSuggestions');
+    const greenParkSuggestion = document.getElementById('greenParkSuggestion');
+    const selectedLocation = document.getElementById('selectedLocation');
+
+    const GREEN_PARK_ADDRESS = 'Avenida Green Park, Residencial Green Park, Rio Verde - GO, 75909-620';
+
+    function handleLocationSuggestions(){
+      const text = matchLocation.value.trim().toLowerCase();
+
+      if(
+        text.length >= 2 &&
+        ('green park'.includes(text) || text.includes('green') || text.includes('park'))
+      ){
+        locationSuggestions.classList.add('show');
+      }else{
+        locationSuggestions.classList.remove('show');
+      }
+    }
+
+    greenParkSuggestion.addEventListener('click',()=>{
+      matchLocation.value = GREEN_PARK_ADDRESS;
+      selectedLocation.textContent = GREEN_PARK_ADDRESS;
+      selectedLocation.classList.add('show');
+      locationSuggestions.classList.remove('show');
+      updateHome();
+    });
+
     function openAdmin(){
       phone.classList.add('admin-mode');
       window.scrollTo({top:0, behavior:'smooth'});
@@ -949,7 +1137,7 @@
     if(saved){
       matchDate.value = saved.date || '';
       matchTime.value = saved.time || '20:00';
-      matchLocation.value = saved.location || 'Arena Green Park';
+      matchLocation.value = saved.location || 'Green Park';
     }
 
     if(!matchDate.value){
@@ -972,14 +1160,37 @@
 
     matchDate.addEventListener('change', updateHome);
     matchTime.addEventListener('change', updateHome);
-    matchLocation.addEventListener('input', updateHome);
+    matchLocation.addEventListener('input', ()=>{
+      updateHome();
+      handleLocationSuggestions();
+
+      if(matchLocation.value.trim() !== GREEN_PARK_ADDRESS){
+        selectedLocation.classList.remove('show');
+      }
+    });
+
+    matchLocation.addEventListener('focus', handleLocationSuggestions);
+
+    document.addEventListener('click',(event)=>{
+      if(!event.target.closest('.location-autocomplete')){
+        locationSuggestions.classList.remove('show');
+      }
+    });
 
     document.getElementById('searchLocation').addEventListener('click',()=>{
-      const local = matchLocation.value.trim();
+      let local = matchLocation.value.trim();
 
       if(!local){
         alert('Digite um local ou endereço.');
         return;
+      }
+
+      if(local.toLowerCase() === 'green park'){
+        local = GREEN_PARK_ADDRESS;
+        matchLocation.value = GREEN_PARK_ADDRESS;
+        selectedLocation.textContent = GREEN_PARK_ADDRESS;
+        selectedLocation.classList.add('show');
+        updateHome();
       }
 
       window.open(
@@ -989,11 +1200,19 @@
     });
 
     document.getElementById('openMaps').addEventListener('click',()=>{
-      const local = matchLocation.value.trim();
+      let local = matchLocation.value.trim();
 
       if(!local){
         alert('Digite um local ou endereço.');
         return;
+      }
+
+      if(local.toLowerCase() === 'green park'){
+        local = GREEN_PARK_ADDRESS;
+        matchLocation.value = GREEN_PARK_ADDRESS;
+        selectedLocation.textContent = GREEN_PARK_ADDRESS;
+        selectedLocation.classList.add('show');
+        updateHome();
       }
 
       window.open(
@@ -1037,24 +1256,131 @@
 
     document.getElementById('resetApp').addEventListener('click',()=>{
       const first = confirm(
-        'Tem certeza que deseja zerar o aplicativo? Os dados salvos neste aparelho serão apagados.'
+        'ATENÇÃO: isso vai apagar TODOS os dados do racha salvos neste aparelho. Deseja continuar?'
       );
 
       if(!first) return;
 
       const second = confirm(
-        'Confirma novamente? Esta ação não poderá ser desfeita.'
+        'Confirma o RESET TOTAL do Green Park? Esta ação não poderá ser desfeita.'
       );
 
       if(!second) return;
 
-      localStorage.removeItem('greenparkRacha');
-      localStorage.removeItem('greenpark_racha_v1');
-      localStorage.removeItem('greenpark_match');
+      /*
+        RESET TOTAL DO APP GREEN PARK
+        Remove:
+        - configurações do próximo racha
+        - presença / confirmação
+        - jogadores
+        - pagamentos
+        - sorteios
+        - ranking / estatísticas
+        - listas de espera
+        - qualquer chave antiga criada nas versões anteriores
+      */
 
-      alert('Aplicativo zerado com sucesso.');
+      const exactKeys = [
+        'greenparkRacha',
+        'greenparkJoined',
+        'greenpark_racha_v1',
+        'greenpark_match',
+        'greenparkPlayers',
+        'greenparkPayments',
+        'greenparkConfirmations',
+        'greenparkWaitlist',
+        'greenparkTeams',
+        'greenparkRanking',
+        'greenparkStats',
+        'greenparkSponsors',
+        'greenparkGallery',
+        'greenparkAdmin'
+      ];
+
+      exactKeys.forEach(key => localStorage.removeItem(key));
+
+      // Remove também qualquer chave futura/antiga ligada ao Green Park ou ao racha.
+      const keysToRemove = [];
+
+      for(let i = 0; i < localStorage.length; i++){
+        const key = localStorage.key(i);
+        if(!key) continue;
+
+        const normalized = key.toLowerCase();
+
+        if(
+          normalized.includes('greenpark') ||
+          normalized.includes('green_park') ||
+          normalized.startsWith('gp_racha') ||
+          normalized.startsWith('racha_')
+        ){
+          keysToRemove.push(key);
+        }
+      }
+
+      keysToRemove.forEach(key => localStorage.removeItem(key));
+
+      // Limpa estados temporários da sessão.
+      const sessionKeys = [];
+
+      for(let i = 0; i < sessionStorage.length; i++){
+        const key = sessionStorage.key(i);
+        if(!key) continue;
+
+        const normalized = key.toLowerCase();
+
+        if(
+          normalized.includes('greenpark') ||
+          normalized.includes('green_park') ||
+          normalized.includes('racha')
+        ){
+          sessionKeys.push(key);
+        }
+      }
+
+      sessionKeys.forEach(key => sessionStorage.removeItem(key));
+
+      alert('Todos os dados do racha foram apagados. O aplicativo será reiniciado.');
       location.reload();
     });
+
+
+    const joinRacha = document.getElementById('joinRacha');
+    const joinRachaText = document.getElementById('joinRachaText');
+    const playerStatus = document.getElementById('playerStatus');
+
+    function renderJoinStatus(){
+      const joined = localStorage.getItem('greenparkJoined') === 'true';
+
+      if(joined){
+        joinRacha.classList.add('joined');
+        joinRachaText.textContent = 'VOCÊ ESTÁ NO RACHA ✓';
+        playerStatus.textContent = 'CONFIRMADO ✓';
+        playerStatus.style.background = '#58d52f';
+      }else{
+        joinRacha.classList.remove('joined');
+        joinRachaText.textContent = 'ENTRAR NO RACHA';
+        playerStatus.textContent = 'NÃO CONFIRMADO';
+        playerStatus.style.background = '#7d8782';
+      }
+    }
+
+    joinRacha.addEventListener('click',()=>{
+      const joined = localStorage.getItem('greenparkJoined') === 'true';
+
+      if(!joined){
+        localStorage.setItem('greenparkJoined','true');
+        renderJoinStatus();
+      }else{
+        const leave = confirm('Deseja sair da lista deste racha?');
+        if(leave){
+          localStorage.removeItem('greenparkJoined');
+          renderJoinStatus();
+        }
+      }
+    });
+
+    renderJoinStatus();
 
     updateHome();
   </script>
