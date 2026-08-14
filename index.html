@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <!-- GREEN PARK BUILD: 2026-08-14-admin-local-v2 -->
+  <!-- GREEN PARK BUILD: 2026-08-14-admin-manual-local -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#071018">
@@ -1703,6 +1703,72 @@
       box-sizing:border-box !important;
     }
 
+  
+    /* ADMIN - correção definitiva para iPhone */
+    #adminView .admin-card{
+      overflow:hidden;
+    }
+
+    #adminView .fields,
+    #adminView .date-time,
+    #adminView .date-time > .field{
+      width:100% !important;
+      max-width:100% !important;
+      min-width:0 !important;
+      box-sizing:border-box !important;
+    }
+
+    #adminView .date-time{
+      display:flex !important;
+      flex-direction:column !important;
+      gap:14px !important;
+    }
+
+    #adminView #matchDate,
+    #adminView #matchTime{
+      display:block !important;
+      inline-size:100% !important;
+      width:100% !important;
+      min-inline-size:0 !important;
+      min-width:0 !important;
+      max-inline-size:100% !important;
+      max-width:100% !important;
+      height:56px !important;
+      padding:0 14px !important;
+      margin:0 !important;
+      box-sizing:border-box !important;
+      overflow:hidden !important;
+      font-size:17px !important;
+      text-align:center !important;
+      border-radius:15px !important;
+    }
+
+    #adminView #matchDate::-webkit-date-and-time-value,
+    #adminView #matchTime::-webkit-date-and-time-value{
+      text-align:center !important;
+      margin:0 !important;
+      padding:0 !important;
+    }
+
+    #adminView .location-block,
+    #adminView .location-row{
+      display:block !important;
+      width:100% !important;
+      max-width:100% !important;
+      min-width:0 !important;
+      box-sizing:border-box !important;
+    }
+
+    #adminView #matchLocation{
+      display:block !important;
+      width:100% !important;
+      max-width:100% !important;
+      min-width:0 !important;
+      height:56px !important;
+      box-sizing:border-box !important;
+      font-size:16px !important;
+    }
+
   </style>
 </head>
 
@@ -2003,19 +2069,12 @@
 
         <div class="field location-block">
           <label>Local</label>
-
-          <div class="location-row">
-            <input
-              id="matchLocation"
-              type="text"
-              placeholder="Digite o nome do local ou endereço..."
-              autocomplete="off"
-            >
-          </div>
-
-          <div class="suggestions" id="locationSuggestions"></div>
-          <div class="search-state" id="locationState"></div>
-
+          <input
+            id="matchLocation"
+            type="text"
+            placeholder="Digite o local do racha"
+            autocomplete="off"
+          >
         </div>
       </div>
 
@@ -2128,7 +2187,6 @@ const db = getFirestore(firebaseApp);
 const functions = getFunctions(firebaseApp, 'southamerica-east1');
 const criarPagamentoPixCall = httpsCallable(functions, 'criarPagamentoPix');
 const consultarPagamentoPixCall = httpsCallable(functions, 'consultarPagamentoPix');
-const buscarLocalCall = httpsCallable(functions, 'buscarLocal');
 const ADMIN_UID = 'd3nVt6SbQlO6lYnOcCUDbLBhoU02';
 const VAPID_PUBLIC_KEY = 'BPBQyOZBpQS-uBaM5H0YhkyPNjQI2dNjrweS4zjvmB79e7TVQR-QuzkmpQyAGJgTCxxaFL_ZnRCelCsbK0T9Lg0';
 let messagingInstance = null;
@@ -2206,8 +2264,6 @@ let messagingInstance = null;
   const matchLocation = document.getElementById('matchLocation');
   const maxPlayers = document.getElementById('maxPlayers');
 
-  const suggestionsBox = document.getElementById('locationSuggestions');
-  const locationState = document.getElementById('locationState');
 
   const selfieInput = document.getElementById('selfieInput');
   const selfiePreview = document.getElementById('selfiePreview');
@@ -2274,7 +2330,6 @@ let messagingInstance = null;
 
   let selfieData = state.currentUser.photo || '';
 
-  let selectedPlace = null;
   let searchTimer = null;
   let searchRequestSeq = 0;
 
@@ -3630,106 +3685,7 @@ let messagingInstance = null;
     };
   }
 
-  function renderSuggestions(places){
-    suggestionsBox.innerHTML = '';
 
-    if(!places.length){
-      suggestionsBox.classList.remove('show');
-      locationState.textContent = 'Nenhum local encontrado. Tente outro nome.';
-      locationState.classList.add('show');
-      return;
-    }
-
-    locationState.classList.remove('show');
-
-    places.forEach(place => {
-      const btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'suggestion';
-
-      const pin = document.createElement('span');
-      pin.className = 'suggestion-pin';
-      pin.textContent = '⌖';
-
-      const text = document.createElement('span');
-      const strong = document.createElement('strong');
-      const small = document.createElement('small');
-
-      strong.textContent = place.name;
-      small.textContent = place.address || 'Rio Verde - GO';
-
-      text.appendChild(strong);
-      text.appendChild(small);
-      btn.appendChild(pin);
-      btn.appendChild(text);
-
-      btn.addEventListener('click', () => {
-        selectedPlace = place;
-        matchLocation.value = place.name || place.address;
-        suggestionsBox.classList.remove('show');
-
-        if(place.address){
-          locationState.textContent = 'Endereço encontrado: ' + place.address;
-          locationState.classList.add('show');
-        }else{
-          locationState.classList.remove('show');
-        }
-      });
-
-      suggestionsBox.appendChild(btn);
-    });
-
-    suggestionsBox.classList.add('show');
-  }
-
-  async function searchPlaces(query){
-    const requestSeq = ++searchRequestSeq;
-
-    locationState.textContent = 'Buscando locais...';
-    locationState.classList.add('show');
-    suggestionsBox.classList.remove('show');
-
-    try{
-      const result = await buscarLocalCall({query});
-      if(requestSeq !== searchRequestSeq) return;
-
-      const places = Array.isArray(result.data?.places) ?
-        result.data.places :
-        [];
-
-      renderSuggestions(places);
-    }catch(error){
-      if(requestSeq !== searchRequestSeq) return;
-
-      console.warn('Busca de local:', error);
-      suggestionsBox.classList.remove('show');
-      locationState.textContent =
-        'Não consegui buscar agora. Aguarde alguns segundos e tente novamente.';
-      locationState.classList.add('show');
-    }
-  }
-
-  matchLocation.addEventListener('input', () => {
-    selectedPlace = null;
-
-    clearTimeout(searchTimer);
-    const query = matchLocation.value.trim();
-
-    if(query.length < 2){
-      suggestionsBox.classList.remove('show');
-      locationState.classList.remove('show');
-      return;
-    }
-
-    searchTimer = setTimeout(() => searchPlaces(query), 320);
-  });
-
-  document.addEventListener('click', event => {
-    if(!event.target.closest('.location-block')){
-      suggestionsBox.classList.remove('show');
-      locationState.classList.remove('show');
-    }
-  });
 
 
   document.getElementById('saveRachaButton').addEventListener('click', async () => {
@@ -3739,17 +3695,10 @@ let messagingInstance = null;
     state.config.time = matchTime.value;
     state.config.maxPlayers = Math.max(2, Number(maxPlayers.value) || 40);
 
-    if(selectedPlace){
-      state.config.locationName = selectedPlace.name;
-      state.config.locationAddress = selectedPlace.address;
-      state.config.latitude = selectedPlace.latitude;
-      state.config.longitude = selectedPlace.longitude;
-    }else{
-      state.config.locationName = locationText;
-      state.config.locationAddress = locationText;
-      state.config.latitude = null;
-      state.config.longitude = null;
-    }
+    state.config.locationName = locationText;
+    state.config.locationAddress = locationText;
+    state.config.latitude = null;
+    state.config.longitude = null;
 
     saveState();
     renderHome();
