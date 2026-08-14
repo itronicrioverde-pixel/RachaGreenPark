@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <!-- GREEN PARK BUILD: 2026-08-14-admin-data-hora-ios-v2 -->
+  <!-- GREEN PARK BUILD: 2026-08-14-admin-data-hora-ios-v3 -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#071018">
@@ -1773,6 +1773,28 @@
       justify-content:flex-start !important;
       margin:0 !important;
       padding:0 !important;
+    }
+
+  
+    /* FIX FINAL iPhone: remove o text-align-last:center herdado */
+    #adminView #matchDate,
+    #adminView #matchTime{
+      text-align:left !important;
+      text-align-last:left !important;
+      -webkit-text-align-last:left !important;
+      padding-left:18px !important;
+      padding-right:18px !important;
+    }
+
+    #adminView #matchDate::-webkit-date-and-time-value,
+    #adminView #matchTime::-webkit-date-and-time-value{
+      text-align:left !important;
+      text-align-last:left !important;
+      justify-content:flex-start !important;
+      margin-left:0 !important;
+      margin-right:auto !important;
+      padding-left:0 !important;
+      padding-right:0 !important;
     }
 
   </style>
