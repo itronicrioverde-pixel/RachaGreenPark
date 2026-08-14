@@ -1773,7 +1773,7 @@
 
       <section class="pix-box">
         <div class="pix-title">PAGAMENTO VIA PIX</div>
-        <div class="pix-sub">Gere o Pix e faça o pagamento. Sua vaga só será confirmada quando o Mercado Pago identificar o recebimento.</div>
+        <div class="pix-sub">Gere o Pix e faça o pagamento. A confirmação da vaga é automática.</div>
 
         <button class="pix-generate" id="generatePixButton" type="button">
           GERAR PIX
@@ -1794,7 +1794,7 @@
         </div>
 
         <div class="payment-admin-note">
-          A confirmação é automática. Não é necessário enviar comprovante.
+          Não é necessário enviar comprovante. O sistema confirma automaticamente quando o Pix for identificado.
         </div>
       </section>
     </div>
@@ -1838,6 +1838,11 @@
       <div class="register-modern-field">
         <label for="playerPhone">Telefone</label>
         <input id="playerPhone" type="tel" inputmode="tel" placeholder="(64) 99999-9999" autocomplete="tel">
+    <div class="form-field">
+      <label for="playerEmail">E-mail</label>
+      <input id="playerEmail" type="email" inputmode="email" autocomplete="email" placeholder="seuemail@exemplo.com">
+      <small>Você informa apenas no primeiro cadastro.</small>
+    </div>
       </div>
     </div>
 
@@ -2047,8 +2052,8 @@ const firebaseApp = initializeApp(firebaseConfig);
 const auth = getAuth(firebaseApp);
 const db = getFirestore(firebaseApp);
 const functions = getFunctions(firebaseApp, 'southamerica-east1');
-const criarPagamentoQrCall = httpsCallable(functions, 'criarPagamentoQr');
-const consultarPagamentoQrCall = httpsCallable(functions, 'consultarPagamentoQr');
+const criarPagamentoPixCall = httpsCallable(functions, 'criarPagamentoPix');
+const consultarPagamentoPixCall = httpsCallable(functions, 'consultarPagamentoPix');
 const ADMIN_UID = 'd3nVt6SbQlO6lYnOcCUDbLBhoU02';
 const VAPID_PUBLIC_KEY = 'BPBQyOZBpQS-uBaM5H0YhkyPNjQI2dNjrweS4zjvmB79e7TVQR-QuzkmpQyAGJgTCxxaFL_ZnRCelCsbK0T9Lg0';
 let messagingInstance = null;
@@ -2080,8 +2085,7 @@ let messagingInstance = null;
       pixOrderId: '',
       pixQrCode: '',
       pixQrCodeBase64: '',
-      pixStatus: '',
-      pixProvider: '' 
+      pixStatus: '' 
     },
     payments: [],
     teams: [],
@@ -2135,6 +2139,7 @@ let messagingInstance = null;
   const selfieImage = document.getElementById('selfieImage');
   const playerName = document.getElementById('playerName');
   const playerPhone = document.getElementById('playerPhone');
+  const playerEmail = document.getElementById('playerEmail');
   const cardNamePreview = document.getElementById('cardNamePreview');
   const cardPhonePreview = document.getElementById('cardPhonePreview');
   const finishRegistration = document.getElementById('finishRegistration');
@@ -2608,6 +2613,7 @@ let messagingInstance = null;
       uid: user.uid,
       name: state.currentUser.name,
       phone: state.currentUser.phone,
+      email: state.currentUser.email || '',
       status: state.currentUser.status === 'confirmed' ? 'confirmed' : 'registered',
       updatedAt: serverTimestamp()
     }, {merge:true});
@@ -2881,6 +2887,7 @@ let messagingInstance = null;
         status: state.currentUser.status,
         name: state.currentUser.name || 'Jogador',
         phone: state.currentUser.phone || '',
+        email: state.currentUser.email || '',
         photo: state.currentUser.photo || '',
         paymentType: state.currentUser.paymentType || '',
         paymentReported: !!state.currentUser.paymentReported
@@ -2979,6 +2986,7 @@ let messagingInstance = null;
   document.getElementById('yesButton').addEventListener('click', () => {
     playerName.value = state.currentUser.name || '';
     playerPhone.value = state.currentUser.phone || '';
+    playerEmail.value = state.currentUser.email || '';
     selfieData = state.currentUser.photo || '';
     cardNamePreview.textContent = playerName.value || 'Jogador Green Park';
     cardPhonePreview.textContent = playerPhone.value || '(00) 00000-0000';
@@ -3005,16 +3013,6 @@ let messagingInstance = null;
   }
 
   function renderPixFromState(){
-    // Limpa qualquer Pix antigo criado pela integração anterior com e-mail.
-    if(state.currentUser.pixOrderId && state.currentUser.pixProvider !== 'mercadopago_qr'){
-      state.currentUser.pixOrderId = '';
-      state.currentUser.pixQrCode = '';
-      state.currentUser.pixQrCodeBase64 = '';
-      state.currentUser.pixStatus = '';
-      currentPixOrderId = '';
-      saveState();
-    }
-
     currentPixOrderId = state.currentUser.pixOrderId || '';
 
     if(!currentPixOrderId){
@@ -3033,16 +3031,17 @@ let messagingInstance = null;
     generatePixButton.textContent = 'PIX GERADO';
     pixKey.textContent = state.currentUser.pixQrCode || 'Pix gerado';
 
-    // Nesta integração o QR dinâmico chega como Pix Copia e Cola (qr_data).
-    // Mantemos o foco no copiar/colar, que funciona melhor no próprio telefone.
-    pixQrImage.classList.remove('show');
-    pixQrImage.removeAttribute('src');
+    const qrBase64 = state.currentUser.pixQrCodeBase64 || '';
+    if(qrBase64){
+      pixQrImage.src = qrBase64.startsWith('data:')
+        ? qrBase64
+        : 'data:image/png;base64,' + qrBase64;
+      pixQrImage.classList.add('show');
+    }else{
+      pixQrImage.classList.remove('show');
+    }
 
-    setPixStatus(
-      'Aguardando pagamento... Assim que o Mercado Pago confirmar, sua vaga será liberada automaticamente.',
-      'waiting'
-    );
-
+    setPixStatus('Aguardando pagamento... Assim que o Mercado Pago confirmar, sua vaga será liberada automaticamente.', 'waiting');
     confirmationView.classList.add('payment-mode');
     renderPaymentType();
   }
@@ -3059,7 +3058,7 @@ let messagingInstance = null;
     pixCheckRunning = true;
 
     try{
-      const result = await consultarPagamentoQrCall({orderId: currentPixOrderId});
+      const result = await consultarPagamentoPixCall({orderId: currentPixOrderId});
       const data = result.data || {};
 
       if(data.paid){
@@ -3077,7 +3076,6 @@ let messagingInstance = null;
           state.currentUser.pixOrderId = '';
           state.currentUser.pixQrCode = '';
           state.currentUser.pixQrCodeBase64 = '';
-          state.currentUser.pixProvider = '';
           currentPixOrderId = '';
           saveState();
           paymentFlow.classList.remove('show');
@@ -3094,7 +3092,6 @@ let messagingInstance = null;
         state.currentUser.pixOrderId = '';
         state.currentUser.pixQrCode = '';
         state.currentUser.pixQrCodeBase64 = '';
-        state.currentUser.pixProvider = '';
         state.currentUser.pixStatus = 'expired';
         currentPixOrderId = '';
         saveState();
@@ -3146,41 +3143,47 @@ let messagingInstance = null;
   generatePixButton.addEventListener('click', async () => {
     if(currentPixOrderId) return;
 
+    const email = String(state.currentUser.email || '').trim().toLowerCase();
+    if(!email || !/^\S+@\S+\.\S+$/.test(email)){
+      alert('Seu cadastro está sem e-mail. Volte ao cadastro e informe uma vez para continuar.');
+      return;
+    }
+
     generatePixButton.disabled = true;
     generatePixButton.textContent = 'GERANDO PIX...';
 
     try{
       const user = await ensureFirebasePlayer();
-
       if(user.uid === ADMIN_UID){
         throw new Error('Saia do modo administrador antes de gerar um Pix de jogador.');
       }
 
       state.currentUser.id = user.uid;
+      state.currentUser.email = email;
       state.currentUser.paymentType = selectedPaymentType;
 
       await setDoc(doc(db, 'players', user.uid), {
         uid: user.uid,
+        email,
         paymentType: selectedPaymentType,
         updatedAt: serverTimestamp()
       }, {merge:true});
 
-      const result = await criarPagamentoQrCall({
-        type: selectedPaymentType
+      const result = await criarPagamentoPixCall({
+        type: selectedPaymentType,
+        email
       });
-
       const data = result.data || {};
 
-      if(!data.orderId || !data.qrData){
-        throw new Error('O Mercado Pago não retornou o Pix. Tente novamente.');
+      if(!data.orderId || !data.qrCode){
+        throw new Error('O Mercado Pago não retornou o código Pix. Tente novamente.');
       }
 
       currentPixOrderId = data.orderId;
       state.currentUser.pixOrderId = data.orderId;
-      state.currentUser.pixQrCode = data.qrData;
-      state.currentUser.pixQrCodeBase64 = '';
+      state.currentUser.pixQrCode = data.qrCode;
+      state.currentUser.pixQrCodeBase64 = data.qrCodeBase64 || '';
       state.currentUser.pixStatus = 'waiting';
-      state.currentUser.pixProvider = 'mercadopago_qr';
       saveState();
 
       renderPixFromState();
@@ -3281,9 +3284,15 @@ let messagingInstance = null;
   finishRegistration.addEventListener('click', async () => {
     const name = playerName.value.trim();
     const phoneDigits = playerPhone.value.replace(/\D/g,'');
+    const email = playerEmail.value.trim().toLowerCase();
     if(!selfieData){alert('Tire uma selfie para continuar.');return}
     if(!name){alert('Informe seu nome ou apelido.');playerName.focus();return}
     if(phoneDigits.length < 10){alert('Informe um telefone válido com DDD.');playerPhone.focus();return}
+    if(!email || !/^\S+@\S+\.\S+$/.test(email)){
+      alert('Informe um e-mail válido. Você só precisará informar uma vez.');
+      playerEmail.focus();
+      return;
+    }
 
     finishRegistration.disabled = true;
     const originalText = finishRegistration.textContent;
@@ -3292,6 +3301,7 @@ let messagingInstance = null;
     try{
       state.currentUser.name = name;
       state.currentUser.phone = playerPhone.value.trim();
+      state.currentUser.email = email;
       state.currentUser.photo = selfieData;
 
       await savePlayerToCloud();
@@ -3309,7 +3319,7 @@ let messagingInstance = null;
 
       saveState();
       selectedPaymentType = state.currentUser.paymentType || 'daily';
-      paymentFlow.classList.add('show');
+        paymentFlow.classList.add('show');
       confirmationView.classList.add('payment-mode');
       renderPixFromState();
       showView('confirmationView');
