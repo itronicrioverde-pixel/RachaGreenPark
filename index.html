@@ -1278,6 +1278,89 @@
     .register-footer-note{margin:14px 0 2px;text-align:center;color:#75857e;font-size:9px;letter-spacing:.08em;text-transform:uppercase}
     @media(max-width:360px){.player-card-preview{grid-template-columns:1fr;text-align:center}.card-selfie{margin:auto}.card-info-row strong{white-space:normal}}
 
+
+    /* FIREBASE / LOGIN DO ADMIN */
+    .firebase-status{
+      margin:0 0 12px;
+      padding:11px 12px;
+      border:1px solid #2d3a42;
+      border-radius:12px;
+      background:#101920;
+      color:#aab5af;
+      font-size:11px;
+      line-height:1.4;
+    }
+
+    .firebase-status.ok{
+      border-color:rgba(86,213,46,.45);
+      color:#bff3ad;
+    }
+
+    .firebase-status.error{
+      border-color:rgba(217,78,78,.45);
+      color:#ffb0b0;
+    }
+
+    .admin-login-grid{
+      display:grid;
+      gap:10px;
+      margin-top:12px;
+    }
+
+    .admin-login-grid input{
+      width:100%;
+      height:48px;
+      border:1px solid #35434c;
+      border-radius:12px;
+      background:#111a21;
+      color:#fff;
+      padding:0 12px;
+      outline:none;
+    }
+
+    .admin-login-actions{
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:8px;
+    }
+
+    .admin-login-btn{
+      min-height:46px;
+      border:0;
+      border-radius:12px;
+      background:var(--green);
+      color:#102011;
+      font-size:11px;
+      font-weight:950;
+    }
+
+    .admin-logout-btn{
+      min-height:46px;
+      border:1px solid #35434c;
+      border-radius:12px;
+      background:#18232a;
+      color:#fff;
+      padding:0 14px;
+      font-size:10px;
+      font-weight:900;
+      display:none;
+    }
+
+    .admin-logout-btn.show{
+      display:block;
+    }
+
+    .cloud-tag{
+      display:inline-flex;
+      align-items:center;
+      gap:5px;
+      margin-left:6px;
+      color:var(--green2);
+      font-size:9px;
+      font-weight:900;
+      vertical-align:middle;
+    }
+
 </style>
 </head>
 
@@ -1486,6 +1569,27 @@
       </div>
     </div>
 
+    <section class="admin-card" id="adminLoginCard">
+      <div class="admin-head">
+        <h2>Acesso do administrador</h2>
+        <span class="admin-tag" id="adminAuthTag">DESCONECTADO</span>
+      </div>
+
+      <div class="firebase-status" id="firebaseStatus">
+        Conectando ao Firebase...
+      </div>
+
+      <div class="admin-login-grid" id="adminLoginFields">
+        <input id="adminEmail" type="email" value="itronicrioverde@gmail.com" placeholder="E-mail do administrador" autocomplete="username">
+        <input id="adminPassword" type="password" placeholder="Senha do administrador" autocomplete="current-password">
+
+        <div class="admin-login-actions">
+          <button class="admin-login-btn" id="adminLoginButton">ENTRAR COMO ADMIN</button>
+          <button class="admin-logout-btn" id="adminLogoutButton">SAIR</button>
+        </div>
+      </div>
+    </section>
+
     <section class="admin-card">
       <div class="admin-head">
         <h2>Próximo racha</h2>
@@ -1595,7 +1699,42 @@
   </nav>
 </div>
 
-<script>
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js';
+import {
+  getAuth,
+  onAuthStateChanged,
+  signInAnonymously,
+  signInWithEmailAndPassword,
+  signOut
+} from 'https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js';
+import {
+  getFirestore,
+  doc,
+  setDoc,
+  updateDoc,
+  collection,
+  addDoc,
+  query,
+  where,
+  onSnapshot,
+  serverTimestamp
+} from 'https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDnafgCpOkeNcWKT8XO3b7g6sloX51Aiwo",
+  authDomain: "racha-95fca.firebaseapp.com",
+  projectId: "racha-95fca",
+  storageBucket: "racha-95fca.firebasestorage.app",
+  messagingSenderId: "499829913321",
+  appId: "1:499829913321:web:67329174951c6d002c2278"
+};
+
+const firebaseApp = initializeApp(firebaseConfig);
+const auth = getAuth(firebaseApp);
+const db = getFirestore(firebaseApp);
+const ADMIN_UID = 'd3nVt6SbQlO6lYnOcCUDbLBhoU02';
+
 (() => {
   const STORAGE_KEY = 'greenpark_state_v2';
 
@@ -1679,6 +1818,18 @@
   const pixKey = document.getElementById('pixKey');
   const paymentDone = document.getElementById('paymentDone');
 
+  const firebaseStatus = document.getElementById('firebaseStatus');
+  const adminAuthTag = document.getElementById('adminAuthTag');
+  const adminEmail = document.getElementById('adminEmail');
+  const adminPassword = document.getElementById('adminPassword');
+  const adminLoginButton = document.getElementById('adminLoginButton');
+  const adminLogoutButton = document.getElementById('adminLogoutButton');
+
+  let firebaseUser = null;
+  let remotePendingPayments = null;
+  let pendingPaymentsUnsubscribe = null;
+  let playerDocUnsubscribe = null;
+
   let selectedPaymentType = state.currentUser.paymentType || 'daily';
 
   let selfieData = state.currentUser.photo || '';
@@ -1689,6 +1840,153 @@
 
   function saveState(){
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  }
+
+
+  function isAdminUser(){
+    return !!firebaseUser && firebaseUser.uid === ADMIN_UID;
+  }
+
+  function setFirebaseStatus(message, type = ''){
+    firebaseStatus.textContent = message;
+    firebaseStatus.className = 'firebase-status' + (type ? ' ' + type : '');
+  }
+
+  function updateAdminAuthUI(){
+    const admin = isAdminUser();
+
+    adminAuthTag.textContent = admin ? 'CONECTADO' : 'DESCONECTADO';
+    adminAuthTag.style.background = admin ? 'var(--green)' : '';
+
+    adminEmail.disabled = admin;
+    adminPassword.disabled = admin;
+    adminLoginButton.style.display = admin ? 'none' : 'block';
+    adminLogoutButton.classList.toggle('show', admin);
+
+    if(admin){
+      setFirebaseStatus('Administrador conectado ao Firebase. Pagamentos pendentes aparecem aqui em tempo real.', 'ok');
+    }else if(firebaseUser){
+      setFirebaseStatus('Modo jogador conectado ao Firebase. Entre como administrador para visualizar todos os pagamentos.');
+    }
+  }
+
+  function startPlayerListener(uid){
+    if(playerDocUnsubscribe){
+      playerDocUnsubscribe();
+      playerDocUnsubscribe = null;
+    }
+
+    if(!uid || uid === ADMIN_UID) return;
+
+    const playerRef = doc(db, 'players', uid);
+
+    playerDocUnsubscribe = onSnapshot(playerRef, snap => {
+      if(!snap.exists()) return;
+
+      const data = snap.data();
+
+      if(data.status === 'confirmed' && state.currentUser.status !== 'confirmed'){
+        state.currentUser.status = 'confirmed';
+        saveState();
+        renderHome();
+      }else if(data.status === 'rejected' && state.currentUser.status !== 'rejected'){
+        state.currentUser.status = 'rejected';
+        saveState();
+        renderHome();
+      }
+    }, error => {
+      console.warn('Listener do jogador:', error);
+    });
+  }
+
+  function startAdminPaymentsListener(){
+    if(pendingPaymentsUnsubscribe){
+      pendingPaymentsUnsubscribe();
+      pendingPaymentsUnsubscribe = null;
+    }
+
+    remotePendingPayments = null;
+
+    if(!isAdminUser()){
+      renderApprovals();
+      return;
+    }
+
+    const pendingQuery = query(
+      collection(db, 'payments'),
+      where('status', '==', 'pending')
+    );
+
+    pendingPaymentsUnsubscribe = onSnapshot(pendingQuery, snapshot => {
+      remotePendingPayments = snapshot.docs.map(d => ({
+        id: d.id,
+        ...d.data()
+      }));
+
+      remotePendingPayments.sort((a,b) => {
+        const am = a.createdAt?.toMillis?.() || 0;
+        const bm = b.createdAt?.toMillis?.() || 0;
+        return bm - am;
+      });
+
+      renderApprovals();
+    }, error => {
+      console.error('Erro ao ouvir pagamentos:', error);
+      remotePendingPayments = [];
+      setFirebaseStatus('Não foi possível carregar os pagamentos. ' + error.message, 'error');
+      renderApprovals();
+    });
+  }
+
+  async function ensureFirebasePlayer(){
+    if(auth.currentUser) return auth.currentUser;
+    const result = await signInAnonymously(auth);
+    return result.user;
+  }
+
+  async function savePlayerToCloud(){
+    const user = await ensureFirebasePlayer();
+
+    if(user.uid === ADMIN_UID){
+      throw new Error('O administrador está conectado. Saia do modo Admin antes de simular um jogador.');
+    }
+
+    state.currentUser.id = user.uid;
+
+    await setDoc(doc(db, 'players', user.uid), {
+      uid: user.uid,
+      name: state.currentUser.name,
+      phone: state.currentUser.phone,
+      status: state.currentUser.status === 'confirmed' ? 'confirmed' : 'registered',
+      updatedAt: serverTimestamp()
+    }, {merge:true});
+
+    return user;
+  }
+
+  async function createPaymentInCloud(){
+    const user = await ensureFirebasePlayer();
+
+    if(user.uid === ADMIN_UID){
+      throw new Error('O administrador está conectado. Saia do modo Admin antes de simular um pagamento de jogador.');
+    }
+
+    state.currentUser.id = user.uid;
+
+    const amount = selectedPaymentType === 'monthly' ? 70 : 15;
+
+    const ref = await addDoc(collection(db, 'payments'), {
+      userId: user.uid,
+      name: state.currentUser.name || 'Jogador',
+      phone: state.currentUser.phone || '',
+      amount,
+      type: selectedPaymentType,
+      status: 'pending',
+      createdAt: serverTimestamp()
+    });
+
+    state.currentUser.lastPaymentId = ref.id;
+    return ref.id;
   }
 
   function showView(id){
@@ -1711,6 +2009,118 @@
 
 
   function renderApprovals(){
+    if(isAdminUser() && remotePendingPayments !== null){
+      pendingApprovalCount.textContent =
+        remotePendingPayments.length +
+        (remotePendingPayments.length === 1 ? ' PENDENTE' : ' PENDENTES') +
+        ' • NUVEM';
+
+      if(!remotePendingPayments.length){
+        approvalList.innerHTML =
+          '<div class="approval-empty">Nenhum pagamento aguardando conferência no Firebase.</div>';
+        return;
+      }
+
+      approvalList.innerHTML = '';
+
+      remotePendingPayments.forEach(record => {
+        const row = document.createElement('div');
+        row.className = 'approval-item';
+
+        const info = document.createElement('div');
+        info.className = 'approval-player';
+
+        const avatar = document.createElement('div');
+        avatar.className = 'approval-avatar';
+        avatar.textContent = (record.name || 'J').charAt(0).toUpperCase();
+
+        const textInfo = document.createElement('div');
+        const name = document.createElement('div');
+        const status = document.createElement('div');
+
+        name.className = 'approval-name';
+        name.innerHTML = (record.name || 'Jogador') + '<span class="cloud-tag">☁ FIREBASE</span>';
+
+        status.className = 'approval-status';
+        status.textContent =
+          (record.phone ? record.phone + ' • ' : '') +
+          (record.type === 'monthly' ? 'Mensal R$ 70' : 'Diária R$ 15') +
+          ' • Pagamento aguardando conferência';
+
+        textInfo.appendChild(name);
+        textInfo.appendChild(status);
+        info.appendChild(avatar);
+        info.appendChild(textInfo);
+
+        const actions = document.createElement('div');
+        actions.className = 'approval-actions';
+
+        const approve = document.createElement('button');
+        approve.className = 'approve-btn';
+        approve.textContent = 'Confirmar';
+
+        approve.addEventListener('click', async () => {
+          approve.disabled = true;
+          try{
+            await updateDoc(doc(db, 'payments', record.id), {
+              status: 'approved',
+              approvedAt: serverTimestamp(),
+              approvedBy: ADMIN_UID
+            });
+
+            try{
+              await updateDoc(doc(db, 'players', record.userId), {
+                status: 'confirmed',
+                paymentStatus: 'approved',
+                updatedAt: serverTimestamp()
+              });
+            }catch(playerError){
+              console.warn('Pagamento aprovado, mas não foi possível atualizar jogador:', playerError);
+            }
+          }catch(error){
+            alert('Não foi possível confirmar o pagamento: ' + error.message);
+            approve.disabled = false;
+          }
+        });
+
+        const reject = document.createElement('button');
+        reject.className = 'reject-btn';
+        reject.textContent = 'Recusar';
+
+        reject.addEventListener('click', async () => {
+          reject.disabled = true;
+          try{
+            await updateDoc(doc(db, 'payments', record.id), {
+              status: 'rejected',
+              rejectedAt: serverTimestamp(),
+              reviewedBy: ADMIN_UID
+            });
+
+            try{
+              await updateDoc(doc(db, 'players', record.userId), {
+                status: 'rejected',
+                paymentStatus: 'rejected',
+                updatedAt: serverTimestamp()
+              });
+            }catch(playerError){
+              console.warn('Pagamento recusado, mas não foi possível atualizar jogador:', playerError);
+            }
+          }catch(error){
+            alert('Não foi possível recusar o pagamento: ' + error.message);
+            reject.disabled = false;
+          }
+        });
+
+        actions.appendChild(approve);
+        actions.appendChild(reject);
+        row.appendChild(info);
+        row.appendChild(actions);
+        approvalList.appendChild(row);
+      });
+
+      return;
+    }
+
     const pending = state.confirmations.filter(c => c.status === 'requested');
 
     pendingApprovalCount.textContent =
@@ -1952,15 +2362,31 @@
     }
   });
 
-  paymentDone.addEventListener('click', () => {
-    state.currentUser.paymentType = selectedPaymentType;
-    state.currentUser.paymentReported = true;
-    state.currentUser.status = 'requested';
-    syncLocalUserConfirmation();
-    saveState();
-    renderHome();
-    renderApprovals();
-    showView('homeView');
+  paymentDone.addEventListener('click', async () => {
+    paymentDone.disabled = true;
+    const originalText = paymentDone.textContent;
+    paymentDone.textContent = 'ENVIANDO PAGAMENTO...';
+
+    try{
+      state.currentUser.paymentType = selectedPaymentType;
+      await createPaymentInCloud();
+
+      state.currentUser.paymentReported = true;
+      state.currentUser.status = 'requested';
+      syncLocalUserConfirmation();
+      saveState();
+      renderHome();
+      renderApprovals();
+
+      alert('Pagamento enviado para conferência do administrador.');
+      showView('homeView');
+    }catch(error){
+      console.error(error);
+      alert('Não foi possível enviar o pagamento: ' + error.message);
+    }finally{
+      paymentDone.disabled = false;
+      paymentDone.textContent = originalText;
+    }
   });
 
   document.querySelectorAll('[data-back-home]').forEach(btn => {
@@ -2042,28 +2468,90 @@
     }
   });
 
-  finishRegistration.addEventListener('click', () => {
+  finishRegistration.addEventListener('click', async () => {
     const name = playerName.value.trim();
     const phoneDigits = playerPhone.value.replace(/\D/g,'');
     if(!selfieData){alert('Tire uma selfie para continuar.');return}
     if(!name){alert('Informe seu nome ou apelido.');playerName.focus();return}
     if(phoneDigits.length < 10){alert('Informe um telefone válido com DDD.');playerPhone.focus();return}
 
-    state.currentUser.name = name;
-    state.currentUser.phone = playerPhone.value.trim();
-    state.currentUser.photo = selfieData;
+    finishRegistration.disabled = true;
+    const originalText = finishRegistration.textContent;
+    finishRegistration.textContent = 'SALVANDO CADASTRO...';
 
-    const playerIndex = state.players.findIndex(p => p.id === state.currentUser.id);
-    const playerRecord = {id:state.currentUser.id,name:state.currentUser.name,phone:state.currentUser.phone,photo:state.currentUser.photo};
-    if(playerIndex >= 0) state.players[playerIndex] = playerRecord;
-    else state.players.push(playerRecord);
+    try{
+      state.currentUser.name = name;
+      state.currentUser.phone = playerPhone.value.trim();
+      state.currentUser.photo = selfieData;
 
-    saveState();
-    selectedPaymentType = state.currentUser.paymentType || 'daily';
-    renderPaymentType();
-    paymentFlow.classList.add('show');
-    showView('confirmationView');
-    setTimeout(() => paymentFlow.scrollIntoView({behavior:'smooth',block:'start'}),100);
+      await savePlayerToCloud();
+
+      const playerIndex = state.players.findIndex(p => p.id === state.currentUser.id);
+      const playerRecord = {
+        id:state.currentUser.id,
+        name:state.currentUser.name,
+        phone:state.currentUser.phone,
+        photo:state.currentUser.photo
+      };
+
+      if(playerIndex >= 0) state.players[playerIndex] = playerRecord;
+      else state.players.push(playerRecord);
+
+      saveState();
+      selectedPaymentType = state.currentUser.paymentType || 'daily';
+      renderPaymentType();
+      paymentFlow.classList.add('show');
+      showView('confirmationView');
+      setTimeout(() => paymentFlow.scrollIntoView({behavior:'smooth',block:'start'}),100);
+    }catch(error){
+      console.error(error);
+      alert('Não foi possível salvar o cadastro no Firebase: ' + error.message);
+    }finally{
+      finishRegistration.disabled = false;
+      finishRegistration.textContent = originalText;
+    }
+  });
+
+
+  adminLoginButton.addEventListener('click', async () => {
+    const email = adminEmail.value.trim();
+    const password = adminPassword.value;
+
+    if(!email || !password){
+      alert('Informe o e-mail e a senha do administrador.');
+      return;
+    }
+
+    adminLoginButton.disabled = true;
+    adminLoginButton.textContent = 'ENTRANDO...';
+
+    try{
+      const result = await signInWithEmailAndPassword(auth, email, password);
+
+      if(result.user.uid !== ADMIN_UID){
+        await signOut(auth);
+        throw new Error('Este usuário não está autorizado como administrador.');
+      }
+
+      adminPassword.value = '';
+    }catch(error){
+      console.error(error);
+      setFirebaseStatus('Falha no login do administrador: ' + error.message, 'error');
+    }finally{
+      adminLoginButton.disabled = false;
+      adminLoginButton.textContent = 'ENTRAR COMO ADMIN';
+    }
+  });
+
+  adminLogoutButton.addEventListener('click', async () => {
+    await signOut(auth);
+    adminPassword.value = '';
+
+    try{
+      await signInAnonymously(auth);
+    }catch(error){
+      console.warn('Falha ao voltar ao modo jogador:', error);
+    }
   });
 
   document.getElementById('menuButton').addEventListener('click', () => {
@@ -2366,6 +2854,59 @@
 
     alert('Aplicativo zerado. Confirmados voltaram para 0 e todos os dados do racha foram apagados.');
     location.reload();
+  });
+
+  let firstAuthCheck = true;
+
+  onAuthStateChanged(auth, async user => {
+    firebaseUser = user;
+
+    if(!user){
+      setFirebaseStatus('Conectando jogador ao Firebase...');
+
+      if(firstAuthCheck){
+        firstAuthCheck = false;
+        try{
+          await signInAnonymously(auth);
+        }catch(error){
+          console.error(error);
+          setFirebaseStatus('Falha ao conectar ao Firebase: ' + error.message, 'error');
+        }
+      }
+
+      updateAdminAuthUI();
+      return;
+    }
+
+    firstAuthCheck = false;
+
+    if(user.uid === ADMIN_UID){
+      if(playerDocUnsubscribe){
+        playerDocUnsubscribe();
+        playerDocUnsubscribe = null;
+      }
+
+      updateAdminAuthUI();
+      startAdminPaymentsListener();
+    }else{
+      state.currentUser.id = user.uid;
+      state.confirmations = state.confirmations.filter(
+        c => c.playerId !== 'local-user'
+      );
+      saveState();
+
+      if(pendingPaymentsUnsubscribe){
+        pendingPaymentsUnsubscribe();
+        pendingPaymentsUnsubscribe = null;
+      }
+
+      remotePendingPayments = null;
+      updateAdminAuthUI();
+      startPlayerListener(user.uid);
+      renderApprovals();
+    }
+
+    renderHome();
   });
 
   // Primeira renderização
