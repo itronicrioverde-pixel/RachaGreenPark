@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <!-- GREEN PARK BUILD: 2026-08-14-admin-data-hora-ios-v3 -->
+  <!-- GREEN PARK BUILD: 2026-08-14-admin-data-hora-central-v4 -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#071018">
@@ -1797,6 +1797,56 @@
       padding-right:0 !important;
     }
 
+  
+    /* Data/Hora: visual idêntico ao campo do número 40 */
+    #adminView .native-picker-shell{
+      position:relative;
+      width:100%;
+      min-width:0;
+    }
+
+    #adminView .native-picker-shell #matchDate,
+    #adminView .native-picker-shell #matchTime{
+      position:relative !important;
+      z-index:2 !important;
+      display:block !important;
+      width:100% !important;
+      max-width:100% !important;
+      min-width:0 !important;
+      box-sizing:border-box !important;
+      color:transparent !important;
+      -webkit-text-fill-color:transparent !important;
+      caret-color:transparent !important;
+      background:transparent !important;
+      text-align:center !important;
+    }
+
+    #adminView .native-picker-shell #matchDate::-webkit-date-and-time-value,
+    #adminView .native-picker-shell #matchTime::-webkit-date-and-time-value{
+      color:transparent !important;
+      -webkit-text-fill-color:transparent !important;
+      opacity:0 !important;
+    }
+
+    #adminView .native-picker-display{
+      position:absolute;
+      z-index:3;
+      inset:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:0 18px;
+      box-sizing:border-box;
+      pointer-events:none;
+      color:#f5f7f8;
+      font:inherit;
+      font-size:inherit;
+      font-weight:400;
+      line-height:1.15;
+      text-align:center;
+      white-space:nowrap;
+    }
+
   </style>
 </head>
 
@@ -2081,12 +2131,18 @@
         <div class="date-time">
           <div class="field">
             <label>Data</label>
-            <input id="matchDate" type="date">
+            <div class="native-picker-shell">
+              <input id="matchDate" type="date" aria-label="Data do próximo racha">
+              <span class="native-picker-display" id="matchDateDisplay">Selecione a data</span>
+            </div>
           </div>
 
           <div class="field">
             <label>Horário</label>
-            <input id="matchTime" type="time">
+            <div class="native-picker-shell">
+              <input id="matchTime" type="time" aria-label="Horário do próximo racha">
+              <span class="native-picker-display" id="matchTimeDisplay">Selecione o horário</span>
+            </div>
           </div>
         </div>
 
@@ -2297,6 +2353,8 @@ let messagingInstance = null;
 
   const matchDate = document.getElementById('matchDate');
   const matchTime = document.getElementById('matchTime');
+  const matchDateDisplay = document.getElementById('matchDateDisplay');
+  const matchTimeDisplay = document.getElementById('matchTimeDisplay');
   const matchLocation = document.getElementById('matchLocation');
   const maxPlayers = document.getElementById('maxPlayers');
 
@@ -3157,6 +3215,7 @@ let messagingInstance = null;
 
     matchDate.value = state.config.date || '';
     matchTime.value = state.config.time || '';
+    syncAdminDateTimeVisual();
     matchLocation.value =
       state.config.locationName ||
       state.config.locationAddress ||
@@ -3164,6 +3223,38 @@ let messagingInstance = null;
     maxPlayers.value = state.config.maxPlayers || 40;
     refreshPlayerPushUI();
   }
+
+  function formatAdminDateValue(value){
+    if(!value) return 'Selecione a data';
+
+    const d = new Date(value + 'T12:00:00');
+
+    return d.toLocaleDateString(
+      'pt-BR',
+      {
+        day:'2-digit',
+        month:'short',
+        year:'numeric'
+      }
+    );
+  }
+
+  function syncAdminDateTimeVisual(){
+    if(matchDateDisplay){
+      matchDateDisplay.textContent =
+        formatAdminDateValue(matchDate.value);
+    }
+
+    if(matchTimeDisplay){
+      matchTimeDisplay.textContent =
+        matchTime.value || 'Selecione o horário';
+    }
+  }
+
+  matchDate.addEventListener('input', syncAdminDateTimeVisual);
+  matchDate.addEventListener('change', syncAdminDateTimeVisual);
+  matchTime.addEventListener('input', syncAdminDateTimeVisual);
+  matchTime.addEventListener('change', syncAdminDateTimeVisual);
 
   function setAttendance(status){
     state.currentUser.status = status;
