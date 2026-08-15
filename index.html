@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <!-- GREEN PARK BUILD: 2026-08-14-topico4-lista-confirmados -->
+  <!-- GREEN PARK BUILD: 2026-08-14-paginas-acessos-rapidos -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#071018">
@@ -1953,6 +1953,142 @@
       text-align:center;
     }
 
+  
+    /* PÁGINAS DOS ACESSOS RÁPIDOS */
+    .feature-page-card{
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:24px;
+      padding:18px;
+    }
+
+    .feature-page-title-row{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:14px;
+      margin-bottom:14px;
+    }
+
+    .feature-page-title-row h2{
+      margin:0;
+      font-size:24px;
+      line-height:1.08;
+    }
+
+    .feature-page-kicker{
+      color:var(--green);
+      font-size:12px;
+      font-weight:950;
+      letter-spacing:.06em;
+      white-space:nowrap;
+      padding-top:4px;
+    }
+
+    .feature-page-subtitle{
+      margin:0 0 16px;
+      color:var(--muted);
+      font-size:14px;
+      line-height:1.5;
+    }
+
+    .feature-empty{
+      min-height:170px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      padding:24px 18px;
+      text-align:center;
+      border:1px dashed #33444c;
+      border-radius:18px;
+      color:var(--muted);
+    }
+
+    .feature-empty-icon{
+      color:#fff;
+      font-size:32px;
+      line-height:1;
+    }
+
+    .feature-empty strong{
+      color:#fff;
+      font-size:16px;
+    }
+
+    .feature-empty span{
+      max-width:290px;
+      font-size:13px;
+      line-height:1.45;
+    }
+
+    .stats-grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:10px;
+    }
+
+    .stat-box{
+      min-height:105px;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      padding:14px;
+      border:1px solid #293840;
+      border-radius:16px;
+      background:#0d171d;
+    }
+
+    .stat-box small{
+      color:var(--muted);
+      font-size:11px;
+      font-weight:800;
+      text-transform:uppercase;
+      letter-spacing:.06em;
+    }
+
+    .stat-box strong{
+      margin-top:7px;
+      color:#fff;
+      font-size:28px;
+      line-height:1;
+    }
+
+    .stat-box strong.green{
+      color:var(--green);
+    }
+
+    .feature-match-info{
+      margin-top:12px;
+      padding:13px 14px;
+      border:1px solid #293840;
+      border-radius:14px;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.45;
+    }
+
+    .sponsor-placeholder-grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:10px;
+    }
+
+    .sponsor-placeholder{
+      min-height:105px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:14px;
+      border:1px dashed #33444c;
+      border-radius:16px;
+      color:#718087;
+      font-size:12px;
+      font-weight:850;
+      text-align:center;
+    }
+
   </style>
 </head>
 
@@ -2036,11 +2172,11 @@
     <div class="quick-title">Acessos rápidos</div>
     <div class="quick-grid">
       <button class="quick" id="openConfirmedListQuick"><b>✓</b>Lista</button>
-      <button class="quick"><b>♛</b>Ranking</button>
-      <button class="quick"><b>▥</b>Estatísticas</button>
-      <button class="quick"><b>▣</b>Galeria</button>
-      <button class="quick"><b>▤</b>Comunicados</button>
-      <button class="quick"><b>◆</b>Patrocinadores</button>
+      <button class="quick" id="openRankingQuick"><b>♛</b>Ranking</button>
+      <button class="quick" id="openStatsQuick"><b>▥</b>Estatísticas</button>
+      <button class="quick" id="openGalleryQuick"><b>▣</b>Galeria</button>
+      <button class="quick" id="openNoticesQuick"><b>▤</b>Comunicados</button>
+      <button class="quick" id="openSponsorsQuick"><b>◆</b>Patrocinadores</button>
     </div>
   </main>
 
@@ -2068,6 +2204,163 @@
 
       <div class="confirmed-list-note">
         A lista mostra somente jogadores com presença confirmada.
+      </div>
+    </section>
+  </main>
+
+  <!-- RANKING -->
+  <main class="content view" id="rankingView">
+    <div class="page-head">
+      <button class="back-btn" data-feature-back>←</button>
+      <div class="page-head-title">RANKING</div>
+      <div></div>
+    </div>
+
+    <section class="feature-page-card">
+      <div class="feature-page-title-row">
+        <h2>Ranking Green Park</h2>
+        <div class="feature-page-kicker">TEMPORADA</div>
+      </div>
+
+      <p class="feature-page-subtitle">
+        Classificação individual dos jogadores do racha.
+      </p>
+
+      <div class="feature-empty">
+        <div class="feature-empty-icon">♛</div>
+        <strong>Ranking ainda não iniciado</strong>
+        <span>
+          Aqui vamos mostrar a classificação assim que definirmos a regra de pontos do racha.
+        </span>
+      </div>
+    </section>
+  </main>
+
+  <!-- ESTATÍSTICAS -->
+  <main class="content view" id="statsView">
+    <div class="page-head">
+      <button class="back-btn" data-feature-back>←</button>
+      <div class="page-head-title">ESTATÍSTICAS</div>
+      <div></div>
+    </div>
+
+    <section class="feature-page-card">
+      <div class="feature-page-title-row">
+        <h2>Próximo racha</h2>
+        <div class="feature-page-kicker">AO VIVO</div>
+      </div>
+
+      <p class="feature-page-subtitle">
+        Números atuais de presença para o próximo futebol.
+      </p>
+
+      <div class="stats-grid">
+        <div class="stat-box">
+          <small>Confirmados</small>
+          <strong class="green" id="statsConfirmed">0</strong>
+        </div>
+
+        <div class="stat-box">
+          <small>Vagas restantes</small>
+          <strong id="statsRemaining">0</strong>
+        </div>
+
+        <div class="stat-box">
+          <small>Limite</small>
+          <strong id="statsMax">40</strong>
+        </div>
+
+        <div class="stat-box">
+          <small>Ocupação</small>
+          <strong id="statsPercent">0%</strong>
+        </div>
+      </div>
+
+      <div class="feature-match-info" id="statsMatchInfo">
+        Próximo racha
+      </div>
+    </section>
+  </main>
+
+  <!-- GALERIA -->
+  <main class="content view" id="galleryView">
+    <div class="page-head">
+      <button class="back-btn" data-feature-back>←</button>
+      <div class="page-head-title">GALERIA</div>
+      <div></div>
+    </div>
+
+    <section class="feature-page-card">
+      <div class="feature-page-title-row">
+        <h2>Galeria</h2>
+        <div class="feature-page-kicker">FOTOS</div>
+      </div>
+
+      <p class="feature-page-subtitle">
+        Fotos dos rachas, times e momentos do Green Park.
+      </p>
+
+      <div class="feature-empty">
+        <div class="feature-empty-icon">▣</div>
+        <strong>Nenhuma foto publicada</strong>
+        <span>
+          A galeria está pronta. Depois vamos liberar o envio das fotos pelo administrador.
+        </span>
+      </div>
+    </section>
+  </main>
+
+  <!-- COMUNICADOS -->
+  <main class="content view" id="noticesView">
+    <div class="page-head">
+      <button class="back-btn" data-feature-back>←</button>
+      <div class="page-head-title">COMUNICADOS</div>
+      <div></div>
+    </div>
+
+    <section class="feature-page-card">
+      <div class="feature-page-title-row">
+        <h2>Comunicados</h2>
+        <div class="feature-page-kicker">GREEN PARK FC</div>
+      </div>
+
+      <p class="feature-page-subtitle">
+        Avisos importantes para todos os jogadores.
+      </p>
+
+      <div class="feature-empty">
+        <div class="feature-empty-icon">▤</div>
+        <strong>Nenhum comunicado</strong>
+        <span>
+          Os avisos publicados pelo administrador aparecerão aqui.
+        </span>
+      </div>
+    </section>
+  </main>
+
+  <!-- PATROCINADORES -->
+  <main class="content view" id="sponsorsView">
+    <div class="page-head">
+      <button class="back-btn" data-feature-back>←</button>
+      <div class="page-head-title">PATROCINADORES</div>
+      <div></div>
+    </div>
+
+    <section class="feature-page-card">
+      <div class="feature-page-title-row">
+        <h2>Parceiros</h2>
+        <div class="feature-page-kicker">GREEN PARK FC</div>
+      </div>
+
+      <p class="feature-page-subtitle">
+        Empresas e marcas que apoiam o projeto.
+      </p>
+
+      <div class="sponsor-placeholder-grid">
+        <div class="sponsor-placeholder">ESPAÇO PARA PATROCINADOR</div>
+        <div class="sponsor-placeholder">ESPAÇO PARA PATROCINADOR</div>
+        <div class="sponsor-placeholder">ESPAÇO PARA PATROCINADOR</div>
+        <div class="sponsor-placeholder">ESPAÇO PARA PATROCINADOR</div>
       </div>
     </section>
   </main>
@@ -3152,6 +3445,41 @@ let messagingInstance = null;
     }, 5000);
   }
 
+
+  function renderStatsPage(){
+    const max = Math.max(1, Number(state.config.maxPlayers) || 40);
+    const confirmed = confirmedTotal();
+    const remaining = Math.max(0, max - confirmed);
+    const percent = Math.min(100, Math.round((confirmed / max) * 100));
+
+    document.getElementById('statsConfirmed').textContent = confirmed;
+    document.getElementById('statsRemaining').textContent = remaining;
+    document.getElementById('statsMax').textContent = max;
+    document.getElementById('statsPercent').textContent = percent + '%';
+
+    const dateText = state.config.date ?
+      formatDateBR(state.config.date) :
+      'Data não definida';
+
+    const timeText = state.config.time || '--:--';
+
+    const locationText =
+      state.config.locationName ||
+      state.config.locationAddress ||
+      'Local não definido';
+
+    document.getElementById('statsMatchInfo').textContent =
+      `${dateText} • ${timeText} • ${locationText}`;
+  }
+
+  function openFeatureView(viewId){
+    if(viewId === 'statsView'){
+      renderStatsPage();
+    }
+
+    showView(viewId);
+  }
+
   function showView(id){
     views.forEach(v => v.classList.toggle('active', v.id === id));
     app.classList.toggle('hide-nav', id !== 'homeView');
@@ -3468,6 +3796,10 @@ let messagingInstance = null;
       '';
     maxPlayers.value = state.config.maxPlayers || 40;
     refreshPlayerPushUI();
+
+    if(document.getElementById('statsConfirmed')){
+      renderStatsPage();
+    }
   }
 
   function formatAdminDateValue(value){
@@ -4035,6 +4367,32 @@ let messagingInstance = null;
   document.getElementById('openConfirmedListQuick').addEventListener('click', openConfirmedList);
   document.getElementById('confirmedListBack').addEventListener('click', () => {
     showView('homeView');
+  });
+
+  document.getElementById('openRankingQuick').addEventListener('click', () => {
+    openFeatureView('rankingView');
+  });
+
+  document.getElementById('openStatsQuick').addEventListener('click', () => {
+    openFeatureView('statsView');
+  });
+
+  document.getElementById('openGalleryQuick').addEventListener('click', () => {
+    openFeatureView('galleryView');
+  });
+
+  document.getElementById('openNoticesQuick').addEventListener('click', () => {
+    openFeatureView('noticesView');
+  });
+
+  document.getElementById('openSponsorsQuick').addEventListener('click', () => {
+    openFeatureView('sponsorsView');
+  });
+
+  document.querySelectorAll('[data-feature-back]').forEach(button => {
+    button.addEventListener('click', () => {
+      showView('homeView');
+    });
   });
 
   // -------------------------------
