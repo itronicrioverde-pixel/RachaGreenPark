@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- GREEN PARK BUILD: 2026-08-15-payment-options-13-70 -->
 <!-- GREEN PARK BUILD: 2026-08-15-master-sponsors -->
 <html lang="pt-BR">
 <head>
@@ -5373,12 +5374,12 @@
           O tipo de cobrança é definido pelo administrador.
         </div>
 
-        <div class="payment-types" style="display:none;">
+        <div class="payment-types">
           <button class="payment-type selected" id="dailyPayment" type="button">
-            <span><strong>Diária</strong><span>Diarista</span></span>
+            <span><strong>Diária</strong><span>R$ 13,00</span></span>
           </button>
           <button class="payment-type" id="monthlyPayment" type="button">
-            <span><strong>Mensal</strong><span>Mensalista</span></span>
+            <span><strong>Mensal</strong><span>R$ 70,00</span></span>
           </button>
         </div>
       </section>
@@ -8608,7 +8609,7 @@ let messagingInstance = null;
         `${Number(dashboard.monthlyPaidCount || 0)} com mês pago`;
       financeDailyCount.textContent = Number(dashboard.dailyCount || 0);
 
-      financeDailyPrice.value = Number(dashboard.settings?.dailyPrice ?? 15);
+      financeDailyPrice.value = Number(dashboard.settings?.dailyPrice ?? 13);
       financeMonthlyPrice.value = Number(dashboard.settings?.monthlyPrice ?? 70);
       financeOpeningBalance.value = Number(dashboard.settings?.openingBalance ?? 0);
 
@@ -9404,6 +9405,12 @@ let messagingInstance = null;
     const locked = !!currentPixOrderId && state.currentUser.status !== 'confirmed';
     dailyPayment.disabled = locked;
     monthlyPayment.disabled = locked;
+
+    if(!locked){
+      generatePixButton.textContent = selectedPaymentType === 'monthly'
+        ? 'GERAR PIX — R$ 70,00'
+        : 'GERAR PIX — R$ 13,00';
+    }
   }
 
   function renderPixFromState(){
@@ -9535,8 +9542,23 @@ let messagingInstance = null;
     pixPollTimer = setInterval(() => consultarPixAtual(), 3000);
   }
 
-  dailyPayment.addEventListener('click', () => {});
-  monthlyPayment.addEventListener('click', () => {});
+  dailyPayment.addEventListener('click', () => {
+    if(currentPixOrderId) return;
+    selectedPaymentType = 'daily';
+    state.currentUser.billingType = 'daily';
+    state.currentUser.paymentType = 'daily';
+    saveState();
+    renderPaymentType();
+  });
+
+  monthlyPayment.addEventListener('click', () => {
+    if(currentPixOrderId) return;
+    selectedPaymentType = 'monthly';
+    state.currentUser.billingType = 'monthly';
+    state.currentUser.paymentType = 'monthly';
+    saveState();
+    renderPaymentType();
+  });
 
   cancelPixButton.addEventListener('click', () => {
     const ok = confirm(
@@ -9581,9 +9603,9 @@ let messagingInstance = null;
 
       state.currentUser.id = user.uid;
       state.currentUser.email = email;
-      selectedPaymentType = 'daily';
-      state.currentUser.billingType = 'daily';
-      state.currentUser.paymentType = 'daily';
+      selectedPaymentType = selectedPaymentType === 'monthly' ? 'monthly' : 'daily';
+      state.currentUser.billingType = selectedPaymentType;
+      state.currentUser.paymentType = selectedPaymentType;
 
       await setDoc(doc(db, 'players', user.uid), {
         uid: user.uid,
@@ -9592,7 +9614,7 @@ let messagingInstance = null;
       }, {merge:true});
 
       const result = await criarPagamentoPixCall({
-        type: 'daily',
+        type: selectedPaymentType,
         email
       });
       const data = result.data || {};
