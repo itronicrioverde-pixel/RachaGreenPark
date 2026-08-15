@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <!-- GREEN PARK BUILD: 2026-08-15-MASTER-V1 -->
+  <!-- GREEN PARK BUILD: 2026-08-15-stats-compact-photo-list -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#071018">
@@ -585,7 +585,7 @@
       min-height:82px;
       padding:10px 8px calc(9px + env(safe-area-inset-bottom));
       display:grid;
-      grid-template-columns:repeat(4,1fr);
+      grid-template-columns:repeat(5,1fr);
       align-items:end;
       z-index:100;
       background:rgba(7,16,24,.98);
@@ -3901,10 +3901,253 @@
       .finance-player-actions{grid-template-columns:1fr;}
     }
 
-  </style>
+  
+
+    /* ESTATÍSTICAS COMPACTAS — referência visual 15/08/2026 */
+    .confirmed-player-avatar{
+      padding:0;
+      overflow:hidden;
+      border:1px solid #3a5f49;
+      background:#11231a;
+      color:#8bd498;
+    }
+    .confirmed-player-avatar img{
+      width:100%;
+      height:100%;
+      display:block;
+      object-fit:cover;
+    }
+
+    #statsView .live-player-list{gap:10px;}
+    #statsView .live-player-card-compact{
+      display:grid;
+      grid-template-columns:minmax(0,1fr) auto;
+      align-items:center;
+      column-gap:14px;
+      row-gap:8px;
+      padding:14px 15px;
+      border:1px solid #27373e;
+      border-radius:16px;
+      background:#101b21;
+      box-shadow:0 7px 18px rgba(0,0,0,.12);
+    }
+    #statsView .live-player-identity{
+      min-width:0;
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+    #statsView .live-player-avatar{
+      width:54px;
+      height:54px;
+      flex:0 0 54px;
+      border:1px solid #385148;
+      background:#18262b;
+      color:#8ca29a;
+    }
+    #statsView .live-player-name-wrap{min-width:0;}
+    #statsView .live-player-name{
+      font-size:15px;
+      line-height:1.15;
+      font-weight:900;
+      text-transform:none;
+      white-space:normal;
+      display:-webkit-box;
+      -webkit-line-clamp:2;
+      -webkit-box-orient:vertical;
+    }
+    #statsView .live-player-role{
+      margin-top:5px;
+      color:#f2bd45;
+      font-size:9px;
+      font-weight:900;
+      letter-spacing:.08em;
+    }
+    #statsView .live-compact-metrics{
+      display:flex;
+      align-items:center;
+      justify-content:flex-end;
+      gap:10px;
+    }
+    #statsView .live-compact-metric{
+      min-width:64px;
+      text-align:center;
+    }
+    #statsView .live-compact-label{
+      margin-bottom:5px;
+      color:#8fa19a;
+      font-size:9px;
+      font-weight:900;
+      letter-spacing:.05em;
+    }
+    #statsView .live-compact-controls{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:6px;
+    }
+    #statsView .live-compact-value{
+      min-width:28px;
+      color:#79e28a;
+      font-size:23px;
+      line-height:1;
+      font-weight:950;
+    }
+    #statsView .live-compact-metric.conceded .live-compact-value{color:#f5bf42;}
+    #statsView .live-compact-btn{
+      width:28px;
+      height:28px;
+      display:grid;
+      place-items:center;
+      padding:0;
+      border:1px solid #40535a;
+      border-radius:50%;
+      background:#16242a;
+      color:#fff;
+      font-size:17px;
+      line-height:1;
+      font-weight:900;
+    }
+    #statsView .live-compact-btn.plus{
+      border-color:#58d96b;
+      background:#43d62f;
+      color:#071007;
+    }
+    #statsView .live-compact-btn:disabled{opacity:.35;}
+    #statsView .live-compact-admin-row{
+      grid-column:1/-1;
+      display:flex;
+      justify-content:flex-end;
+      margin-top:1px;
+      padding-top:8px;
+      border-top:1px solid #223139;
+    }
+    #statsView .live-compact-admin-row .live-goalie-toggle{
+      min-height:28px;
+      padding:0 10px;
+      font-size:9px;
+    }
+    #statsView .live-stats-help{
+      margin:0 0 12px;
+      padding:9px 11px;
+      border-radius:11px;
+      background:#111d22;
+      color:#8ca198;
+      font-size:10px;
+      line-height:1.4;
+      text-transform:none;
+    }
+    @media (max-width:390px){
+      #statsView .live-player-card-compact{column-gap:9px;padding:12px;}
+      #statsView .live-player-avatar{width:48px;height:48px;flex-basis:48px;}
+      #statsView .live-player-name{font-size:14px;}
+      #statsView .live-compact-metrics{gap:5px;}
+      #statsView .live-compact-metric{min-width:55px;}
+      #statsView .live-compact-btn{width:26px;height:26px;}
+      #statsView .live-compact-value{font-size:21px;min-width:24px;}
+    }
+
+
+    /* REGRAS / REGULAMENTO */
+    .rules-shell{
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+
+    .rules-intro{
+      padding:16px;
+      border:1px solid var(--line);
+      border-radius:18px;
+      background:var(--panel);
+    }
+
+    .rules-intro h2{
+      margin:0 0 6px;
+      color:#fff;
+      font-size:23px;
+      line-height:1.1;
+    }
+
+    .rules-intro p{
+      margin:0;
+      color:#8fa0a7;
+      font-size:12px;
+      line-height:1.5;
+    }
+
+    .rules-section{
+      overflow:hidden;
+      border:1px solid var(--line);
+      border-radius:18px;
+      background:#0d171d;
+    }
+
+    .rules-section summary{
+      min-height:66px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:0 16px;
+      cursor:pointer;
+      list-style:none;
+      color:#fff;
+      font-size:15px;
+      font-weight:950;
+      text-transform:uppercase;
+      -webkit-tap-highlight-color:transparent;
+    }
+
+    .rules-section summary::-webkit-details-marker{display:none}
+
+    .rules-section summary::after{
+      content:'+';
+      width:30px;
+      height:30px;
+      flex:0 0 30px;
+      display:grid;
+      place-items:center;
+      border:1px solid #31503e;
+      border-radius:50%;
+      color:var(--green);
+      font-size:20px;
+      line-height:1;
+    }
+
+    .rules-section[open] summary::after{content:'−'}
+
+    .rules-section-body{
+      padding:0 16px 16px;
+      border-top:1px solid #203038;
+    }
+
+    .rules-list{
+      margin:0;
+      padding:14px 0 0 20px;
+      color:#dbe2de;
+      font-size:13px;
+      line-height:1.55;
+    }
+
+    .rules-list li{margin:0 0 10px}
+    .rules-list li:last-child{margin-bottom:0}
+
+    .rules-note{
+      margin-top:12px;
+      padding:11px 12px;
+      border-radius:12px;
+      background:#0a2014;
+      color:#83cb8c;
+      font-size:11px;
+      line-height:1.45;
+      font-weight:750;
+    }
+</style>
 </head>
 
 <body>
+<!-- GREEN PARK BUILD: 2026-08-15-regras-comunicados -->
 <div class="phone" id="app">
 
   <header class="topbar">
@@ -4078,15 +4321,11 @@
 
       <div class="live-stats-match" id="liveStatsMatch">Próximo racha</div>
 
-      <p class="live-stats-help">
-        Controle os gols de cada jogador durante o racha.
-        Marque quem está no gol e registre também cada gol sofrido.
-        Os dados atualizam o ranking automaticamente.
+      <p class="live-stats-help" id="liveStatsHelp">
+        Modo administrador: use − e + para lançar os gols. Marque GOLEIRO quando precisar registrar gols sofridos.
       </p>
 
-      <div class="live-stats-readonly" id="liveStatsReadOnly">
-        Os botões de edição aparecem somente para o administrador.
-      </div>
+      <div class="live-stats-readonly" id="liveStatsReadOnly"></div>
 
       <div class="live-player-list" id="livePlayerList">
         <div class="live-empty">Carregando jogadores confirmados...</div>
@@ -4169,6 +4408,57 @@
     </section>
   </main>
 
+
+
+  <!-- REGRAS -->
+  <main class="content view" id="rulesView">
+    <div class="page-head">
+      <button class="back-btn" data-feature-back>←</button>
+      <div class="page-head-title">REGRAS</div>
+      <div></div>
+    </div>
+
+    <section class="rules-shell">
+      <div class="rules-intro">
+        <h2>Regras do Green Park</h2>
+        <p>
+          Aqui ficam as regras de participação do racha e o regulamento interno do grupo.
+        </p>
+      </div>
+
+      <details class="rules-section" open>
+        <summary>Regras do racha</summary>
+        <div class="rules-section-body">
+          <ol class="rules-list">
+            <li>A presença deve ser confirmada pelo aplicativo para entrar na lista do racha.</li>
+            <li>O diarista entra como confirmado após a aprovação do pagamento da diária.</li>
+            <li>O mensalista com a mensalidade do mês em dia pode confirmar a presença sem pagar uma nova diária.</li>
+            <li>As vagas respeitam o limite definido para cada racha e a ordem de confirmação registrada no aplicativo.</li>
+            <li>O horário e o local oficiais são sempre os informados na tela inicial do aplicativo.</li>
+            <li>A organização poderá ajustar a divisão dos times quando necessário para manter o equilíbrio do jogo.</li>
+          </ol>
+        </div>
+      </details>
+
+      <details class="rules-section">
+        <summary>Regulamento interno</summary>
+        <div class="rules-section-body">
+          <ol class="rules-list">
+            <li>Respeito entre jogadores, organização, convidados e demais participantes é obrigatório.</li>
+            <li>Discussões, ofensas, ameaças ou agressões não fazem parte do ambiente do Green Park FC.</li>
+            <li>As decisões de organização do racha devem priorizar segurança, equilíbrio dos times e boa convivência.</li>
+            <li>Todos devem colaborar com a pontualidade e com o bom andamento dos jogos.</li>
+            <li>Casos não previstos neste regulamento serão avaliados pela organização do Green Park FC.</li>
+          </ol>
+
+          <div class="rules-note">
+            Este regulamento pode ser atualizado pela organização sempre que necessário. A versão exibida aqui no aplicativo é a referência vigente.
+          </div>
+        </div>
+      </details>
+    </section>
+  </main>
+
   <!-- COMUNICADOS -->
   <main class="content view" id="noticesView">
     <div class="page-head">
@@ -4184,7 +4474,7 @@
       </div>
 
       <p class="feature-page-subtitle">
-        Avisos oficiais para todos os jogadores.
+        Campeonatos, avisos de churrasco e comunicados oficiais do Green Park FC.
       </p>
 
       <div class="notice-admin content-admin-only" id="noticeAdminPanel">
@@ -4195,13 +4485,13 @@
             id="noticeTitleInput"
             type="text"
             maxlength="80"
-            placeholder="Título do comunicado"
+            placeholder="Ex.: Campeonato, churrasco ou aviso importante"
           >
 
           <textarea
             id="noticeTextInput"
             maxlength="1200"
-            placeholder="Escreva o aviso..."
+            placeholder="Escreva aqui todas as informações do comunicado..."
           ></textarea>
 
           <button class="content-primary-btn" id="noticePublishButton" type="button">
@@ -5022,7 +5312,12 @@
     <button class="nav-item" data-nav="racha">
       <span class="icon">◉</span><span>Racha</span>
     </button>
-<button class="nav-item" data-nav="lista">
+
+    <button class="nav-item" data-nav="regras">
+      <span class="icon">§</span><span>REGRAS</span>
+    </button>
+
+    <button class="nav-item" data-nav="lista">
       <span class="icon">✓</span><span>Lista</span>
     </button>
 
@@ -5864,13 +6159,28 @@ let messagingInstance = null;
         return;
       }
 
-      players.forEach((player, index) => {
+      players.forEach((player) => {
         const row = document.createElement('div');
         row.className = 'confirmed-player-row';
 
-        const number = document.createElement('div');
-        number.className = 'confirmed-player-number';
-        number.textContent = String(index + 1).padStart(2, '0');
+        const avatar = document.createElement('div');
+        avatar.className = 'confirmed-player-number confirmed-player-avatar';
+
+        const fallbackInitials = () => {
+          avatar.innerHTML = '';
+          avatar.textContent = playerInitials(player.name);
+        };
+
+        if(player.photoURL){
+          const img = document.createElement('img');
+          img.src = player.photoURL;
+          img.alt = player.name || 'Jogador';
+          img.loading = 'lazy';
+          img.addEventListener('error', fallbackInitials, {once:true});
+          avatar.appendChild(img);
+        }else{
+          fallbackInitials();
+        }
 
         const name = document.createElement('div');
         name.className = 'confirmed-player-name';
@@ -5880,7 +6190,7 @@ let messagingInstance = null;
         badge.className = 'confirmed-player-badge';
         badge.textContent = '✓ CONFIRMADO';
 
-        row.appendChild(number);
+        row.appendChild(avatar);
         row.appendChild(name);
         row.appendChild(badge);
 
@@ -7423,7 +7733,9 @@ let messagingInstance = null;
     liveStatsMatch.textContent = liveStatsMatchText();
 
     const admin = isAdminUser();
-    liveStatsReadOnly.style.display = admin ? 'none' : 'block';
+    const help = document.getElementById('liveStatsHelp');
+    if(help) help.style.display = admin ? 'block' : 'none';
+    liveStatsReadOnly.style.display = 'none';
 
     if(liveStatsCache.length === 0){
       livePlayerList.innerHTML =
@@ -7433,85 +7745,86 @@ let messagingInstance = null;
 
     liveStatsCache.forEach(player => {
       const card = document.createElement('article');
-      card.className = 'live-player-card';
+      card.className = 'live-player-card live-player-card-compact';
 
-      const top = document.createElement('div');
-      top.className = 'live-player-top';
+      const identity = document.createElement('div');
+      identity.className = 'live-player-identity';
 
       const avatar = document.createElement('div');
       avatar.className = 'live-player-avatar';
+
+      const fallbackInitials = () => {
+        avatar.innerHTML = '';
+        avatar.textContent = playerInitials(player.name);
+      };
 
       if(player.photoURL){
         const img = document.createElement('img');
         img.src = player.photoURL;
         img.alt = player.name || 'Jogador';
+        img.loading = 'lazy';
+        img.addEventListener('error', fallbackInitials, {once:true});
         avatar.appendChild(img);
       }else{
-        avatar.textContent = playerInitials(player.name);
+        fallbackInitials();
       }
+
+      const nameWrap = document.createElement('div');
+      nameWrap.className = 'live-player-name-wrap';
 
       const name = document.createElement('div');
       name.className = 'live-player-name';
       name.textContent = player.name || 'Jogador';
+      nameWrap.appendChild(name);
 
-      const goalie = document.createElement('button');
-      goalie.type = 'button';
-      goalie.className = 'live-goalie-toggle' + (player.isGoalkeeper ? ' active' : '');
-      goalie.textContent = player.isGoalkeeper ? '🧤 GOLEIRO' : 'GOLEIRO';
-      goalie.style.display = admin ? 'block' : (player.isGoalkeeper ? 'block' : 'none');
+      if(player.isGoalkeeper){
+        const keeperLabel = document.createElement('div');
+        keeperLabel.className = 'live-player-role';
+        keeperLabel.textContent = 'GOLEIRO';
+        nameWrap.appendChild(keeperLabel);
+      }
 
-      goalie.addEventListener('click', async () => {
-        if(!admin) return;
+      identity.append(avatar, nameWrap);
 
-        if(player.isGoalkeeper && Number(player.goalsConceded || 0) > 0){
-          if(!confirm('Retirar do gol? Os gols sofridos deste racha serão zerados.')) return;
-        }
+      const metrics = document.createElement('div');
+      metrics.className = 'live-compact-metrics';
 
-        await toggleLiveGoalkeeper(player.playerId, !player.isGoalkeeper);
-      });
-
-      top.append(avatar, name, goalie);
-
-      const counters = document.createElement('div');
-      counters.className = 'live-player-counters';
-
-      function counter(field, label, value, conceded=false){
-        const box = document.createElement('div');
-        box.className = 'live-counter';
+      function compactMetric(field, label, value, conceded=false){
+        const metric = document.createElement('div');
+        metric.className = 'live-compact-metric' + (conceded ? ' conceded' : '');
 
         const labelEl = document.createElement('div');
-        labelEl.className = 'live-counter-label';
+        labelEl.className = 'live-compact-label';
         labelEl.textContent = label;
 
         const controls = document.createElement('div');
-        controls.className = 'live-counter-controls';
+        controls.className = 'live-compact-controls';
 
         const minus = document.createElement('button');
         minus.type = 'button';
-        minus.className = 'live-stat-btn';
+        minus.className = 'live-compact-btn';
         minus.textContent = '−';
+        minus.setAttribute('aria-label', `Diminuir ${label.toLowerCase()} de ${player.name || 'jogador'}`);
 
         const val = document.createElement('div');
-        val.className = 'live-stat-value' + (conceded ? ' conceded' : '');
+        val.className = 'live-compact-value';
         val.textContent = Number(value || 0);
 
         const plus = document.createElement('button');
         plus.type = 'button';
-        plus.className = 'live-stat-btn plus';
+        plus.className = 'live-compact-btn plus';
         plus.textContent = '+';
+        plus.setAttribute('aria-label', `Aumentar ${label.toLowerCase()} de ${player.name || 'jogador'}`);
 
         const key = `${player.playerId}_${field}`;
         const busy = liveStatsActionRunning.has(key);
 
         minus.disabled =
-          !admin ||
-          busy ||
-          Number(value || 0) <= 0 ||
+          !admin || busy || Number(value || 0) <= 0 ||
           (field === 'goalsConceded' && !player.isGoalkeeper);
 
         plus.disabled =
-          !admin ||
-          busy ||
+          !admin || busy ||
           (field === 'goalsConceded' && !player.isGoalkeeper);
 
         if(!admin){
@@ -7523,34 +7836,42 @@ let messagingInstance = null;
         plus.addEventListener('click', () => changeLiveStat(player.playerId, field, 1));
 
         controls.append(minus, val, plus);
-        box.append(labelEl, controls);
-        return box;
+        metric.append(labelEl, controls);
+        return metric;
       }
 
-      counters.append(
-        counter('goals', 'GOLS', player.goals, false),
-        counter('goalsConceded', 'GOLS SOFRIDOS', player.goalsConceded, true)
+      metrics.appendChild(
+        compactMetric('goals', 'GOLS', player.goals, false)
       );
 
-      const bottom = document.createElement('div');
-      bottom.className = 'live-player-bottom';
+      if(player.isGoalkeeper){
+        metrics.appendChild(
+          compactMetric('goalsConceded', 'SOFRIDOS', player.goalsConceded, true)
+        );
+      }
 
-      const saldo = liveBalanceValue(player);
-      const balance = document.createElement('div');
-      balance.className =
-        'live-balance ' +
-        (saldo > 0 ? 'positive' : saldo < 0 ? 'negative' : '');
+      card.append(identity, metrics);
 
-      const lbl = document.createElement('span');
-      lbl.textContent = 'SALDO';
+      if(admin){
+        const adminRow = document.createElement('div');
+        adminRow.className = 'live-compact-admin-row';
 
-      const value = document.createElement('strong');
-      value.textContent = saldo > 0 ? `+${saldo}` : String(saldo);
+        const goalie = document.createElement('button');
+        goalie.type = 'button';
+        goalie.className = 'live-goalie-toggle' + (player.isGoalkeeper ? ' active' : '');
+        goalie.textContent = player.isGoalkeeper ? '✓ GOLEIRO' : '+ GOLEIRO';
 
-      balance.append(lbl, value);
-      bottom.appendChild(balance);
+        goalie.addEventListener('click', async () => {
+          if(player.isGoalkeeper && Number(player.goalsConceded || 0) > 0){
+            if(!confirm('Retirar do gol? Os gols sofridos deste racha serão zerados.')) return;
+          }
+          await toggleLiveGoalkeeper(player.playerId, !player.isGoalkeeper);
+        });
 
-      card.append(top, counters, bottom);
+        adminRow.appendChild(goalie);
+        card.appendChild(adminRow);
+      }
+
       livePlayerList.appendChild(card);
     });
   }
@@ -8633,6 +8954,10 @@ let messagingInstance = null;
   document.querySelector('[data-nav="racha"]').addEventListener('click', () => {
     paymentFlow.classList.remove('show');
     showView('confirmationView');
+  });
+
+  document.querySelector('[data-nav="regras"]').addEventListener('click', () => {
+    showView('rulesView');
   });
 
   document.querySelector('[data-nav="lista"]').addEventListener('click', openConfirmedList);
