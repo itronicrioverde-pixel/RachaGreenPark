@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <!-- GREEN PARK BUILD: 2026-08-14-admin-data-hora-central-v4 -->
+  <!-- GREEN PARK BUILD: 2026-08-14-topico4-lista-confirmados -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#071018">
@@ -1847,6 +1847,112 @@
       white-space:nowrap;
     }
 
+  
+    /* TÓPICO 4 - Lista de confirmados */
+    .confirmed-list-card{
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:24px;
+      padding:18px;
+    }
+
+    .confirmed-list-head{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:14px;
+      margin-bottom:16px;
+    }
+
+    .confirmed-list-head h2{
+      margin:0;
+      font-size:24px;
+      line-height:1.05;
+    }
+
+    .confirmed-list-count{
+      color:var(--green);
+      font-size:13px;
+      font-weight:950;
+      white-space:nowrap;
+      padding-top:3px;
+    }
+
+    .confirmed-list-match{
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.45;
+      padding:12px 14px;
+      border:1px solid #293840;
+      border-radius:14px;
+      margin-bottom:14px;
+    }
+
+    .confirmed-list-items{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+
+    .confirmed-player-row{
+      display:grid;
+      grid-template-columns:42px minmax(0,1fr) auto;
+      align-items:center;
+      gap:12px;
+      min-height:64px;
+      padding:10px 12px;
+      border:1px solid #293840;
+      border-radius:16px;
+      background:#0d171d;
+    }
+
+    .confirmed-player-number{
+      width:38px;
+      height:38px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border-radius:50%;
+      background:#162229;
+      color:var(--green);
+      font-size:13px;
+      font-weight:950;
+    }
+
+    .confirmed-player-name{
+      min-width:0;
+      color:#fff;
+      font-size:16px;
+      font-weight:850;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+    }
+
+    .confirmed-player-badge{
+      color:var(--green);
+      font-size:11px;
+      font-weight:950;
+      letter-spacing:.04em;
+      white-space:nowrap;
+    }
+
+    .confirmed-list-empty{
+      padding:28px 14px;
+      text-align:center;
+      color:var(--muted);
+      border:1px dashed #33444c;
+      border-radius:16px;
+      line-height:1.45;
+    }
+
+    .confirmed-list-note{
+      margin-top:12px;
+      color:#718087;
+      font-size:11px;
+      text-align:center;
+    }
+
   </style>
 </head>
 
@@ -1929,13 +2035,41 @@
 
     <div class="quick-title">Acessos rápidos</div>
     <div class="quick-grid">
-      <button class="quick"><b>⚽</b>Times</button>
+      <button class="quick" id="openConfirmedListQuick"><b>✓</b>Lista</button>
       <button class="quick"><b>♛</b>Ranking</button>
       <button class="quick"><b>▥</b>Estatísticas</button>
       <button class="quick"><b>▣</b>Galeria</button>
       <button class="quick"><b>▤</b>Comunicados</button>
       <button class="quick"><b>◆</b>Patrocinadores</button>
     </div>
+  </main>
+
+  <!-- LISTA DE CONFIRMADOS -->
+  <main class="content view" id="confirmedListView">
+    <div class="page-head">
+      <button class="back-btn" id="confirmedListBack">←</button>
+      <div class="page-head-title">LISTA</div>
+      <div></div>
+    </div>
+
+    <section class="confirmed-list-card">
+      <div class="confirmed-list-head">
+        <h2>Confirmados</h2>
+        <div class="confirmed-list-count" id="confirmedListCount">0 CONFIRMADOS</div>
+      </div>
+
+      <div class="confirmed-list-match" id="confirmedListMatch">
+        Próximo racha
+      </div>
+
+      <div class="confirmed-list-items" id="confirmedListItems">
+        <div class="confirmed-list-empty">Carregando lista...</div>
+      </div>
+
+      <div class="confirmed-list-note">
+        A lista mostra somente jogadores com presença confirmada.
+      </div>
+    </section>
   </main>
 
   <!-- CONFIRMAÇÃO -->
@@ -2219,8 +2353,8 @@
     <button class="nav-item" data-nav="racha">
       <span class="icon">◉</span><span>Racha</span>
     </button>
-<button class="nav-item" data-nav="ranking">
-      <span class="icon">♛</span><span>Ranking</span>
+<button class="nav-item" data-nav="lista">
+      <span class="icon">✓</span><span>Lista</span>
     </button>
 
     <button class="nav-item" id="adminNavButton">
@@ -2279,6 +2413,7 @@ const functions = getFunctions(firebaseApp, 'southamerica-east1');
 const criarPagamentoPixCall = httpsCallable(functions, 'criarPagamentoPix');
 const consultarPagamentoPixCall = httpsCallable(functions, 'consultarPagamentoPix');
 const buscarLocalCall = httpsCallable(functions, 'buscarLocal');
+const listarConfirmadosCall = httpsCallable(functions, 'listarConfirmados');
 const ADMIN_UID = 'd3nVt6SbQlO6lYnOcCUDbLBhoU02';
 const VAPID_PUBLIC_KEY = 'BPBQyOZBpQS-uBaM5H0YhkyPNjQI2dNjrweS4zjvmB79e7TVQR-QuzkmpQyAGJgTCxxaFL_ZnRCelCsbK0T9Lg0';
 let messagingInstance = null;
@@ -2338,6 +2473,10 @@ let messagingInstance = null;
   const homeTime = document.getElementById('homeTime');
   const homeLocation = document.getElementById('homeLocation');
   const confirmedCount = document.getElementById('confirmedCount');
+  const confirmedListView = document.getElementById('confirmedListView');
+  const confirmedListCount = document.getElementById('confirmedListCount');
+  const confirmedListMatch = document.getElementById('confirmedListMatch');
+  const confirmedListItems = document.getElementById('confirmedListItems');
   const remainingCount = document.getElementById('remainingCount');
   const ringConfirmed = document.getElementById('ringConfirmed');
   const ringMax = document.getElementById('ringMax');
@@ -2911,9 +3050,116 @@ let messagingInstance = null;
     return ref.id;
   }
 
+
+  let confirmedListTimer = null;
+  let confirmedListLoading = false;
+
+  function stopConfirmedListAutoRefresh(){
+    if(confirmedListTimer){
+      clearInterval(confirmedListTimer);
+      confirmedListTimer = null;
+    }
+  }
+
+  function renderConfirmedListMatch(){
+    const dateText = state.config.date ?
+      formatDateBR(state.config.date) :
+      'Data não definida';
+
+    const timeText = state.config.time || '--:--';
+
+    const locationText =
+      state.config.locationName ||
+      state.config.locationAddress ||
+      'Local não definido';
+
+    confirmedListMatch.textContent =
+      `${dateText} • ${timeText} • ${locationText}`;
+  }
+
+  async function loadConfirmedList(){
+    if(confirmedListLoading) return;
+    confirmedListLoading = true;
+
+    renderConfirmedListMatch();
+
+    try{
+      await ensureFirebasePlayer();
+
+      const result = await listarConfirmadosCall();
+      const players = Array.isArray(result.data?.players) ?
+        result.data.players :
+        [];
+
+      confirmedListCount.textContent =
+        `${players.length} ${players.length === 1 ? 'CONFIRMADO' : 'CONFIRMADOS'}`;
+
+      confirmedListItems.innerHTML = '';
+
+      if(players.length === 0){
+        const empty = document.createElement('div');
+        empty.className = 'confirmed-list-empty';
+        empty.textContent = 'Ainda não há jogadores confirmados para este racha.';
+        confirmedListItems.appendChild(empty);
+        return;
+      }
+
+      players.forEach((player, index) => {
+        const row = document.createElement('div');
+        row.className = 'confirmed-player-row';
+
+        const number = document.createElement('div');
+        number.className = 'confirmed-player-number';
+        number.textContent = String(index + 1).padStart(2, '0');
+
+        const name = document.createElement('div');
+        name.className = 'confirmed-player-name';
+        name.textContent = String(player.name || 'Jogador');
+
+        const badge = document.createElement('div');
+        badge.className = 'confirmed-player-badge';
+        badge.textContent = '✓ CONFIRMADO';
+
+        row.appendChild(number);
+        row.appendChild(name);
+        row.appendChild(badge);
+
+        confirmedListItems.appendChild(row);
+      });
+    }catch(error){
+      console.error('Lista de confirmados:', error);
+      confirmedListItems.innerHTML = '';
+
+      const empty = document.createElement('div');
+      empty.className = 'confirmed-list-empty';
+      empty.textContent =
+        'Não foi possível carregar a lista agora. Tente novamente em alguns segundos.';
+      confirmedListItems.appendChild(empty);
+    }finally{
+      confirmedListLoading = false;
+    }
+  }
+
+  function openConfirmedList(){
+    showView('confirmedListView');
+    loadConfirmedList();
+
+    stopConfirmedListAutoRefresh();
+    confirmedListTimer = setInterval(() => {
+      if(confirmedListView.classList.contains('active')){
+        loadConfirmedList();
+      }
+    }, 5000);
+  }
+
   function showView(id){
     views.forEach(v => v.classList.toggle('active', v.id === id));
     app.classList.toggle('hide-nav', id !== 'homeView');
+
+    if(id !== 'confirmedListView'){
+      stopConfirmedListAutoRefresh();
+    }
+
     window.scrollTo({top:0, behavior:'smooth'});
   }
 
@@ -3783,6 +4029,12 @@ let messagingInstance = null;
   document.querySelector('[data-nav="racha"]').addEventListener('click', () => {
     paymentFlow.classList.remove('show');
     showView('confirmationView');
+  });
+
+  document.querySelector('[data-nav="lista"]').addEventListener('click', openConfirmedList);
+  document.getElementById('openConfirmedListQuick').addEventListener('click', openConfirmedList);
+  document.getElementById('confirmedListBack').addEventListener('click', () => {
+    showView('homeView');
   });
 
   // -------------------------------
