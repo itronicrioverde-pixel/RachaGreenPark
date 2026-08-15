@@ -1,0 +1,63 @@
+GREEN PARK FC — PACOTE FINAL DE CONTEÚDO
+===========================================
+
+ESTE PACOTE CONTÉM:
+1. index.html
+   - Ranking (Artilharia + Goleiro menos vazado)
+   - Galeria com fotos e vídeos
+   - Categorias: Futebol, Resenha, Churrasco e Outros
+   - Visualização em tela cheia
+   - Comunicados
+   - Patrocinadores com upload pelo Admin
+   - Pix, webhook, Lista, Admin, busca de local preservados
+
+2. ranking-functions.js
+   - salvarRankingRacha
+   - carregarRankingRacha
+   - obterRanking
+   - listarConfirmados
+
+3. content-functions.js
+   - Galeria
+   - Comunicados
+   - Patrocinadores
+
+4. storage.rules
+   - Admin pode subir/excluir fotos, vídeos e logos
+   - Jogadores autenticados podem visualizar
+
+REGRAS DO RANKING
+-----------------
+ARTILHARIA:
+- Admin lança gols depois de cada racha.
+- O sistema soma os gols automaticamente.
+- Se o Admin salvar novamente a mesma data/horário, substitui aquele jogo.
+
+GOLEIRO MENOS VAZADO:
+- Admin informa goleiro e gols sofridos em cada racha.
+- Classificação por média de gols sofridos por jogo.
+- Mínimo de 3 jogos no gol.
+
+GALERIA
+-------
+- Fotos: até 25 MB no app.
+- Vídeos: até 250 MB no app.
+- Para maior compatibilidade entre celulares, prefira JPG/PNG/WEBP e vídeo MP4.
+- MOV também é aceito, mas MP4 é o formato mais compatível.
+
+PATROCINADORES
+--------------
+- O Admin toca em + LOGO.
+- Recomendado: PNG transparente, 1000 x 500 px.
+- Logo centralizada, aproximadamente 10% de margem.
+- O app exibe as logos em branco monocromático.
+
+IMPORTANTE
+----------
+Não substitua functions/index.js inteiro.
+ranking-functions.js e content-functions.js foram feitos para serem
+ANEXADOS ao final do seu functions/index.js atual, depois de backup.
+
+O storage.rules deve ser publicado separadamente.
+
+A sequência exata de comandos será passada no chat quando você decidir subir tudo.

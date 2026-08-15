@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <!-- GREEN PARK BUILD: 2026-08-14-patrocinadores-v1 -->
+  <!-- GREEN PARK BUILD: 2026-08-14-galeria-comunicados-final -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#071018">
@@ -2552,6 +2552,534 @@
       }
     }
 
+  
+    /* ==========================================================
+       CONTEÚDO — GALERIA, COMUNICADOS E PATROCINADORES ADMIN
+       ========================================================== */
+
+    .content-admin-only{
+      display:none !important;
+    }
+
+    .content-admin-only.admin-visible{
+      display:block !important;
+    }
+
+    /* GALERIA */
+    .gallery-shell{
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:24px;
+      padding:18px;
+    }
+
+    .gallery-head{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:14px;
+    }
+
+    .gallery-head h2{
+      margin:0;
+      font-size:24px;
+      line-height:1.08;
+    }
+
+    .gallery-count{
+      color:var(--green);
+      font-size:11px;
+      font-weight:950;
+      letter-spacing:.06em;
+      padding-top:5px;
+      white-space:nowrap;
+    }
+
+    .gallery-filters{
+      display:flex;
+      gap:8px;
+      overflow-x:auto;
+      scrollbar-width:none;
+      margin:0 -2px 14px;
+      padding:0 2px 2px;
+    }
+
+    .gallery-filters::-webkit-scrollbar{display:none;}
+
+    .gallery-filter{
+      flex:0 0 auto;
+      min-height:36px;
+      border:1px solid #314149;
+      border-radius:999px;
+      padding:0 14px;
+      background:#0d171d;
+      color:#8d9aa0;
+      font-size:11px;
+      font-weight:900;
+    }
+
+    .gallery-filter.active{
+      background:var(--green);
+      border-color:var(--green);
+      color:#061007;
+    }
+
+    .gallery-grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:9px;
+    }
+
+    .gallery-card{
+      position:relative;
+      overflow:hidden;
+      min-width:0;
+      aspect-ratio:1 / 1.15;
+      border:1px solid #26363d;
+      border-radius:17px;
+      background:#091218;
+      cursor:pointer;
+    }
+
+    .gallery-card img,
+    .gallery-card video{
+      width:100%;
+      height:100%;
+      display:block;
+      object-fit:cover;
+      background:#071015;
+    }
+
+    .gallery-card-overlay{
+      position:absolute;
+      left:0;
+      right:0;
+      bottom:0;
+      padding:28px 10px 10px;
+      background:linear-gradient(transparent,rgba(0,0,0,.78));
+      color:#fff;
+      pointer-events:none;
+    }
+
+    .gallery-card-title{
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+      font-size:12px;
+      font-weight:900;
+    }
+
+    .gallery-card-meta{
+      margin-top:3px;
+      color:#c6cdd0;
+      font-size:9px;
+      font-weight:750;
+    }
+
+    .gallery-play{
+      position:absolute;
+      inset:50% auto auto 50%;
+      transform:translate(-50%,-50%);
+      width:46px;
+      height:46px;
+      display:grid;
+      place-items:center;
+      border:1px solid rgba(255,255,255,.5);
+      border-radius:50%;
+      background:rgba(0,0,0,.48);
+      color:#fff;
+      font-size:19px;
+      pointer-events:none;
+      backdrop-filter:blur(5px);
+    }
+
+    .gallery-delete{
+      position:absolute;
+      z-index:5;
+      right:7px;
+      top:7px;
+      width:34px;
+      height:34px;
+      display:none;
+      place-items:center;
+      border:0;
+      border-radius:10px;
+      background:rgba(172,34,34,.92);
+      color:#fff;
+      font-size:17px;
+      font-weight:950;
+    }
+
+    .gallery-delete.admin-visible{
+      display:grid;
+    }
+
+    .gallery-empty{
+      grid-column:1 / -1;
+      min-height:180px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      gap:7px;
+      padding:20px;
+      border:1px dashed #34464e;
+      border-radius:17px;
+      color:#7f8d93;
+      text-align:center;
+    }
+
+    .gallery-empty strong{
+      color:#fff;
+      font-size:15px;
+    }
+
+    .gallery-admin{
+      margin-bottom:16px;
+      padding:14px;
+      border:1px solid rgba(61,255,70,.22);
+      border-radius:16px;
+      background:rgba(10,30,22,.48);
+    }
+
+    .gallery-admin-title{
+      margin-bottom:10px;
+      color:#fff;
+      font-size:13px;
+      font-weight:950;
+    }
+
+    .gallery-admin-grid{
+      display:grid;
+      gap:9px;
+    }
+
+    .gallery-admin input,
+    .gallery-admin select,
+    .gallery-admin textarea,
+    .notice-admin input,
+    .notice-admin textarea{
+      width:100%;
+      min-width:0;
+      box-sizing:border-box;
+      border:1px solid #34464e;
+      border-radius:12px;
+      background:#0b151b;
+      color:#fff;
+      font:inherit;
+      font-size:14px;
+      padding:12px 13px;
+      outline:none;
+    }
+
+    .gallery-admin textarea,
+    .notice-admin textarea{
+      min-height:86px;
+      resize:vertical;
+    }
+
+    .gallery-upload-label{
+      min-height:52px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border:1px dashed #45605a;
+      border-radius:13px;
+      color:var(--green);
+      font-size:12px;
+      font-weight:950;
+      text-align:center;
+      padding:8px 12px;
+      cursor:pointer;
+    }
+
+    .gallery-upload-label input{
+      display:none;
+    }
+
+    .content-primary-btn{
+      width:100%;
+      min-height:48px;
+      border:0;
+      border-radius:13px;
+      background:var(--green);
+      color:#061007;
+      font-size:13px;
+      font-weight:950;
+    }
+
+    .content-primary-btn:disabled{
+      opacity:.55;
+    }
+
+    .content-status{
+      display:none;
+      margin-top:9px;
+      padding:10px 12px;
+      border-radius:12px;
+      font-size:11px;
+      line-height:1.4;
+    }
+
+    .content-status.show{display:block;}
+    .content-status.ok{
+      background:#10271a;
+      border:1px solid #285c39;
+      color:#8fffa4;
+    }
+    .content-status.error{
+      background:#2b1414;
+      border:1px solid #633535;
+      color:#ff9b9b;
+    }
+
+    .gallery-progress{
+      display:none;
+      height:7px;
+      overflow:hidden;
+      margin-top:10px;
+      border-radius:999px;
+      background:#19252b;
+    }
+
+    .gallery-progress.show{display:block;}
+
+    .gallery-progress-bar{
+      width:0%;
+      height:100%;
+      background:var(--green);
+      transition:width .18s ease;
+    }
+
+    /* LIGHTBOX */
+    .media-lightbox{
+      position:fixed;
+      z-index:9999;
+      inset:0;
+      display:none;
+      flex-direction:column;
+      background:rgba(2,7,10,.96);
+      padding:
+        calc(16px + env(safe-area-inset-top))
+        14px
+        calc(18px + env(safe-area-inset-bottom));
+    }
+
+    .media-lightbox.show{display:flex;}
+
+    .media-lightbox-top{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom:12px;
+    }
+
+    .media-lightbox-title{
+      min-width:0;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+      color:#fff;
+      font-size:14px;
+      font-weight:900;
+    }
+
+    .media-lightbox-close{
+      flex:0 0 auto;
+      width:42px;
+      height:42px;
+      border:1px solid #34444c;
+      border-radius:50%;
+      background:#111c22;
+      color:#fff;
+      font-size:21px;
+    }
+
+    .media-lightbox-stage{
+      flex:1;
+      min-height:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+
+    .media-lightbox-stage img,
+    .media-lightbox-stage video{
+      max-width:100%;
+      max-height:100%;
+      border-radius:14px;
+      object-fit:contain;
+      background:#000;
+    }
+
+    .media-lightbox-caption{
+      padding-top:12px;
+      color:#9aa6ab;
+      font-size:12px;
+      line-height:1.45;
+      text-align:center;
+    }
+
+    /* COMUNICADOS */
+    .notices-shell{
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:24px;
+      padding:18px;
+    }
+
+    .notice-admin{
+      margin-bottom:15px;
+      padding:14px;
+      border:1px solid rgba(61,255,70,.22);
+      border-radius:16px;
+      background:rgba(10,30,22,.48);
+    }
+
+    .notice-admin h3{
+      margin:0 0 10px;
+      font-size:15px;
+    }
+
+    .notice-admin-grid{
+      display:grid;
+      gap:9px;
+    }
+
+    .notice-list{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+
+    .notice-card{
+      position:relative;
+      padding:15px 15px 14px;
+      border:1px solid #293a42;
+      border-radius:17px;
+      background:#0d171d;
+    }
+
+    .notice-date{
+      margin-bottom:6px;
+      color:var(--green);
+      font-size:10px;
+      font-weight:950;
+      letter-spacing:.06em;
+      text-transform:uppercase;
+    }
+
+    .notice-title{
+      margin:0;
+      padding-right:40px;
+      color:#fff;
+      font-size:17px;
+      font-weight:950;
+      line-height:1.2;
+    }
+
+    .notice-text{
+      margin:8px 0 0;
+      color:#a3aeb3;
+      font-size:13px;
+      line-height:1.55;
+      white-space:pre-wrap;
+      overflow-wrap:anywhere;
+    }
+
+    .notice-delete{
+      position:absolute;
+      right:10px;
+      top:10px;
+      width:32px;
+      height:32px;
+      display:none;
+      place-items:center;
+      border:0;
+      border-radius:9px;
+      background:#542020;
+      color:#fff;
+      font-size:15px;
+      font-weight:950;
+    }
+
+    .notice-delete.admin-visible{
+      display:grid;
+    }
+
+    /* PATROCINADORES ADMIN */
+    .sponsor-slot{
+      flex-direction:column;
+      gap:8px;
+    }
+
+    .sponsor-slot-logo-wrap{
+      flex:1;
+      width:100%;
+      min-height:62px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+
+    .sponsor-slot-actions{
+      width:100%;
+      display:none;
+      grid-template-columns:1fr auto;
+      gap:6px;
+    }
+
+    .sponsor-slot-actions.admin-visible{
+      display:grid;
+    }
+
+    .sponsor-upload-btn,
+    .sponsor-remove-btn{
+      min-height:32px;
+      border-radius:9px;
+      font-size:9px;
+      font-weight:950;
+    }
+
+    .sponsor-upload-btn{
+      border:1px solid rgba(61,255,70,.32);
+      background:#102219;
+      color:var(--green);
+    }
+
+    .sponsor-remove-btn{
+      border:1px solid #5d3030;
+      background:#2a1515;
+      color:#ffaaaa;
+      padding:0 9px;
+    }
+
+    .sponsor-upload-progress{
+      display:none;
+      width:100%;
+      color:#9aa7ac;
+      font-size:9px;
+      text-align:center;
+    }
+
+    .sponsor-upload-progress.show{display:block;}
+
+    .sponsor-file-input{
+      display:none;
+    }
+
+    @media (max-width:390px){
+      .gallery-grid{
+        gap:7px;
+      }
+
+      .gallery-card-title{
+        font-size:11px;
+      }
+    }
+
   </style>
 </head>
 
@@ -2767,22 +3295,69 @@
       <div></div>
     </div>
 
-    <section class="feature-page-card">
-      <div class="feature-page-title-row">
-        <h2>Galeria</h2>
-        <div class="feature-page-kicker">FOTOS</div>
+    <section class="gallery-shell">
+      <div class="gallery-head">
+        <div>
+          <h2>Momentos</h2>
+          <p class="feature-page-subtitle" style="margin:5px 0 0;">
+            Futebol, resenha, churrasco e tudo que acontece no Green Park.
+          </p>
+        </div>
+        <div class="gallery-count" id="galleryCount">0 MÍDIAS</div>
       </div>
 
-      <p class="feature-page-subtitle">
-        Fotos dos rachas, times e momentos do Green Park.
-      </p>
+      <div class="gallery-admin content-admin-only" id="galleryAdminPanel">
+        <div class="gallery-admin-title">Adicionar fotos ou vídeos</div>
 
-      <div class="feature-empty">
-        <div class="feature-empty-icon">▣</div>
-        <strong>Nenhuma foto publicada</strong>
-        <span>
-          A galeria está pronta. Depois vamos liberar o envio das fotos pelo administrador.
-        </span>
+        <div class="gallery-admin-grid">
+          <input
+            id="galleryCaption"
+            type="text"
+            maxlength="80"
+            placeholder="Legenda (opcional)"
+          >
+
+          <select id="galleryCategory">
+            <option value="Futebol">Futebol</option>
+            <option value="Resenha">Resenha</option>
+            <option value="Churrasco">Churrasco</option>
+            <option value="Outros">Outros</option>
+          </select>
+
+          <label class="gallery-upload-label">
+            <input
+              id="galleryFileInput"
+              type="file"
+              multiple
+              accept="image/jpeg,image/png,image/webp,image/heic,image/heif,video/mp4,video/quicktime,video/*"
+            >
+            <span id="galleryFileLabel">ESCOLHER FOTOS / VÍDEOS</span>
+          </label>
+
+          <button class="content-primary-btn" id="galleryUploadButton" type="button">
+            PUBLICAR NA GALERIA
+          </button>
+        </div>
+
+        <div class="gallery-progress" id="galleryProgress">
+          <div class="gallery-progress-bar" id="galleryProgressBar"></div>
+        </div>
+
+        <div class="content-status" id="galleryAdminStatus"></div>
+      </div>
+
+      <div class="gallery-filters">
+        <button class="gallery-filter active" data-gallery-filter="Todos">Todos</button>
+        <button class="gallery-filter" data-gallery-filter="Futebol">Futebol</button>
+        <button class="gallery-filter" data-gallery-filter="Resenha">Resenha</button>
+        <button class="gallery-filter" data-gallery-filter="Churrasco">Churrasco</button>
+        <button class="gallery-filter" data-gallery-filter="Outros">Outros</button>
+      </div>
+
+      <div class="gallery-grid" id="galleryGrid">
+        <div class="gallery-empty">
+          <strong>Carregando galeria...</strong>
+        </div>
       </div>
     </section>
   </main>
@@ -2795,22 +3370,45 @@
       <div></div>
     </div>
 
-    <section class="feature-page-card">
+    <section class="notices-shell">
       <div class="feature-page-title-row">
         <h2>Comunicados</h2>
         <div class="feature-page-kicker">GREEN PARK FC</div>
       </div>
 
       <p class="feature-page-subtitle">
-        Avisos importantes para todos os jogadores.
+        Avisos oficiais para todos os jogadores.
       </p>
 
-      <div class="feature-empty">
-        <div class="feature-empty-icon">▤</div>
-        <strong>Nenhum comunicado</strong>
-        <span>
-          Os avisos publicados pelo administrador aparecerão aqui.
-        </span>
+      <div class="notice-admin content-admin-only" id="noticeAdminPanel">
+        <h3>Novo comunicado</h3>
+
+        <div class="notice-admin-grid">
+          <input
+            id="noticeTitleInput"
+            type="text"
+            maxlength="80"
+            placeholder="Título do comunicado"
+          >
+
+          <textarea
+            id="noticeTextInput"
+            maxlength="1200"
+            placeholder="Escreva o aviso..."
+          ></textarea>
+
+          <button class="content-primary-btn" id="noticePublishButton" type="button">
+            PUBLICAR COMUNICADO
+          </button>
+        </div>
+
+        <div class="content-status" id="noticeAdminStatus"></div>
+      </div>
+
+      <div class="notice-list" id="noticeList">
+        <div class="feature-empty">
+          <strong>Carregando comunicados...</strong>
+        </div>
       </div>
     </section>
   </main>
@@ -2832,131 +3430,271 @@
       <div class="sponsors-stage">
         <div class="sponsors-row row-five">
 
-          <div class="sponsor-slot">
-            <img
-              class="sponsor-logo"
-              src="sponsors/sponsor-01.png"
-              alt="Patrocinador 01"
-              onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"
-            >
-            <div class="sponsor-fallback" style="display:none;">
-              Logo 01
+          <div class="sponsor-slot" data-sponsor-slot="1">
+            <div class="sponsor-slot-logo-wrap">
+              <img
+                class="sponsor-logo"
+                data-sponsor-image="1"
+                alt="Patrocinador 01"
+                style="display:none;"
+              >
+              <div class="sponsor-fallback" data-sponsor-fallback="1">
+                Logo 01
+              </div>
+            </div>
+
+            <div class="sponsor-upload-progress" data-sponsor-progress="1">
+              Enviando...
+            </div>
+
+            <div class="sponsor-slot-actions content-admin-only" data-sponsor-actions="1">
+              <button class="sponsor-upload-btn" type="button" data-sponsor-upload="1">
+                + LOGO
+              </button>
+              <button class="sponsor-remove-btn" type="button" data-sponsor-remove="1">
+                ×
+              </button>
             </div>
           </div>
 
-          <div class="sponsor-slot">
-            <img
-              class="sponsor-logo"
-              src="sponsors/sponsor-02.png"
-              alt="Patrocinador 02"
-              onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"
-            >
-            <div class="sponsor-fallback" style="display:none;">
-              Logo 02
+          <div class="sponsor-slot" data-sponsor-slot="2">
+            <div class="sponsor-slot-logo-wrap">
+              <img
+                class="sponsor-logo"
+                data-sponsor-image="2"
+                alt="Patrocinador 02"
+                style="display:none;"
+              >
+              <div class="sponsor-fallback" data-sponsor-fallback="2">
+                Logo 02
+              </div>
+            </div>
+
+            <div class="sponsor-upload-progress" data-sponsor-progress="2">
+              Enviando...
+            </div>
+
+            <div class="sponsor-slot-actions content-admin-only" data-sponsor-actions="2">
+              <button class="sponsor-upload-btn" type="button" data-sponsor-upload="2">
+                + LOGO
+              </button>
+              <button class="sponsor-remove-btn" type="button" data-sponsor-remove="2">
+                ×
+              </button>
             </div>
           </div>
 
-          <div class="sponsor-slot">
-            <img
-              class="sponsor-logo"
-              src="sponsors/sponsor-03.png"
-              alt="Patrocinador 03"
-              onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"
-            >
-            <div class="sponsor-fallback" style="display:none;">
-              Logo 03
+          <div class="sponsor-slot" data-sponsor-slot="3">
+            <div class="sponsor-slot-logo-wrap">
+              <img
+                class="sponsor-logo"
+                data-sponsor-image="3"
+                alt="Patrocinador 03"
+                style="display:none;"
+              >
+              <div class="sponsor-fallback" data-sponsor-fallback="3">
+                Logo 03
+              </div>
+            </div>
+
+            <div class="sponsor-upload-progress" data-sponsor-progress="3">
+              Enviando...
+            </div>
+
+            <div class="sponsor-slot-actions content-admin-only" data-sponsor-actions="3">
+              <button class="sponsor-upload-btn" type="button" data-sponsor-upload="3">
+                + LOGO
+              </button>
+              <button class="sponsor-remove-btn" type="button" data-sponsor-remove="3">
+                ×
+              </button>
             </div>
           </div>
 
-          <div class="sponsor-slot">
-            <img
-              class="sponsor-logo"
-              src="sponsors/sponsor-04.png"
-              alt="Patrocinador 04"
-              onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"
-            >
-            <div class="sponsor-fallback" style="display:none;">
-              Logo 04
+          <div class="sponsor-slot" data-sponsor-slot="4">
+            <div class="sponsor-slot-logo-wrap">
+              <img
+                class="sponsor-logo"
+                data-sponsor-image="4"
+                alt="Patrocinador 04"
+                style="display:none;"
+              >
+              <div class="sponsor-fallback" data-sponsor-fallback="4">
+                Logo 04
+              </div>
+            </div>
+
+            <div class="sponsor-upload-progress" data-sponsor-progress="4">
+              Enviando...
+            </div>
+
+            <div class="sponsor-slot-actions content-admin-only" data-sponsor-actions="4">
+              <button class="sponsor-upload-btn" type="button" data-sponsor-upload="4">
+                + LOGO
+              </button>
+              <button class="sponsor-remove-btn" type="button" data-sponsor-remove="4">
+                ×
+              </button>
             </div>
           </div>
 
-          <div class="sponsor-slot">
-            <img
-              class="sponsor-logo"
-              src="sponsors/sponsor-05.png"
-              alt="Patrocinador 05"
-              onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"
-            >
-            <div class="sponsor-fallback" style="display:none;">
-              Logo 05
+          <div class="sponsor-slot" data-sponsor-slot="5">
+            <div class="sponsor-slot-logo-wrap">
+              <img
+                class="sponsor-logo"
+                data-sponsor-image="5"
+                alt="Patrocinador 05"
+                style="display:none;"
+              >
+              <div class="sponsor-fallback" data-sponsor-fallback="5">
+                Logo 05
+              </div>
+            </div>
+
+            <div class="sponsor-upload-progress" data-sponsor-progress="5">
+              Enviando...
+            </div>
+
+            <div class="sponsor-slot-actions content-admin-only" data-sponsor-actions="5">
+              <button class="sponsor-upload-btn" type="button" data-sponsor-upload="5">
+                + LOGO
+              </button>
+              <button class="sponsor-remove-btn" type="button" data-sponsor-remove="5">
+                ×
+              </button>
             </div>
           </div>
         </div>
 
         <div class="sponsors-row row-four">
 
-          <div class="sponsor-slot">
-            <img
-              class="sponsor-logo"
-              src="sponsors/sponsor-06.png"
-              alt="Patrocinador 06"
-              onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"
-            >
-            <div class="sponsor-fallback" style="display:none;">
-              Logo 06
+          <div class="sponsor-slot" data-sponsor-slot="6">
+            <div class="sponsor-slot-logo-wrap">
+              <img
+                class="sponsor-logo"
+                data-sponsor-image="6"
+                alt="Patrocinador 06"
+                style="display:none;"
+              >
+              <div class="sponsor-fallback" data-sponsor-fallback="6">
+                Logo 06
+              </div>
+            </div>
+
+            <div class="sponsor-upload-progress" data-sponsor-progress="6">
+              Enviando...
+            </div>
+
+            <div class="sponsor-slot-actions content-admin-only" data-sponsor-actions="6">
+              <button class="sponsor-upload-btn" type="button" data-sponsor-upload="6">
+                + LOGO
+              </button>
+              <button class="sponsor-remove-btn" type="button" data-sponsor-remove="6">
+                ×
+              </button>
             </div>
           </div>
 
-          <div class="sponsor-slot">
-            <img
-              class="sponsor-logo"
-              src="sponsors/sponsor-07.png"
-              alt="Patrocinador 07"
-              onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"
-            >
-            <div class="sponsor-fallback" style="display:none;">
-              Logo 07
+          <div class="sponsor-slot" data-sponsor-slot="7">
+            <div class="sponsor-slot-logo-wrap">
+              <img
+                class="sponsor-logo"
+                data-sponsor-image="7"
+                alt="Patrocinador 07"
+                style="display:none;"
+              >
+              <div class="sponsor-fallback" data-sponsor-fallback="7">
+                Logo 07
+              </div>
+            </div>
+
+            <div class="sponsor-upload-progress" data-sponsor-progress="7">
+              Enviando...
+            </div>
+
+            <div class="sponsor-slot-actions content-admin-only" data-sponsor-actions="7">
+              <button class="sponsor-upload-btn" type="button" data-sponsor-upload="7">
+                + LOGO
+              </button>
+              <button class="sponsor-remove-btn" type="button" data-sponsor-remove="7">
+                ×
+              </button>
             </div>
           </div>
 
-          <div class="sponsor-slot">
-            <img
-              class="sponsor-logo"
-              src="sponsors/sponsor-08.png"
-              alt="Patrocinador 08"
-              onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"
-            >
-            <div class="sponsor-fallback" style="display:none;">
-              Logo 08
+          <div class="sponsor-slot" data-sponsor-slot="8">
+            <div class="sponsor-slot-logo-wrap">
+              <img
+                class="sponsor-logo"
+                data-sponsor-image="8"
+                alt="Patrocinador 08"
+                style="display:none;"
+              >
+              <div class="sponsor-fallback" data-sponsor-fallback="8">
+                Logo 08
+              </div>
+            </div>
+
+            <div class="sponsor-upload-progress" data-sponsor-progress="8">
+              Enviando...
+            </div>
+
+            <div class="sponsor-slot-actions content-admin-only" data-sponsor-actions="8">
+              <button class="sponsor-upload-btn" type="button" data-sponsor-upload="8">
+                + LOGO
+              </button>
+              <button class="sponsor-remove-btn" type="button" data-sponsor-remove="8">
+                ×
+              </button>
             </div>
           </div>
 
-          <div class="sponsor-slot">
-            <img
-              class="sponsor-logo"
-              src="sponsors/sponsor-09.png"
-              alt="Patrocinador 09"
-              onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"
-            >
-            <div class="sponsor-fallback" style="display:none;">
-              Logo 09
+          <div class="sponsor-slot" data-sponsor-slot="9">
+            <div class="sponsor-slot-logo-wrap">
+              <img
+                class="sponsor-logo"
+                data-sponsor-image="9"
+                alt="Patrocinador 09"
+                style="display:none;"
+              >
+              <div class="sponsor-fallback" data-sponsor-fallback="9">
+                Logo 09
+              </div>
+            </div>
+
+            <div class="sponsor-upload-progress" data-sponsor-progress="9">
+              Enviando...
+            </div>
+
+            <div class="sponsor-slot-actions content-admin-only" data-sponsor-actions="9">
+              <button class="sponsor-upload-btn" type="button" data-sponsor-upload="9">
+                + LOGO
+              </button>
+              <button class="sponsor-remove-btn" type="button" data-sponsor-remove="9">
+                ×
+              </button>
             </div>
           </div>
         </div>
       </div>
 
+      <input
+        class="sponsor-file-input"
+        id="sponsorFileInput"
+        type="file"
+        accept="image/png,image/jpeg,image/webp"
+      >
+
+      <div class="content-status" id="sponsorAdminStatus"></div>
+
       <div class="sponsors-guide">
         <div class="sponsors-guide-title">Como adicionar uma logo</div>
         <p class="sponsors-guide-text">
-          Use arquivo <b>PNG com fundo transparente</b>, tamanho recomendado
-          <b>1000 × 500 px</b>, com a marca centralizada e uma margem interna
-          de aproximadamente <b>10%</b>. O app transforma automaticamente a
-          logo em <b>branco monocromático</b>.
-          <br><br>
-          Nomeie os arquivos como:
-          <b>sponsor-01.png</b>, <b>sponsor-02.png</b> ... até
-          <b>sponsor-09.png</b> e coloque todos na pasta
-          <b>sponsors</b> ao lado do index.html.
+          Toque em <b>+ LOGO</b> no espaço desejado quando estiver no modo
+          Administrador. Use preferencialmente <b>PNG com fundo transparente</b>,
+          tamanho recomendado <b>1000 × 500 px</b>, marca centralizada e margem
+          interna de aproximadamente <b>10%</b>. O app deixa a logo
+          automaticamente em <b>branco monocromático</b>.
         </p>
       </div>
 
@@ -3269,6 +4007,16 @@
     </section>
   </main>
 
+  <div class="media-lightbox" id="mediaLightbox">
+    <div class="media-lightbox-top">
+      <div class="media-lightbox-title" id="mediaLightboxTitle">Galeria</div>
+      <button class="media-lightbox-close" id="mediaLightboxClose" type="button">×</button>
+    </div>
+
+    <div class="media-lightbox-stage" id="mediaLightboxStage"></div>
+    <div class="media-lightbox-caption" id="mediaLightboxCaption"></div>
+  </div>
+
   <nav class="bottom-nav">
     <button class="nav-item active" data-nav="home">
       <span class="icon">⌂</span><span>Início</span>
@@ -3320,6 +4068,12 @@ import {
   getFunctions,
   httpsCallable
 } from 'https://www.gstatic.com/firebasejs/12.11.0/firebase-functions.js';
+import {
+  getStorage,
+  ref as storageRef,
+  uploadBytesResumable,
+  getDownloadURL
+} from 'https://www.gstatic.com/firebasejs/12.11.0/firebase-storage.js';
 
 const firebaseConfig = {
   apiKey: "AIzaSyDnafgCpOkeNcWKT8XO3b7g6sloX51Aiwo",
@@ -3333,6 +4087,7 @@ const firebaseConfig = {
 const firebaseApp = initializeApp(firebaseConfig);
 const auth = getAuth(firebaseApp);
 const db = getFirestore(firebaseApp);
+const storage = getStorage(firebaseApp);
 const functions = getFunctions(firebaseApp, 'southamerica-east1');
 const criarPagamentoPixCall = httpsCallable(functions, 'criarPagamentoPix');
 const consultarPagamentoPixCall = httpsCallable(functions, 'consultarPagamentoPix');
@@ -3341,6 +4096,15 @@ const listarConfirmadosCall = httpsCallable(functions, 'listarConfirmados');
 const obterRankingCall = httpsCallable(functions, 'obterRanking');
 const salvarRankingRachaCall = httpsCallable(functions, 'salvarRankingRacha');
 const carregarRankingRachaCall = httpsCallable(functions, 'carregarRankingRacha');
+const listarGaleriaCall = httpsCallable(functions, 'listarGaleria');
+const salvarMidiaGaleriaCall = httpsCallable(functions, 'salvarMidiaGaleria');
+const excluirMidiaGaleriaCall = httpsCallable(functions, 'excluirMidiaGaleria');
+const listarComunicadosCall = httpsCallable(functions, 'listarComunicados');
+const publicarComunicadoCall = httpsCallable(functions, 'publicarComunicado');
+const excluirComunicadoCall = httpsCallable(functions, 'excluirComunicado');
+const listarPatrocinadoresCall = httpsCallable(functions, 'listarPatrocinadores');
+const salvarPatrocinadorCall = httpsCallable(functions, 'salvarPatrocinador');
+const removerPatrocinadorCall = httpsCallable(functions, 'removerPatrocinador');
 const ADMIN_UID = 'd3nVt6SbQlO6lYnOcCUDbLBhoU02';
 const VAPID_PUBLIC_KEY = 'BPBQyOZBpQS-uBaM5H0YhkyPNjQI2dNjrweS4zjvmB79e7TVQR-QuzkmpQyAGJgTCxxaFL_ZnRCelCsbK0T9Lg0';
 let messagingInstance = null;
@@ -3409,6 +4173,27 @@ let messagingInstance = null;
   const rankScorerEntries = document.getElementById('rankScorerEntries');
   const rankKeeperEntries = document.getElementById('rankKeeperEntries');
   const rankAdminStatus = document.getElementById('rankAdminStatus');
+  const galleryGrid = document.getElementById('galleryGrid');
+  const galleryCount = document.getElementById('galleryCount');
+  const galleryFileInput = document.getElementById('galleryFileInput');
+  const galleryFileLabel = document.getElementById('galleryFileLabel');
+  const galleryCaption = document.getElementById('galleryCaption');
+  const galleryCategory = document.getElementById('galleryCategory');
+  const galleryUploadButton = document.getElementById('galleryUploadButton');
+  const galleryAdminStatus = document.getElementById('galleryAdminStatus');
+  const galleryProgress = document.getElementById('galleryProgress');
+  const galleryProgressBar = document.getElementById('galleryProgressBar');
+  const mediaLightbox = document.getElementById('mediaLightbox');
+  const mediaLightboxStage = document.getElementById('mediaLightboxStage');
+  const mediaLightboxTitle = document.getElementById('mediaLightboxTitle');
+  const mediaLightboxCaption = document.getElementById('mediaLightboxCaption');
+  const noticeTitleInput = document.getElementById('noticeTitleInput');
+  const noticeTextInput = document.getElementById('noticeTextInput');
+  const noticePublishButton = document.getElementById('noticePublishButton');
+  const noticeAdminStatus = document.getElementById('noticeAdminStatus');
+  const noticeList = document.getElementById('noticeList');
+  const sponsorFileInput = document.getElementById('sponsorFileInput');
+  const sponsorAdminStatus = document.getElementById('sponsorAdminStatus');
   const remainingCount = document.getElementById('remainingCount');
   const ringConfirmed = document.getElementById('ringConfirmed');
   const ringMax = document.getElementById('ringMax');
@@ -4445,6 +5230,762 @@ let messagingInstance = null;
     }
   }
 
+
+  // ============================================================
+  // GALERIA / COMUNICADOS / PATROCINADORES
+  // ============================================================
+  let galleryCache = [];
+  let galleryCurrentFilter = 'Todos';
+  let sponsorUploadSlot = null;
+  let contentRefreshTimer = null;
+
+  function refreshContentAdminUI(){
+    const admin = isAdminUser();
+
+    document.querySelectorAll('.content-admin-only').forEach(el => {
+      el.classList.toggle('admin-visible', admin);
+    });
+
+    document.querySelectorAll('.gallery-delete, .notice-delete').forEach(el => {
+      el.classList.toggle('admin-visible', admin);
+    });
+  }
+
+  function setContentStatus(el, message='', type='ok'){
+    if(!el) return;
+
+    el.textContent = message;
+    el.className = 'content-status';
+
+    if(message){
+      el.classList.add('show', type);
+    }
+  }
+
+  function safeStorageFileName(name){
+    const base = String(name || 'arquivo')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g,'')
+      .replace(/[^a-zA-Z0-9._-]+/g,'-')
+      .replace(/-+/g,'-')
+      .replace(/^-|-$/g,'')
+      .slice(-90);
+
+    return base || 'arquivo';
+  }
+
+  function formatContentDate(ms){
+    const value = Number(ms || 0);
+
+    if(!value) return '';
+
+    try{
+      return new Date(value).toLocaleDateString(
+        'pt-BR',
+        {day:'2-digit', month:'short', year:'numeric'}
+      );
+    }catch{
+      return '';
+    }
+  }
+
+  function uploadStorageFile(file, path, progressCallback){
+    return new Promise((resolve, reject) => {
+      const targetRef = storageRef(storage, path);
+
+      const task = uploadBytesResumable(
+        targetRef,
+        file,
+        {
+          contentType:file.type || undefined,
+          customMetadata:{
+            uploadedBy:firebaseUser?.uid || ''
+          }
+        }
+      );
+
+      task.on(
+        'state_changed',
+        snapshot => {
+          const total = snapshot.totalBytes || 1;
+          const percent = (snapshot.bytesTransferred / total) * 100;
+
+          if(progressCallback){
+            progressCallback(percent);
+          }
+        },
+        reject,
+        async () => {
+          try{
+            const url = await getDownloadURL(task.snapshot.ref);
+            resolve({
+              url,
+              storagePath:task.snapshot.ref.fullPath
+            });
+          }catch(error){
+            reject(error);
+          }
+        }
+      );
+    });
+  }
+
+  // ---------------- GALLERY ----------------
+  function galleryTypeFromFile(file){
+    const type = String(file?.type || '').toLowerCase();
+
+    if(type.startsWith('video/')) return 'video';
+    if(type.startsWith('image/')) return 'image';
+
+    return '';
+  }
+
+  function validateGalleryFile(file){
+    const type = galleryTypeFromFile(file);
+
+    if(!type){
+      return 'Formato não suportado: ' + (file.name || 'arquivo');
+    }
+
+    const max =
+      type === 'video' ?
+        250 * 1024 * 1024 :
+        25 * 1024 * 1024;
+
+    if(file.size > max){
+      return type === 'video' ?
+        'Vídeo acima de 250 MB: ' + file.name :
+        'Foto acima de 25 MB: ' + file.name;
+    }
+
+    return '';
+  }
+
+  function stopContentAutoRefresh(){
+    if(contentRefreshTimer){
+      clearInterval(contentRefreshTimer);
+      contentRefreshTimer = null;
+    }
+  }
+
+  function startContentAutoRefresh(viewId, loader){
+    stopContentAutoRefresh();
+
+    contentRefreshTimer = setInterval(() => {
+      const view = document.getElementById(viewId);
+
+      if(view?.classList.contains('active')){
+        loader();
+      }
+    }, 15000);
+  }
+
+  function renderGallery(){
+    const visible =
+      galleryCurrentFilter === 'Todos' ?
+        galleryCache :
+        galleryCache.filter(item =>
+          String(item.category || 'Outros') === galleryCurrentFilter
+        );
+
+    galleryCount.textContent =
+      `${galleryCache.length} ${galleryCache.length === 1 ? 'MÍDIA' : 'MÍDIAS'}`;
+
+    galleryGrid.innerHTML = '';
+
+    if(visible.length === 0){
+      const empty = document.createElement('div');
+      empty.className = 'gallery-empty';
+
+      const strong = document.createElement('strong');
+      strong.textContent =
+        galleryCurrentFilter === 'Todos' ?
+          'Nenhuma foto ou vídeo publicado' :
+          'Nada publicado nesta categoria';
+
+      const span = document.createElement('span');
+      span.textContent = isAdminUser() ?
+        'Use o botão acima para publicar os primeiros momentos.' :
+        'As fotos e vídeos publicados pelo administrador aparecerão aqui.';
+
+      empty.appendChild(strong);
+      empty.appendChild(span);
+      galleryGrid.appendChild(empty);
+      return;
+    }
+
+    visible.forEach(item => {
+      const card = document.createElement('article');
+      card.className = 'gallery-card';
+
+      if(item.type === 'video'){
+        const video = document.createElement('video');
+        video.src = item.url;
+        video.muted = true;
+        video.playsInline = true;
+        video.preload = 'metadata';
+        card.appendChild(video);
+
+        const play = document.createElement('div');
+        play.className = 'gallery-play';
+        play.textContent = '▶';
+        card.appendChild(play);
+      }else{
+        const img = document.createElement('img');
+        img.src = item.url;
+        img.alt = item.caption || 'Foto Green Park';
+        img.loading = 'lazy';
+        card.appendChild(img);
+      }
+
+      const overlay = document.createElement('div');
+      overlay.className = 'gallery-card-overlay';
+
+      const title = document.createElement('div');
+      title.className = 'gallery-card-title';
+      title.textContent =
+        item.caption ||
+        item.category ||
+        (item.type === 'video' ? 'Vídeo' : 'Foto');
+
+      const meta = document.createElement('div');
+      meta.className = 'gallery-card-meta';
+
+      const date = formatContentDate(item.createdAt);
+      meta.textContent =
+        [item.category, date].filter(Boolean).join(' • ');
+
+      overlay.appendChild(title);
+      overlay.appendChild(meta);
+      card.appendChild(overlay);
+
+      if(isAdminUser()){
+        const del = document.createElement('button');
+        del.type = 'button';
+        del.className = 'gallery-delete admin-visible';
+        del.textContent = '×';
+        del.title = 'Excluir';
+
+        del.addEventListener('click', async event => {
+          event.stopPropagation();
+
+          if(!confirm('Excluir esta mídia da galeria?')) return;
+
+          del.disabled = true;
+
+          try{
+            await excluirMidiaGaleriaCall({id:item.id});
+            await loadGallery();
+          }catch(error){
+            alert('Não foi possível excluir: ' + (error.message || 'erro'));
+            del.disabled = false;
+          }
+        });
+
+        card.appendChild(del);
+      }
+
+      card.addEventListener('click', () => openMediaLightbox(item));
+      galleryGrid.appendChild(card);
+    });
+  }
+
+  async function loadGallery(){
+    try{
+      await ensureFirebasePlayer();
+
+      const result = await listarGaleriaCall();
+      galleryCache =
+        Array.isArray(result.data?.items) ?
+          result.data.items :
+          [];
+
+      renderGallery();
+      refreshContentAdminUI();
+    }catch(error){
+      console.error('Galeria:', error);
+      galleryGrid.innerHTML =
+        '<div class="gallery-empty"><strong>Não foi possível carregar a galeria.</strong><span>Tente novamente em alguns segundos.</span></div>';
+    }
+  }
+
+  async function uploadGalleryFiles(){
+    if(!isAdminUser()){
+      setContentStatus(
+        galleryAdminStatus,
+        'Entre como administrador para publicar.',
+        'error'
+      );
+      return;
+    }
+
+    const files = Array.from(galleryFileInput.files || []);
+
+    if(files.length === 0){
+      setContentStatus(
+        galleryAdminStatus,
+        'Escolha pelo menos uma foto ou vídeo.',
+        'error'
+      );
+      return;
+    }
+
+    for(const file of files){
+      const validation = validateGalleryFile(file);
+
+      if(validation){
+        setContentStatus(galleryAdminStatus, validation, 'error');
+        return;
+      }
+    }
+
+    const caption = String(galleryCaption.value || '').trim().slice(0,80);
+    const category = String(galleryCategory.value || 'Outros');
+
+    galleryUploadButton.disabled = true;
+    galleryUploadButton.textContent = 'ENVIANDO...';
+    galleryProgress.classList.add('show');
+    galleryProgressBar.style.width = '0%';
+    setContentStatus(galleryAdminStatus);
+
+    try{
+      for(let index = 0; index < files.length; index++){
+        const file = files[index];
+        const type = galleryTypeFromFile(file);
+
+        const path =
+          `gallery/${Date.now()}_${index}_${safeStorageFileName(file.name)}`;
+
+        const uploaded = await uploadStorageFile(
+          file,
+          path,
+          percent => {
+            const base = (index / files.length) * 100;
+            const slice = percent / files.length;
+            galleryProgressBar.style.width =
+              Math.min(100, base + slice) + '%';
+          }
+        );
+
+        await salvarMidiaGaleriaCall({
+          url:uploaded.url,
+          storagePath:uploaded.storagePath,
+          type,
+          mimeType:String(file.type || ''),
+          caption,
+          category,
+          fileName:String(file.name || '').slice(0,120),
+          size:Number(file.size || 0)
+        });
+      }
+
+      galleryProgressBar.style.width = '100%';
+
+      setContentStatus(
+        galleryAdminStatus,
+        files.length === 1 ?
+          'Publicado na galeria.' :
+          `${files.length} arquivos publicados na galeria.`,
+        'ok'
+      );
+
+      galleryFileInput.value = '';
+      galleryFileLabel.textContent = 'ESCOLHER FOTOS / VÍDEOS';
+      galleryCaption.value = '';
+
+      await loadGallery();
+    }catch(error){
+      console.error('Upload galeria:', error);
+
+      setContentStatus(
+        galleryAdminStatus,
+        'Falha no envio: ' + (error.message || 'erro desconhecido'),
+        'error'
+      );
+    }finally{
+      galleryUploadButton.disabled = false;
+      galleryUploadButton.textContent = 'PUBLICAR NA GALERIA';
+
+      setTimeout(() => {
+        galleryProgress.classList.remove('show');
+        galleryProgressBar.style.width = '0%';
+      }, 900);
+    }
+  }
+
+  function openMediaLightbox(item){
+    mediaLightboxStage.innerHTML = '';
+
+    const title =
+      item.caption ||
+      item.category ||
+      (item.type === 'video' ? 'Vídeo' : 'Foto');
+
+    mediaLightboxTitle.textContent = title;
+
+    mediaLightboxCaption.textContent =
+      [
+        item.category,
+        formatContentDate(item.createdAt)
+      ].filter(Boolean).join(' • ');
+
+    if(item.type === 'video'){
+      const video = document.createElement('video');
+      video.src = item.url;
+      video.controls = true;
+      video.playsInline = true;
+      video.preload = 'metadata';
+      mediaLightboxStage.appendChild(video);
+    }else{
+      const img = document.createElement('img');
+      img.src = item.url;
+      img.alt = title;
+      mediaLightboxStage.appendChild(img);
+    }
+
+    mediaLightbox.classList.add('show');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeMediaLightbox(){
+    const video = mediaLightboxStage.querySelector('video');
+
+    if(video){
+      try{ video.pause(); }catch{}
+    }
+
+    mediaLightbox.classList.remove('show');
+    mediaLightboxStage.innerHTML = '';
+    document.body.style.overflow = '';
+  }
+
+  // ---------------- NOTICES ----------------
+  function renderNotices(items){
+    noticeList.innerHTML = '';
+
+    if(!Array.isArray(items) || items.length === 0){
+      const empty = document.createElement('div');
+      empty.className = 'feature-empty';
+
+      const strong = document.createElement('strong');
+      strong.textContent = 'Nenhum comunicado publicado';
+
+      const span = document.createElement('span');
+      span.textContent =
+        'Os avisos oficiais do Green Park aparecerão aqui.';
+
+      empty.appendChild(strong);
+      empty.appendChild(span);
+      noticeList.appendChild(empty);
+      return;
+    }
+
+    items.forEach(item => {
+      const card = document.createElement('article');
+      card.className = 'notice-card';
+
+      const date = document.createElement('div');
+      date.className = 'notice-date';
+      date.textContent =
+        formatContentDate(item.createdAt) || 'Comunicado';
+
+      const title = document.createElement('h3');
+      title.className = 'notice-title';
+      title.textContent = item.title || 'Comunicado';
+
+      const body = document.createElement('p');
+      body.className = 'notice-text';
+      body.textContent = item.text || '';
+
+      card.appendChild(date);
+      card.appendChild(title);
+      card.appendChild(body);
+
+      if(isAdminUser()){
+        const del = document.createElement('button');
+        del.type = 'button';
+        del.className = 'notice-delete admin-visible';
+        del.textContent = '×';
+
+        del.addEventListener('click', async () => {
+          if(!confirm('Excluir este comunicado?')) return;
+
+          del.disabled = true;
+
+          try{
+            await excluirComunicadoCall({id:item.id});
+            await loadNotices();
+          }catch(error){
+            alert('Não foi possível excluir: ' + (error.message || 'erro'));
+            del.disabled = false;
+          }
+        });
+
+        card.appendChild(del);
+      }
+
+      noticeList.appendChild(card);
+    });
+  }
+
+  async function loadNotices(){
+    try{
+      await ensureFirebasePlayer();
+
+      const result = await listarComunicadosCall();
+      renderNotices(
+        Array.isArray(result.data?.items) ?
+          result.data.items :
+          []
+      );
+
+      refreshContentAdminUI();
+    }catch(error){
+      console.error('Comunicados:', error);
+      noticeList.innerHTML =
+        '<div class="feature-empty"><strong>Não foi possível carregar os comunicados.</strong></div>';
+    }
+  }
+
+  async function publishNotice(){
+    if(!isAdminUser()){
+      setContentStatus(
+        noticeAdminStatus,
+        'Entre como administrador para publicar.',
+        'error'
+      );
+      return;
+    }
+
+    const title = String(noticeTitleInput.value || '').trim();
+    const text = String(noticeTextInput.value || '').trim();
+
+    if(title.length < 3){
+      setContentStatus(
+        noticeAdminStatus,
+        'Digite um título.',
+        'error'
+      );
+      return;
+    }
+
+    if(text.length < 3){
+      setContentStatus(
+        noticeAdminStatus,
+        'Escreva o comunicado.',
+        'error'
+      );
+      return;
+    }
+
+    noticePublishButton.disabled = true;
+    noticePublishButton.textContent = 'PUBLICANDO...';
+    setContentStatus(noticeAdminStatus);
+
+    try{
+      await publicarComunicadoCall({title, text});
+
+      noticeTitleInput.value = '';
+      noticeTextInput.value = '';
+
+      setContentStatus(
+        noticeAdminStatus,
+        'Comunicado publicado.',
+        'ok'
+      );
+
+      await loadNotices();
+    }catch(error){
+      setContentStatus(
+        noticeAdminStatus,
+        'Não foi possível publicar: ' + (error.message || 'erro'),
+        'error'
+      );
+    }finally{
+      noticePublishButton.disabled = false;
+      noticePublishButton.textContent = 'PUBLICAR COMUNICADO';
+    }
+  }
+
+  // ---------------- SPONSORS ----------------
+  function sponsorSlotElements(slot){
+    return {
+      image:document.querySelector(`[data-sponsor-image="${slot}"]`),
+      fallback:document.querySelector(`[data-sponsor-fallback="${slot}"]`),
+      upload:document.querySelector(`[data-sponsor-upload="${slot}"]`),
+      remove:document.querySelector(`[data-sponsor-remove="${slot}"]`),
+      progress:document.querySelector(`[data-sponsor-progress="${slot}"]`)
+    };
+  }
+
+  function renderSponsors(items){
+    const map = new Map();
+
+    (Array.isArray(items) ? items : []).forEach(item => {
+      map.set(Number(item.slot), item);
+    });
+
+    for(let slot=1; slot<=9; slot++){
+      const el = sponsorSlotElements(slot);
+      const item = map.get(slot);
+
+      if(!el.image || !el.fallback) continue;
+
+      if(item?.url){
+        el.image.src = item.url;
+        el.image.style.display = 'block';
+        el.fallback.style.display = 'none';
+
+        if(el.upload){
+          el.upload.textContent = 'TROCAR';
+        }
+
+        if(el.remove){
+          el.remove.style.visibility = 'visible';
+        }
+      }else{
+        el.image.removeAttribute('src');
+        el.image.style.display = 'none';
+        el.fallback.style.display = 'flex';
+        el.fallback.textContent = `Logo ${String(slot).padStart(2,'0')}`;
+
+        if(el.upload){
+          el.upload.textContent = '+ LOGO';
+        }
+
+        if(el.remove){
+          el.remove.style.visibility = 'hidden';
+        }
+      }
+    }
+
+    refreshContentAdminUI();
+  }
+
+  async function loadSponsors(){
+    try{
+      await ensureFirebasePlayer();
+
+      const result = await listarPatrocinadoresCall();
+
+      renderSponsors(
+        Array.isArray(result.data?.items) ?
+          result.data.items :
+          []
+      );
+    }catch(error){
+      console.error('Patrocinadores:', error);
+
+      setContentStatus(
+        sponsorAdminStatus,
+        'Não foi possível carregar as logos.',
+        'error'
+      );
+    }
+  }
+
+  async function uploadSponsorLogo(slot, file){
+    if(!isAdminUser()) return;
+
+    if(!file){
+      return;
+    }
+
+    if(!String(file.type || '').startsWith('image/')){
+      setContentStatus(
+        sponsorAdminStatus,
+        'Escolha uma imagem PNG, JPG ou WEBP.',
+        'error'
+      );
+      return;
+    }
+
+    if(file.size > 15 * 1024 * 1024){
+      setContentStatus(
+        sponsorAdminStatus,
+        'A logo deve ter no máximo 15 MB.',
+        'error'
+      );
+      return;
+    }
+
+    const el = sponsorSlotElements(slot);
+
+    if(el.progress){
+      el.progress.classList.add('show');
+      el.progress.textContent = 'Enviando 0%';
+    }
+
+    setContentStatus(sponsorAdminStatus);
+
+    try{
+      const path =
+        `sponsors/slot-${String(slot).padStart(2,'0')}/${Date.now()}_${safeStorageFileName(file.name)}`;
+
+      const uploaded = await uploadStorageFile(
+        file,
+        path,
+        percent => {
+          if(el.progress){
+            el.progress.textContent =
+              'Enviando ' + Math.round(percent) + '%';
+          }
+        }
+      );
+
+      await salvarPatrocinadorCall({
+        slot,
+        url:uploaded.url,
+        storagePath:uploaded.storagePath,
+        fileName:String(file.name || '').slice(0,120)
+      });
+
+      setContentStatus(
+        sponsorAdminStatus,
+        'Logo atualizada.',
+        'ok'
+      );
+
+      await loadSponsors();
+    }catch(error){
+      console.error('Upload patrocinador:', error);
+
+      setContentStatus(
+        sponsorAdminStatus,
+        'Não foi possível enviar a logo: ' + (error.message || 'erro'),
+        'error'
+      );
+    }finally{
+      if(el.progress){
+        el.progress.classList.remove('show');
+      }
+    }
+  }
+
+  async function removeSponsorLogo(slot){
+    if(!isAdminUser()) return;
+
+    if(!confirm('Remover esta logo de patrocinador?')) return;
+
+    try{
+      await removerPatrocinadorCall({slot});
+
+      setContentStatus(
+        sponsorAdminStatus,
+        'Logo removida.',
+        'ok'
+      );
+
+      await loadSponsors();
+    }catch(error){
+      setContentStatus(
+        sponsorAdminStatus,
+        'Não foi possível remover a logo.',
+        'error'
+      );
+    }
+  }
+
   function renderStatsPage(){
     const max = Math.max(1, Number(state.config.maxPlayers) || 40);
     const confirmed = confirmedTotal();
@@ -4472,6 +6013,8 @@ let messagingInstance = null;
   }
 
   function openFeatureView(viewId){
+    stopContentAutoRefresh();
+
     if(viewId === 'statsView'){
       renderStatsPage();
     }
@@ -4480,6 +6023,22 @@ let messagingInstance = null;
       loadRanking();
     }
 
+    if(viewId === 'galleryView'){
+      loadGallery();
+      startContentAutoRefresh('galleryView', loadGallery);
+    }
+
+    if(viewId === 'noticesView'){
+      loadNotices();
+      startContentAutoRefresh('noticesView', loadNotices);
+    }
+
+    if(viewId === 'sponsorsView'){
+      loadSponsors();
+      startContentAutoRefresh('sponsorsView', loadSponsors);
+    }
+
+    refreshContentAdminUI();
     showView(viewId);
   }
 
@@ -4489,6 +6048,10 @@ let messagingInstance = null;
 
     if(id !== 'confirmedListView'){
       stopConfirmedListAutoRefresh();
+    }
+
+    if(!['galleryView','noticesView','sponsorsView'].includes(id)){
+      stopContentAutoRefresh();
     }
 
     window.scrollTo({top:0, behavior:'smooth'});
@@ -5424,6 +6987,73 @@ let messagingInstance = null;
     openFeatureView('sponsorsView');
   });
 
+  galleryFileInput.addEventListener('change', () => {
+    const count = galleryFileInput.files?.length || 0;
+
+    galleryFileLabel.textContent =
+      count === 0 ?
+        'ESCOLHER FOTOS / VÍDEOS' :
+        count === 1 ?
+          '1 ARQUIVO SELECIONADO' :
+          `${count} ARQUIVOS SELECIONADOS`;
+  });
+
+  galleryUploadButton.addEventListener('click', uploadGalleryFiles);
+
+  document.querySelectorAll('[data-gallery-filter]').forEach(button => {
+    button.addEventListener('click', () => {
+      document.querySelectorAll('[data-gallery-filter]').forEach(item => {
+        item.classList.toggle('active', item === button);
+      });
+
+      galleryCurrentFilter =
+        button.dataset.galleryFilter || 'Todos';
+
+      renderGallery();
+    });
+  });
+
+  document.getElementById('mediaLightboxClose').addEventListener(
+    'click',
+    closeMediaLightbox
+  );
+
+  mediaLightbox.addEventListener('click', event => {
+    if(event.target === mediaLightbox){
+      closeMediaLightbox();
+    }
+  });
+
+  noticePublishButton.addEventListener('click', publishNotice);
+
+  document.querySelectorAll('[data-sponsor-upload]').forEach(button => {
+    button.addEventListener('click', () => {
+      if(!isAdminUser()) return;
+
+      sponsorUploadSlot = Number(button.dataset.sponsorUpload);
+      sponsorFileInput.value = '';
+      sponsorFileInput.click();
+    });
+  });
+
+  sponsorFileInput.addEventListener('change', async () => {
+    const file = sponsorFileInput.files?.[0];
+
+    if(!file || !sponsorUploadSlot) return;
+
+    const slot = sponsorUploadSlot;
+    sponsorUploadSlot = null;
+
+    await uploadSponsorLogo(slot, file);
+  });
+
+  document.querySelectorAll('[data-sponsor-remove]').forEach(button => {
+    button.addEventListener('click', () => {
+      const slot = Number(button.dataset.sponsorRemove);
+      removeSponsorLogo(slot);
+    });
+  });
+
   document.querySelectorAll('[data-feature-back]').forEach(button => {
     button.addEventListener('click', () => {
       showView('homeView');
@@ -5720,6 +7350,7 @@ let messagingInstance = null;
 
   onAuthStateChanged(auth, async user => {
     firebaseUser = user;
+    setTimeout(() => refreshContentAdminUI(), 0);
 
     if(!user){
       setFirebaseStatus('Conectando jogador ao Firebase...');

@@ -1,0 +1,40 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return signedIn()
+        && request.auth.uid == 'd3nVt6SbQlO6lYnOcCUDbLBhoU02';
+    }
+
+    // Fotos e vídeos da galeria.
+    match /gallery/{fileName} {
+      allow read: if signedIn();
+
+      allow create, update: if isAdmin()
+        && request.resource.size < 250 * 1024 * 1024
+        && (
+          request.resource.contentType.matches('image/.*')
+          || request.resource.contentType.matches('video/.*')
+        );
+
+      allow delete: if isAdmin();
+    }
+
+    // Logos: há uma subpasta por posição.
+    match /sponsors/{allPaths=**} {
+      allow read: if signedIn();
+
+      allow create, update: if isAdmin()
+        && request.resource.size < 15 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*');
+
+      allow delete: if isAdmin();
+    }
+  }
+}
