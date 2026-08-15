@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- GREEN PARK BUILD: 2026-08-15-team-draw-arrival-cart -->
+<!-- GREEN PARK BUILD: 2026-08-15-master-sponsors -->
 <html lang="pt-BR">
 <head>
   <!-- GREEN PARK BUILD: 2026-08-15-stats-compact-photo-list -->
@@ -2388,21 +2388,59 @@
       pointer-events:none;
     }
 
-    .sponsors-brand-mark{
-      width:52px;
-      height:52px;
-      margin:0 auto 14px;
-      display:grid;
-      place-items:center;
-      border:1px solid rgba(78,255,72,.32);
-      border-radius:14px;
-      color:var(--green);
-      font-size:13px;
-      font-weight:950;
-      letter-spacing:.06em;
-      line-height:1.05;
+    .sponsors-master-label{
+      margin:0 0 10px;
       text-align:center;
-      background:rgba(7,20,16,.58);
+      color:var(--green);
+      font-size:10px;
+      font-weight:950;
+      letter-spacing:.22em;
+      text-transform:uppercase;
+    }
+
+    .sponsors-master-row{
+      display:flex;
+      align-items:stretch;
+      justify-content:center;
+      gap:10px;
+      margin:0 auto 18px;
+      width:min(100%,520px);
+    }
+
+    .master-sponsor-slot{
+      flex:1 1 0;
+      max-width:250px;
+      min-height:104px;
+      border:1px solid rgba(82,255,76,.24);
+      border-radius:18px;
+      background:rgba(5,21,16,.62);
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      padding:14px 12px;
+      position:relative;
+    }
+
+    .master-sponsor-slot .sponsor-slot-logo-wrap{
+      min-height:62px;
+    }
+
+    .master-sponsor-slot .sponsor-logo{
+      max-width:205px;
+      max-height:70px;
+    }
+
+    .master-sponsor-slot .sponsor-fallback{
+      color:var(--green);
+      opacity:.72;
+      font-size:10px;
+      letter-spacing:.10em;
+    }
+
+    .master-sponsor-slot .sponsor-slot-actions{
+      bottom:7px;
     }
 
     .sponsors-title{
@@ -2442,72 +2480,202 @@
       margin-top:18px;
       display:flex;
       flex-direction:column;
-      gap:12px;
+      gap:14px;
     }
 
-    .sponsors-row{
+    .sponsors-master-section{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      padding:14px;
+      border:1px solid rgba(242,183,53,.28);
+      border-radius:20px;
+      background:linear-gradient(180deg,rgba(242,183,53,.06),rgba(6,18,18,.64));
+    }
+
+    .sponsors-master-section[hidden]{display:none !important;}
+
+    .sponsors-master-head{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      color:#f1d17b;
+      font-size:10px;
+      font-weight:950;
+      letter-spacing:.18em;
+      text-transform:uppercase;
+    }
+
+    .sponsors-master-grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:10px;
+    }
+
+    .sponsors-master-grid.single{
+      grid-template-columns:minmax(0,1fr);
+      max-width:68%;
+      width:100%;
+      margin:0 auto;
+    }
+
+    .sponsors-normal-shell{
+      display:flex;
+      flex-direction:column;
+      gap:9px;
+    }
+
+    .sponsors-dynamic-grid{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+
+    .sponsor-dynamic-row{
       display:grid;
       gap:0;
       overflow:hidden;
+      width:100%;
+      margin:0 auto;
       border:1px solid rgba(75,255,69,.20);
-      border-radius:20px;
+      border-radius:18px;
       background:rgba(6,18,18,.64);
-    }
-
-    .sponsors-row.row-five{
-      grid-template-columns:repeat(5,minmax(0,1fr));
-    }
-
-    .sponsors-row.row-four{
-      grid-template-columns:repeat(4,minmax(0,1fr));
     }
 
     .sponsor-slot{
       position:relative;
       min-width:0;
-      min-height:126px;
+      min-height:104px;
       display:flex;
+      flex-direction:column;
       align-items:center;
       justify-content:center;
-      padding:16px 10px;
+      gap:7px;
+      padding:12px 8px;
     }
 
-    .sponsor-slot + .sponsor-slot::before{
+    .sponsor-dynamic-row .sponsor-slot + .sponsor-slot::before,
+    .sponsors-master-grid .sponsor-slot + .sponsor-slot::before{
       content:"";
       position:absolute;
       left:0;
-      top:22%;
-      bottom:22%;
+      top:20%;
+      bottom:20%;
       width:1px;
       background:rgba(75,255,69,.13);
+    }
+
+    .sponsors-master-grid .sponsor-slot{
+      min-height:142px;
+      border:1px solid rgba(242,183,53,.12);
+      border-radius:16px;
+      background:rgba(3,15,15,.42);
+    }
+
+    .sponsor-slot-logo-wrap{
+      flex:1;
+      width:100%;
+      min-height:54px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      overflow:hidden;
     }
 
     .sponsor-logo{
       display:block;
       width:100%;
-      max-width:150px;
-      max-height:64px;
+      max-width:124px;
+      max-height:52px;
       object-fit:contain;
       object-position:center;
       filter:grayscale(1) brightness(0) invert(1);
-      opacity:.96;
+      opacity:.97;
+      transition:max-width .2s ease,max-height .2s ease;
+    }
+
+    .sponsor-master-logo{
+      max-width:220px;
+      max-height:82px;
+    }
+
+    .sponsors-dynamic-grid[data-density="medium"] .sponsor-logo{
+      max-width:104px;
+      max-height:46px;
+    }
+
+    .sponsors-dynamic-grid[data-density="compact"] .sponsor-logo{
+      max-width:88px;
+      max-height:40px;
+    }
+
+    .sponsors-dynamic-grid[data-density="dense"] .sponsor-logo{
+      max-width:74px;
+      max-height:34px;
+    }
+
+    .sponsors-dynamic-grid[data-density="ultra"] .sponsor-logo{
+      max-width:64px;
+      max-height:30px;
+    }
+
+    .sponsors-dynamic-grid[data-density="compact"] .sponsor-slot,
+    .sponsors-dynamic-grid[data-density="dense"] .sponsor-slot,
+    .sponsors-dynamic-grid[data-density="ultra"] .sponsor-slot{
+      min-height:88px;
+      padding:10px 6px;
+    }
+
+    .sponsors-dynamic-grid[data-density="ultra"] .sponsor-slot{
+      min-height:76px;
     }
 
     .sponsor-fallback{
       display:flex;
-      min-height:58px;
+      min-height:50px;
       width:100%;
       align-items:center;
       justify-content:center;
-      padding:6px;
+      padding:5px;
       color:#fff;
       text-align:center;
-      font-size:11px;
+      font-size:10px;
       font-weight:900;
       line-height:1.25;
-      letter-spacing:.04em;
+      letter-spacing:.05em;
       opacity:.52;
       text-transform:uppercase;
+    }
+
+    .sponsors-empty{
+      padding:17px 14px;
+      border:1px dashed rgba(75,255,69,.22);
+      border-radius:16px;
+      color:#738189;
+      font-size:11px;
+      line-height:1.45;
+      text-align:center;
+    }
+
+    .sponsors-add-wrap{
+      display:none;
+      justify-content:center;
+      margin-top:3px;
+    }
+
+    .sponsors-add-wrap.admin-visible{display:flex !important;}
+
+    .sponsors-add-btn{
+      min-height:42px;
+      padding:0 18px;
+      border:1px solid rgba(86,213,46,.42);
+      border-radius:13px;
+      background:#102219;
+      color:var(--green);
+      font-size:11px;
+      font-weight:950;
+      letter-spacing:.03em;
     }
 
     .sponsors-guide{
@@ -2534,9 +2702,7 @@
       line-height:1.55;
     }
 
-    .sponsors-guide-text b{
-      color:#c7d0d4;
-    }
+    .sponsors-guide-text b{color:#c7d0d4;}
 
     .sponsors-footer-note{
       margin-top:12px;
@@ -2548,7 +2714,7 @@
 
     @media (max-width:520px){
       .sponsors-hero{
-        padding:22px 14px 18px;
+        padding:22px 12px 18px;
       }
 
       .sponsors-title{
@@ -2556,35 +2722,53 @@
         letter-spacing:.10em;
       }
 
-      .sponsors-row.row-five{
-        grid-template-columns:repeat(3,minmax(0,1fr));
+      .sponsors-master-grid{
+        gap:7px;
       }
 
-      .sponsors-row.row-five .sponsor-slot:nth-child(4),
-      .sponsors-row.row-five .sponsor-slot:nth-child(5){
-        border-top:1px solid rgba(75,255,69,.10);
+      .sponsors-master-grid.single{max-width:82%;}
+
+      .sponsors-master-grid .sponsor-slot{
+        min-height:126px;
+        padding:11px 7px;
       }
 
-      .sponsors-row.row-four{
-        grid-template-columns:repeat(2,minmax(0,1fr));
-      }
-
-      .sponsors-row.row-four .sponsor-slot:nth-child(3),
-      .sponsors-row.row-four .sponsor-slot:nth-child(4){
-        border-top:1px solid rgba(75,255,69,.10);
+      .sponsor-master-logo{
+        max-width:170px;
+        max-height:70px;
       }
 
       .sponsor-slot{
-        min-height:112px;
+        min-height:88px;
+        padding:10px 5px;
       }
 
       .sponsor-logo{
-        max-width:122px;
-        max-height:56px;
+        max-width:90px;
+        max-height:42px;
+      }
+
+      .sponsors-dynamic-grid[data-density="medium"] .sponsor-logo{
+        max-width:78px;
+        max-height:38px;
+      }
+
+      .sponsors-dynamic-grid[data-density="compact"] .sponsor-logo{
+        max-width:68px;
+        max-height:34px;
+      }
+
+      .sponsors-dynamic-grid[data-density="dense"] .sponsor-logo{
+        max-width:58px;
+        max-height:30px;
+      }
+
+      .sponsors-dynamic-grid[data-density="ultra"] .sponsor-logo{
+        max-width:48px;
+        max-height:26px;
       }
     }
 
-  
     /* ==========================================================
        CONTEÚDO — GALERIA, COMUNICADOS E PATROCINADORES ADMIN
        ========================================================== */
@@ -3042,65 +3226,49 @@
     }
 
     /* PATROCINADORES ADMIN */
-    .sponsor-slot{
-      flex-direction:column;
-      gap:8px;
-    }
-
-    .sponsor-slot-logo-wrap{
-      flex:1;
-      width:100%;
-      min-height:62px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-    }
-
     .sponsor-slot-actions{
       width:100%;
       display:none;
       grid-template-columns:1fr auto;
-      gap:6px;
+      gap:5px;
     }
 
-    .sponsor-slot-actions.admin-visible{
-      display:grid;
-    }
+    .sponsor-slot-actions.content-admin-only.admin-visible{display:grid !important;}
+    #sponsorAddWrap.content-admin-only.admin-visible{display:flex !important;}
 
     .sponsor-upload-btn,
     .sponsor-remove-btn{
-      min-height:32px;
-      border-radius:9px;
-      font-size:9px;
+      min-height:29px;
+      border-radius:8px;
+      font-size:8px;
       font-weight:950;
+      line-height:1;
     }
 
     .sponsor-upload-btn{
       border:1px solid rgba(61,255,70,.32);
       background:#102219;
       color:var(--green);
+      padding:0 6px;
     }
 
     .sponsor-remove-btn{
       border:1px solid #5d3030;
       background:#2a1515;
       color:#ffaaaa;
-      padding:0 9px;
+      padding:0 8px;
     }
 
     .sponsor-upload-progress{
       display:none;
       width:100%;
       color:#9aa7ac;
-      font-size:9px;
+      font-size:8px;
       text-align:center;
     }
 
     .sponsor-upload-progress.show{display:block;}
-
-    .sponsor-file-input{
-      display:none;
-    }
+    .sponsor-file-input{display:none;}
 
     @media (max-width:390px){
       .gallery-grid{
@@ -4925,260 +5093,25 @@
     </div>
 
     <section class="sponsors-hero">
-      <div class="sponsors-brand-mark">GP<br>FC</div>
       <h2 class="sponsors-title">Patrocinadores Oficiais</h2>
       <div class="sponsors-subtitle">Green Park FC</div>
       <div class="sponsors-separator"></div>
 
       <div class="sponsors-stage">
-        <div class="sponsors-row row-five">
+        <section class="sponsors-master-section" id="sponsorMasterArea" hidden>
+          <div class="sponsors-master-head">Patrocínio Master</div>
+          <div class="sponsors-master-grid" id="sponsorMasterGrid"></div>
+        </section>
 
-          <div class="sponsor-slot" data-sponsor-slot="1">
-            <div class="sponsor-slot-logo-wrap">
-              <img
-                class="sponsor-logo"
-                data-sponsor-image="1"
-                alt="Patrocinador 01"
-                style="display:none;"
-              >
-              <div class="sponsor-fallback" data-sponsor-fallback="1">
-                Logo 01
-              </div>
-            </div>
+        <section class="sponsors-normal-shell">
+          <div class="sponsors-dynamic-grid" id="sponsorDynamicGrid"></div>
 
-            <div class="sponsor-upload-progress" data-sponsor-progress="1">
-              Enviando...
-            </div>
-
-            <div class="sponsor-slot-actions content-admin-only" data-sponsor-actions="1">
-              <button class="sponsor-upload-btn" type="button" data-sponsor-upload="1">
-                + LOGO
-              </button>
-              <button class="sponsor-remove-btn" type="button" data-sponsor-remove="1">
-                ×
-              </button>
-            </div>
+          <div class="sponsors-add-wrap content-admin-only" id="sponsorAddWrap">
+            <button class="sponsors-add-btn" id="sponsorAddButton" type="button">
+              + ADICIONAR PATROCINADOR
+            </button>
           </div>
-
-          <div class="sponsor-slot" data-sponsor-slot="2">
-            <div class="sponsor-slot-logo-wrap">
-              <img
-                class="sponsor-logo"
-                data-sponsor-image="2"
-                alt="Patrocinador 02"
-                style="display:none;"
-              >
-              <div class="sponsor-fallback" data-sponsor-fallback="2">
-                Logo 02
-              </div>
-            </div>
-
-            <div class="sponsor-upload-progress" data-sponsor-progress="2">
-              Enviando...
-            </div>
-
-            <div class="sponsor-slot-actions content-admin-only" data-sponsor-actions="2">
-              <button class="sponsor-upload-btn" type="button" data-sponsor-upload="2">
-                + LOGO
-              </button>
-              <button class="sponsor-remove-btn" type="button" data-sponsor-remove="2">
-                ×
-              </button>
-            </div>
-          </div>
-
-          <div class="sponsor-slot" data-sponsor-slot="3">
-            <div class="sponsor-slot-logo-wrap">
-              <img
-                class="sponsor-logo"
-                data-sponsor-image="3"
-                alt="Patrocinador 03"
-                style="display:none;"
-              >
-              <div class="sponsor-fallback" data-sponsor-fallback="3">
-                Logo 03
-              </div>
-            </div>
-
-            <div class="sponsor-upload-progress" data-sponsor-progress="3">
-              Enviando...
-            </div>
-
-            <div class="sponsor-slot-actions content-admin-only" data-sponsor-actions="3">
-              <button class="sponsor-upload-btn" type="button" data-sponsor-upload="3">
-                + LOGO
-              </button>
-              <button class="sponsor-remove-btn" type="button" data-sponsor-remove="3">
-                ×
-              </button>
-            </div>
-          </div>
-
-          <div class="sponsor-slot" data-sponsor-slot="4">
-            <div class="sponsor-slot-logo-wrap">
-              <img
-                class="sponsor-logo"
-                data-sponsor-image="4"
-                alt="Patrocinador 04"
-                style="display:none;"
-              >
-              <div class="sponsor-fallback" data-sponsor-fallback="4">
-                Logo 04
-              </div>
-            </div>
-
-            <div class="sponsor-upload-progress" data-sponsor-progress="4">
-              Enviando...
-            </div>
-
-            <div class="sponsor-slot-actions content-admin-only" data-sponsor-actions="4">
-              <button class="sponsor-upload-btn" type="button" data-sponsor-upload="4">
-                + LOGO
-              </button>
-              <button class="sponsor-remove-btn" type="button" data-sponsor-remove="4">
-                ×
-              </button>
-            </div>
-          </div>
-
-          <div class="sponsor-slot" data-sponsor-slot="5">
-            <div class="sponsor-slot-logo-wrap">
-              <img
-                class="sponsor-logo"
-                data-sponsor-image="5"
-                alt="Patrocinador 05"
-                style="display:none;"
-              >
-              <div class="sponsor-fallback" data-sponsor-fallback="5">
-                Logo 05
-              </div>
-            </div>
-
-            <div class="sponsor-upload-progress" data-sponsor-progress="5">
-              Enviando...
-            </div>
-
-            <div class="sponsor-slot-actions content-admin-only" data-sponsor-actions="5">
-              <button class="sponsor-upload-btn" type="button" data-sponsor-upload="5">
-                + LOGO
-              </button>
-              <button class="sponsor-remove-btn" type="button" data-sponsor-remove="5">
-                ×
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <div class="sponsors-row row-four">
-
-          <div class="sponsor-slot" data-sponsor-slot="6">
-            <div class="sponsor-slot-logo-wrap">
-              <img
-                class="sponsor-logo"
-                data-sponsor-image="6"
-                alt="Patrocinador 06"
-                style="display:none;"
-              >
-              <div class="sponsor-fallback" data-sponsor-fallback="6">
-                Logo 06
-              </div>
-            </div>
-
-            <div class="sponsor-upload-progress" data-sponsor-progress="6">
-              Enviando...
-            </div>
-
-            <div class="sponsor-slot-actions content-admin-only" data-sponsor-actions="6">
-              <button class="sponsor-upload-btn" type="button" data-sponsor-upload="6">
-                + LOGO
-              </button>
-              <button class="sponsor-remove-btn" type="button" data-sponsor-remove="6">
-                ×
-              </button>
-            </div>
-          </div>
-
-          <div class="sponsor-slot" data-sponsor-slot="7">
-            <div class="sponsor-slot-logo-wrap">
-              <img
-                class="sponsor-logo"
-                data-sponsor-image="7"
-                alt="Patrocinador 07"
-                style="display:none;"
-              >
-              <div class="sponsor-fallback" data-sponsor-fallback="7">
-                Logo 07
-              </div>
-            </div>
-
-            <div class="sponsor-upload-progress" data-sponsor-progress="7">
-              Enviando...
-            </div>
-
-            <div class="sponsor-slot-actions content-admin-only" data-sponsor-actions="7">
-              <button class="sponsor-upload-btn" type="button" data-sponsor-upload="7">
-                + LOGO
-              </button>
-              <button class="sponsor-remove-btn" type="button" data-sponsor-remove="7">
-                ×
-              </button>
-            </div>
-          </div>
-
-          <div class="sponsor-slot" data-sponsor-slot="8">
-            <div class="sponsor-slot-logo-wrap">
-              <img
-                class="sponsor-logo"
-                data-sponsor-image="8"
-                alt="Patrocinador 08"
-                style="display:none;"
-              >
-              <div class="sponsor-fallback" data-sponsor-fallback="8">
-                Logo 08
-              </div>
-            </div>
-
-            <div class="sponsor-upload-progress" data-sponsor-progress="8">
-              Enviando...
-            </div>
-
-            <div class="sponsor-slot-actions content-admin-only" data-sponsor-actions="8">
-              <button class="sponsor-upload-btn" type="button" data-sponsor-upload="8">
-                + LOGO
-              </button>
-              <button class="sponsor-remove-btn" type="button" data-sponsor-remove="8">
-                ×
-              </button>
-            </div>
-          </div>
-
-          <div class="sponsor-slot" data-sponsor-slot="9">
-            <div class="sponsor-slot-logo-wrap">
-              <img
-                class="sponsor-logo"
-                data-sponsor-image="9"
-                alt="Patrocinador 09"
-                style="display:none;"
-              >
-              <div class="sponsor-fallback" data-sponsor-fallback="9">
-                Logo 09
-              </div>
-            </div>
-
-            <div class="sponsor-upload-progress" data-sponsor-progress="9">
-              Enviando...
-            </div>
-
-            <div class="sponsor-slot-actions content-admin-only" data-sponsor-actions="9">
-              <button class="sponsor-upload-btn" type="button" data-sponsor-upload="9">
-                + LOGO
-              </button>
-              <button class="sponsor-remove-btn" type="button" data-sponsor-remove="9">
-                ×
-              </button>
-            </div>
-          </div>
-        </div>
+        </section>
       </div>
 
       <input
@@ -5190,14 +5123,14 @@
 
       <div class="content-status" id="sponsorAdminStatus"></div>
 
-      <div class="sponsors-guide">
-        <div class="sponsors-guide-title">Como adicionar uma logo</div>
+      <div class="sponsors-guide content-admin-only">
+        <div class="sponsors-guide-title">Como adicionar logos</div>
         <p class="sponsors-guide-text">
-          Toque em <b>+ LOGO</b> no espaço desejado quando estiver no modo
-          Administrador. Use preferencialmente <b>PNG com fundo transparente</b>,
-          tamanho recomendado <b>1000 × 500 px</b>, marca centralizada e margem
-          interna de aproximadamente <b>10%</b>. O app deixa a logo
-          automaticamente em <b>branco monocromático</b>.
+          Use os espaços <b>MASTER 01</b> e <b>MASTER 02</b> para os patrocinadores
+          principais. Para os demais, toque em <b>+ ADICIONAR PATROCINADOR</b>.
+          O sistema organiza automaticamente em fileiras de até <b>6 logos</b> e
+          reduz o tamanho conforme a quantidade aumenta. Prefira <b>PNG com fundo
+          transparente</b>; as marcas aparecem em <b>branco monocromático</b>.
         </p>
       </div>
 
@@ -5206,7 +5139,6 @@
       </div>
     </section>
   </main>
-
 
 
   <!-- SORTEIO DOS TIMES — ADMIN -->
@@ -6008,6 +5940,11 @@ let messagingInstance = null;
   const noticePublishButton = document.getElementById('noticePublishButton');
   const noticeAdminStatus = document.getElementById('noticeAdminStatus');
   const noticeList = document.getElementById('noticeList');
+  const sponsorsView = document.getElementById('sponsorsView');
+  const sponsorMasterArea = document.getElementById('sponsorMasterArea');
+  const sponsorMasterGrid = document.getElementById('sponsorMasterGrid');
+  const sponsorDynamicGrid = document.getElementById('sponsorDynamicGrid');
+  const sponsorAddButton = document.getElementById('sponsorAddButton');
   const sponsorFileInput = document.getElementById('sponsorFileInput');
   const sponsorAdminStatus = document.getElementById('sponsorAdminStatus');
   const livePlayerList = document.getElementById('livePlayerList');
@@ -7488,7 +7425,9 @@ let messagingInstance = null;
   // ============================================================
   let galleryCache = [];
   let galleryCurrentFilter = 'Todos';
+  let sponsorCache = [];
   let sponsorUploadSlot = null;
+  const MASTER_SPONSOR_SLOTS = [900001, 900002];
   let contentRefreshTimer = null;
   let liveStatsRefreshTimer = null;
 
@@ -8087,78 +8026,201 @@ let messagingInstance = null;
     };
   }
 
-  function renderSponsors(items){
-    const map = new Map();
+  function sponsorDensity(total){
+    if(total > 24) return 'ultra';
+    if(total > 18) return 'dense';
+    if(total > 12) return 'compact';
+    if(total > 6) return 'medium';
+    return 'normal';
+  }
 
-    (Array.isArray(items) ? items : []).forEach(item => {
-      map.set(Number(item.slot), item);
-    });
+  function createSponsorCard({slot, item=null, master=false, label=''}){
+    const card = document.createElement('div');
+    card.className = 'sponsor-slot' + (master ? ' sponsor-master-slot' : '');
+    card.dataset.sponsorSlot = String(slot);
 
-    for(let slot=1; slot<=9; slot++){
-      const el = sponsorSlotElements(slot);
-      const item = map.get(slot);
+    const logoWrap = document.createElement('div');
+    logoWrap.className = 'sponsor-slot-logo-wrap';
 
-      if(!el.image || !el.fallback) continue;
+    const image = document.createElement('img');
+    image.className = 'sponsor-logo' + (master ? ' sponsor-master-logo' : '');
+    image.dataset.sponsorImage = String(slot);
+    image.alt = master ? label : 'Patrocinador';
 
-      if(item?.url){
-        el.image.src = item.url;
-        el.image.style.display = 'block';
-        el.fallback.style.display = 'none';
+    const fallback = document.createElement('div');
+    fallback.className = 'sponsor-fallback';
+    fallback.dataset.sponsorFallback = String(slot);
+    fallback.textContent = label || 'Logo';
 
-        if(el.upload){
-          el.upload.textContent = 'TROCAR';
-        }
-
-        if(el.remove){
-          el.remove.style.visibility = 'visible';
-        }
-      }else{
-        el.image.removeAttribute('src');
-        el.image.style.display = 'none';
-        el.fallback.style.display = 'flex';
-        el.fallback.textContent = `Logo ${String(slot).padStart(2,'0')}`;
-
-        if(el.upload){
-          el.upload.textContent = '+ LOGO';
-        }
-
-        if(el.remove){
-          el.remove.style.visibility = 'hidden';
-        }
-      }
+    if(item?.url){
+      image.src = item.url;
+      image.style.display = 'block';
+      fallback.style.display = 'none';
+    }else{
+      image.style.display = 'none';
+      fallback.style.display = 'flex';
     }
 
+    logoWrap.appendChild(image);
+    logoWrap.appendChild(fallback);
+
+    const progress = document.createElement('div');
+    progress.className = 'sponsor-upload-progress';
+    progress.dataset.sponsorProgress = String(slot);
+    progress.textContent = 'Enviando...';
+
+    const actions = document.createElement('div');
+    actions.className = 'sponsor-slot-actions content-admin-only';
+    actions.dataset.sponsorActions = String(slot);
+
+    const upload = document.createElement('button');
+    upload.className = 'sponsor-upload-btn';
+    upload.type = 'button';
+    upload.dataset.sponsorUpload = String(slot);
+    upload.textContent = item?.url ? 'TROCAR' : (master ? '+ MASTER' : '+ LOGO');
+
+    const remove = document.createElement('button');
+    remove.className = 'sponsor-remove-btn';
+    remove.type = 'button';
+    remove.dataset.sponsorRemove = String(slot);
+    remove.textContent = '×';
+    remove.style.visibility = item?.url ? 'visible' : 'hidden';
+
+    actions.appendChild(upload);
+    actions.appendChild(remove);
+
+    card.appendChild(logoWrap);
+    card.appendChild(progress);
+    card.appendChild(actions);
+    return card;
+  }
+
+  function renderMasterSponsors(items){
+    if(!sponsorMasterArea || !sponsorMasterGrid) return;
+
+    const admin = isAdminUser();
+    const bySlot = new Map(items.map(item => [Number(item.slot), item]));
+    const visible = MASTER_SPONSOR_SLOTS
+      .map((slot, index) => ({
+        slot,
+        index,
+        item:bySlot.get(slot) || null
+      }))
+      .filter(entry => admin || entry.item?.url);
+
+    sponsorMasterGrid.innerHTML = '';
+    visible.forEach(entry => {
+      sponsorMasterGrid.appendChild(
+        createSponsorCard({
+          slot:entry.slot,
+          item:entry.item,
+          master:true,
+          label:`MASTER ${String(entry.index + 1).padStart(2,'0')}`
+        })
+      );
+    });
+
+    sponsorMasterGrid.classList.toggle('single', visible.length === 1);
+    sponsorMasterArea.hidden = visible.length === 0;
+  }
+
+  function renderNormalSponsors(items){
+    if(!sponsorDynamicGrid) return;
+
+    const normalItems = items
+      .filter(item => !MASTER_SPONSOR_SLOTS.includes(Number(item.slot)))
+      .filter(item => item?.url)
+      .sort((a,b) => Number(a.slot) - Number(b.slot));
+
+    sponsorDynamicGrid.innerHTML = '';
+    sponsorDynamicGrid.dataset.density = sponsorDensity(normalItems.length);
+
+    if(normalItems.length === 0){
+      const empty = document.createElement('div');
+      empty.className = 'sponsors-empty';
+      empty.textContent = isAdminUser()
+        ? 'Nenhum patrocinador comum cadastrado. Use o botão abaixo para adicionar.'
+        : 'Os patrocinadores oficiais serão exibidos aqui.';
+      sponsorDynamicGrid.appendChild(empty);
+      return;
+    }
+
+    const perRow = 6;
+    for(let start=0; start<normalItems.length; start += perRow){
+      const group = normalItems.slice(start, start + perRow);
+      const row = document.createElement('div');
+      row.className = 'sponsor-dynamic-row';
+      row.style.gridTemplateColumns = `repeat(${group.length}, minmax(0,1fr))`;
+
+      if(group.length < perRow && normalItems.length > perRow){
+        row.style.width = `${(group.length / perRow) * 100}%`;
+      }
+
+      group.forEach(item => {
+        row.appendChild(
+          createSponsorCard({
+            slot:Number(item.slot),
+            item,
+            master:false,
+            label:'Patrocinador'
+          })
+        );
+      });
+
+      sponsorDynamicGrid.appendChild(row);
+    }
+  }
+
+  function renderSponsors(items){
+    sponsorCache = (Array.isArray(items) ? items : [])
+      .map(item => ({...item, slot:Number(item.slot)}))
+      .filter(item => Number.isFinite(item.slot) && item.slot >= 1 && item.url);
+
+    renderMasterSponsors(sponsorCache);
+    renderNormalSponsors(sponsorCache);
     refreshContentAdminUI();
+  }
+
+  function nextNormalSponsorSlot(){
+    const used = new Set(
+      sponsorCache
+        .map(item => Number(item.slot))
+        .filter(slot => !MASTER_SPONSOR_SLOTS.includes(slot))
+    );
+
+    let slot = 1;
+    while(used.has(slot) || MASTER_SPONSOR_SLOTS.includes(slot)){
+      slot += 1;
+    }
+    return slot;
+  }
+
+  function openSponsorFilePicker(slot){
+    if(!isAdminUser()) return;
+    sponsorUploadSlot = Number(slot);
+    sponsorFileInput.value = '';
+    sponsorFileInput.click();
   }
 
   async function loadSponsors(){
     try{
       await ensureFirebasePlayer();
-
       const result = await listarPatrocinadoresCall();
-
       renderSponsors(
-        Array.isArray(result.data?.items) ?
-          result.data.items :
-          []
+        Array.isArray(result.data?.items) ? result.data.items : []
       );
     }catch(error){
       console.error('Patrocinadores:', error);
-
       setContentStatus(
         sponsorAdminStatus,
-        'As funções de Patrocinadores ainda não estão publicadas no Firebase.',
+        'Não foi possível carregar os patrocinadores agora.',
         'error'
       );
     }
   }
 
   async function uploadSponsorLogo(slot, file){
-    if(!isAdminUser()) return;
-
-    if(!file){
-      return;
-    }
+    if(!isAdminUser() || !file) return;
 
     if(!String(file.type || '').startsWith('image/')){
       setContentStatus(
@@ -8179,13 +8241,12 @@ let messagingInstance = null;
     }
 
     const el = sponsorSlotElements(slot);
-
     if(el.progress){
       el.progress.classList.add('show');
       el.progress.textContent = 'Enviando 0%';
     }
 
-    setContentStatus(sponsorAdminStatus);
+    setContentStatus(sponsorAdminStatus, 'Enviando logo...', 'ok');
 
     try{
       const path =
@@ -8196,8 +8257,7 @@ let messagingInstance = null;
         path,
         percent => {
           if(el.progress){
-            el.progress.textContent =
-              'Enviando ' + Math.round(percent) + '%';
+            el.progress.textContent = 'Enviando ' + Math.round(percent) + '%';
           }
         }
       );
@@ -8209,16 +8269,10 @@ let messagingInstance = null;
         fileName:String(file.name || '').slice(0,120)
       });
 
-      setContentStatus(
-        sponsorAdminStatus,
-        'Logo atualizada.',
-        'ok'
-      );
-
+      setContentStatus(sponsorAdminStatus, 'Logo atualizada.', 'ok');
       await loadSponsors();
     }catch(error){
       console.error('Upload patrocinador:', error);
-
       setContentStatus(
         sponsorAdminStatus,
         'Não foi possível enviar a logo: ' + (error.message || 'erro'),
@@ -8233,20 +8287,14 @@ let messagingInstance = null;
 
   async function removeSponsorLogo(slot){
     if(!isAdminUser()) return;
-
     if(!confirm('Remover esta logo de patrocinador?')) return;
 
     try{
       await removerPatrocinadorCall({slot});
-
-      setContentStatus(
-        sponsorAdminStatus,
-        'Logo removida.',
-        'ok'
-      );
-
+      setContentStatus(sponsorAdminStatus, 'Logo removida.', 'ok');
       await loadSponsors();
     }catch(error){
+      console.error('Remover patrocinador:', error);
       setContentStatus(
         sponsorAdminStatus,
         'Não foi possível remover a logo.',
@@ -8254,7 +8302,6 @@ let messagingInstance = null;
       );
     }
   }
-
 
   // ============================================================
   // FINANCEIRO / MENSALISTAS
@@ -10019,32 +10066,30 @@ let messagingInstance = null;
 
   noticePublishButton.addEventListener('click', publishNotice);
 
-  document.querySelectorAll('[data-sponsor-upload]').forEach(button => {
-    button.addEventListener('click', () => {
-      if(!isAdminUser()) return;
+  sponsorsView?.addEventListener('click', event => {
+    const uploadButton = event.target.closest('[data-sponsor-upload]');
+    if(uploadButton){
+      openSponsorFilePicker(Number(uploadButton.dataset.sponsorUpload));
+      return;
+    }
 
-      sponsorUploadSlot = Number(button.dataset.sponsorUpload);
-      sponsorFileInput.value = '';
-      sponsorFileInput.click();
-    });
+    const removeButton = event.target.closest('[data-sponsor-remove]');
+    if(removeButton){
+      removeSponsorLogo(Number(removeButton.dataset.sponsorRemove));
+    }
+  });
+
+  sponsorAddButton?.addEventListener('click', () => {
+    openSponsorFilePicker(nextNormalSponsorSlot());
   });
 
   sponsorFileInput.addEventListener('change', async () => {
     const file = sponsorFileInput.files?.[0];
-
     if(!file || !sponsorUploadSlot) return;
 
     const slot = sponsorUploadSlot;
     sponsorUploadSlot = null;
-
     await uploadSponsorLogo(slot, file);
-  });
-
-  document.querySelectorAll('[data-sponsor-remove]').forEach(button => {
-    button.addEventListener('click', () => {
-      const slot = Number(button.dataset.sponsorRemove);
-      removeSponsorLogo(slot);
-    });
   });
 
 
