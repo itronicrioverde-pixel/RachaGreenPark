@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <!-- GREEN PARK BUILD: 2026-08-14-confirmados-unificados -->
+  <!-- GREEN PARK BUILD: 2026-08-14-financeiro-mensalistas -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#071018">
@@ -3583,6 +3583,324 @@
       }
     }
 
+  
+    /* ==========================================================
+       FINANCEIRO / MENSALISTAS
+       ========================================================== */
+    .finance-shell{
+      display:flex;
+      flex-direction:column;
+      gap:13px;
+    }
+
+    .finance-note{
+      padding:10px 12px;
+      border:1px solid #2d4148;
+      border-radius:13px;
+      background:#0d181e;
+      color:#8c9ba1;
+      font-size:11px;
+      line-height:1.45;
+    }
+
+    .finance-note b{color:#fff;}
+
+    .finance-tabs{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:7px;
+      padding:5px;
+      border:1px solid var(--line);
+      border-radius:15px;
+      background:#0b151b;
+    }
+
+    .finance-tab{
+      min-height:42px;
+      border:0;
+      border-radius:11px;
+      background:transparent;
+      color:#849198;
+      font-size:10px;
+      font-weight:950;
+    }
+
+    .finance-tab.active{
+      background:var(--green);
+      color:#061007;
+    }
+
+    .finance-panel{display:none;}
+    .finance-panel.active{display:block;}
+
+    .finance-grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:9px;
+    }
+
+    .finance-card{
+      min-width:0;
+      min-height:112px;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+      padding:14px;
+      border:1px solid #293a42;
+      border-radius:17px;
+      background:#0d171d;
+    }
+
+    .finance-card.primary{
+      grid-column:1 / -1;
+      min-height:122px;
+      border-color:#28533a;
+      background:linear-gradient(145deg,#0b2416,#0d171d);
+    }
+
+    .finance-card-label{
+      color:#87959b;
+      font-size:10px;
+      font-weight:900;
+      text-transform:uppercase;
+      letter-spacing:.05em;
+    }
+
+    .finance-card-value{
+      margin-top:8px;
+      color:#fff;
+      font-size:24px;
+      line-height:1;
+      font-weight:950;
+      overflow-wrap:anywhere;
+    }
+
+    .finance-card.primary .finance-card-value{
+      color:var(--green);
+      font-size:34px;
+    }
+
+    .finance-card-small{
+      margin-top:7px;
+      color:#75858c;
+      font-size:9px;
+      line-height:1.35;
+    }
+
+    .finance-section{
+      margin-top:13px;
+      padding:15px;
+      border:1px solid var(--line);
+      border-radius:18px;
+      background:var(--panel);
+    }
+
+    .finance-section h3{
+      margin:0 0 11px;
+      color:#fff;
+      font-size:16px;
+    }
+
+    .finance-form{
+      display:grid;
+      gap:9px;
+    }
+
+    .finance-form input,
+    .finance-form select,
+    .finance-player-select{
+      width:100%;
+      min-width:0;
+      box-sizing:border-box;
+      min-height:47px;
+      border:1px solid #33454d;
+      border-radius:12px;
+      background:#0b151b;
+      color:#fff;
+      padding:0 12px;
+      font:inherit;
+      font-size:13px;
+      outline:none;
+    }
+
+    .finance-action{
+      min-height:48px;
+      border:0;
+      border-radius:12px;
+      background:var(--green);
+      color:#061007;
+      font-size:12px;
+      font-weight:950;
+    }
+
+    .finance-action.secondary{
+      border:1px solid #31454d;
+      background:#111d23;
+      color:#dce4e7;
+    }
+
+    .finance-action.danger{
+      border:1px solid #663838;
+      background:#2b1515;
+      color:#ffadad;
+    }
+
+    .finance-player-list,
+    .finance-movement-list{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+
+    .finance-player{
+      padding:13px;
+      border:1px solid #2b3c43;
+      border-radius:15px;
+      background:#0c161c;
+    }
+
+    .finance-player-top{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom:9px;
+    }
+
+    .finance-player-name{
+      min-width:0;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+      color:#fff;
+      font-size:14px;
+      font-weight:950;
+    }
+
+    .finance-plan-badge{
+      flex:0 0 auto;
+      padding:6px 8px;
+      border-radius:999px;
+      background:#18252a;
+      color:#a3afb4;
+      font-size:8px;
+      font-weight:950;
+      letter-spacing:.04em;
+    }
+
+    .finance-plan-badge.monthly{
+      background:#18371f;
+      color:#79e486;
+    }
+
+    .finance-player-actions{
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:7px;
+    }
+
+    .finance-monthly-status{
+      margin-top:8px;
+      color:#7f8e94;
+      font-size:10px;
+    }
+
+    .finance-monthly-status.ok{color:#7ee489;}
+
+    .finance-mini-btn{
+      min-height:42px;
+      border:1px solid #355047;
+      border-radius:11px;
+      background:#102019;
+      color:#b6c2bd;
+      padding:0 10px;
+      font-size:9px;
+      font-weight:950;
+      white-space:nowrap;
+    }
+
+    .finance-mini-btn.pay{
+      border-color:#4b864f;
+      background:#17361c;
+      color:#87ea91;
+    }
+
+    .finance-movement{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:10px;
+      padding:11px 0;
+      border-bottom:1px solid #1f2e35;
+    }
+
+    .finance-movement:last-child{border-bottom:0;}
+
+    .finance-movement-main{
+      min-width:0;
+    }
+
+    .finance-movement-title{
+      color:#fff;
+      font-size:12px;
+      font-weight:900;
+    }
+
+    .finance-movement-meta{
+      margin-top:3px;
+      color:#718188;
+      font-size:9px;
+    }
+
+    .finance-movement-value{
+      flex:0 0 auto;
+      font-size:12px;
+      font-weight:950;
+    }
+
+    .finance-movement-value.in{color:#78df85;}
+    .finance-movement-value.out{color:#ff8e8e;}
+
+    .finance-empty{
+      padding:24px 12px;
+      color:#7d8b91;
+      text-align:center;
+      font-size:12px;
+    }
+
+    .billing-current-plan{
+      margin:0 0 12px;
+      padding:13px;
+      border:1px solid #2a4435;
+      border-radius:13px;
+      background:#0d1d14;
+      color:#92a99a;
+      font-size:11px;
+      line-height:1.45;
+    }
+
+    .billing-current-plan strong{
+      display:block;
+      margin-bottom:3px;
+      color:#fff;
+      font-size:14px;
+    }
+
+    .billing-current-plan.monthly-active{
+      border-color:#387442;
+      background:#102a17;
+    }
+
+    .billing-current-plan.monthly-active strong{
+      color:#82ea8d;
+    }
+
+    @media(max-width:390px){
+      .finance-card-value{font-size:21px;}
+      .finance-card.primary .finance-card-value{font-size:30px;}
+      .finance-player-actions{grid-template-columns:1fr;}
+    }
+
   </style>
 </head>
 
@@ -4193,6 +4511,122 @@
     </section>
   </main>
 
+  <!-- FINANCEIRO -->
+  <main class="content view" id="financeView">
+    <div class="page-head">
+      <button class="back-btn" id="financeBack">←</button>
+      <div>
+        <div class="page-kicker">ADMINISTRAÇÃO</div>
+        <h1>Financeiro</h1>
+      </div>
+    </div>
+
+    <div class="finance-shell">
+      <div class="finance-note">
+        <b>Saldo do caixa do Green Park.</b>
+        É o valor calculado pelos recebimentos e despesas registrados no app.
+        Não é uma consulta direta ao saldo da sua conta bancária.
+      </div>
+
+      <div class="finance-tabs">
+        <button class="finance-tab active" data-finance-tab="dashboard" type="button">DASHBOARD</button>
+        <button class="finance-tab" data-finance-tab="players" type="button">JOGADORES</button>
+        <button class="finance-tab" data-finance-tab="expenses" type="button">DESPESAS</button>
+      </div>
+
+      <section class="finance-panel active" data-finance-panel="dashboard">
+        <div class="finance-grid">
+          <article class="finance-card primary">
+            <div class="finance-card-label">Saldo em caixa</div>
+            <div class="finance-card-value" id="financeBalance">R$ 0,00</div>
+            <div class="finance-card-small">Recebimentos − despesas + saldo inicial</div>
+          </article>
+
+          <article class="finance-card">
+            <div class="finance-card-label">Recebido hoje</div>
+            <div class="finance-card-value" id="financeReceivedToday">R$ 0,00</div>
+            <div class="finance-card-small" id="financeReceivedMonth">Mês: R$ 0,00</div>
+          </article>
+
+          <article class="finance-card">
+            <div class="finance-card-label">Despesas hoje</div>
+            <div class="finance-card-value" id="financeExpensesToday">R$ 0,00</div>
+            <div class="finance-card-small" id="financeExpensesMonth">Mês: R$ 0,00</div>
+          </article>
+
+          <article class="finance-card">
+            <div class="finance-card-label">Mensalistas</div>
+            <div class="finance-card-value" id="financeMonthlyCount">0</div>
+            <div class="finance-card-small" id="financeMonthlyPaidCount">0 com mês pago</div>
+          </article>
+
+          <article class="finance-card">
+            <div class="finance-card-label">Diaristas</div>
+            <div class="finance-card-value" id="financeDailyCount">0</div>
+            <div class="finance-card-small">Pagam para cada racha</div>
+          </article>
+        </div>
+
+        <section class="finance-section">
+          <h3>Configuração</h3>
+          <div class="finance-form">
+            <input id="financeDailyPrice" type="number" inputmode="decimal" step="0.01" min="0" placeholder="Valor da diária">
+            <input id="financeMonthlyPrice" type="number" inputmode="decimal" step="0.01" min="0" placeholder="Valor da mensalidade">
+            <input id="financeOpeningBalance" type="number" inputmode="decimal" step="0.01" placeholder="Saldo inicial do caixa">
+            <button class="finance-action secondary" id="financeSaveSettings" type="button">
+              SALVAR CONFIGURAÇÃO
+            </button>
+          </div>
+        </section>
+
+        <section class="finance-section">
+          <h3>Últimas movimentações</h3>
+          <div class="finance-movement-list" id="financeMovements">
+            <div class="finance-empty">Carregando...</div>
+          </div>
+        </section>
+      </section>
+
+      <section class="finance-panel" data-finance-panel="players">
+        <section class="finance-section" style="margin-top:0;">
+          <h3>Mensalistas e diaristas</h3>
+          <div class="finance-player-list" id="financePlayers">
+            <div class="finance-empty">Carregando jogadores...</div>
+          </div>
+        </section>
+      </section>
+
+      <section class="finance-panel" data-finance-panel="expenses">
+        <section class="finance-section" style="margin-top:0;">
+          <h3>Registrar despesa</h3>
+
+          <div class="finance-form">
+            <input id="expenseDescription" type="text" maxlength="100" placeholder="Ex.: Churrasco, campo, gelo, bolas...">
+            <input id="expenseAmount" type="number" inputmode="decimal" step="0.01" min="0.01" placeholder="Valor da despesa">
+            <select id="expenseCategory">
+              <option value="Campo">Campo</option>
+              <option value="Churrasco">Churrasco / Resenha</option>
+              <option value="Material">Material esportivo</option>
+              <option value="Bebidas">Bebidas / Gelo</option>
+              <option value="Outros">Outros</option>
+            </select>
+
+            <select id="expenseMethod">
+              <option value="Pix">Pix</option>
+              <option value="Dinheiro">Dinheiro</option>
+              <option value="Cartão">Cartão</option>
+              <option value="Transferência">Transferência</option>
+            </select>
+
+            <button class="finance-action danger" id="expenseSaveButton" type="button">
+              REGISTRAR DESPESA
+            </button>
+          </div>
+        </section>
+      </section>
+    </div>
+  </main>
+
   <!-- CONFIRMAÇÃO -->
   <main class="content view" id="confirmationView">
     <div class="page-head">
@@ -4221,23 +4655,19 @@
 
     <div class="payment-flow" id="paymentFlow">
       <section class="confirm-card">
-        <div class="flow-label">TIPO DE PAGAMENTO</div>
+        <div class="flow-label">SEU PLANO</div>
 
-        <div class="payment-types">
+        <div class="billing-current-plan" id="billingCurrentPlan">
+          <strong>Diarista</strong>
+          O tipo de cobrança é definido pelo administrador.
+        </div>
+
+        <div class="payment-types" style="display:none;">
           <button class="payment-type selected" id="dailyPayment" type="button">
-            <span>
-              <strong>R$ 15,00</strong>
-              <span>Pagamento diário</span>
-            </span>
-            <span class="payment-radio"></span>
+            <span><strong>Diária</strong><span>Diarista</span></span>
           </button>
-
           <button class="payment-type" id="monthlyPayment" type="button">
-            <span>
-              <strong>R$ 70,00</strong>
-              <span>Mensalidade</span>
-            </span>
-            <span class="payment-radio"></span>
+            <span><strong>Mensal</strong><span>Mensalista</span></span>
           </button>
         </div>
       </section>
@@ -4675,6 +5105,15 @@ const excluirComunicadoCall = httpsCallable(functions, 'excluirComunicado');
 const listarPatrocinadoresCall = httpsCallable(functions, 'listarPatrocinadores');
 const salvarPatrocinadorCall = httpsCallable(functions, 'salvarPatrocinador');
 const removerPatrocinadorCall = httpsCallable(functions, 'removerPatrocinador');
+const obterDashboardFinanceiroCall = httpsCallable(functions, 'obterDashboardFinanceiro');
+const listarControlePagamentosCall = httpsCallable(functions, 'listarControlePagamentos');
+const definirPlanoJogadorCall = httpsCallable(functions, 'definirPlanoJogador');
+const registrarMensalidadeCall = httpsCallable(functions, 'registrarMensalidade');
+const registrarDespesaCall = httpsCallable(functions, 'registrarDespesa');
+const salvarConfiguracaoFinanceiraCall = httpsCallable(functions, 'salvarConfiguracaoFinanceira');
+const obterMeuPlanoCall = httpsCallable(functions, 'obterMeuPlano');
+const confirmarPresencaMensalistaCall = httpsCallable(functions, 'confirmarPresencaMensalista');
+const prepararNovoRachaCall = httpsCallable(functions, 'prepararNovoRacha');
 const ADMIN_UID = 'd3nVt6SbQlO6lYnOcCUDbLBhoU02';
 const VAPID_PUBLIC_KEY = 'BPBQyOZBpQS-uBaM5H0YhkyPNjQI2dNjrweS4zjvmB79e7TVQR-QuzkmpQyAGJgTCxxaFL_ZnRCelCsbK0T9Lg0';
 let messagingInstance = null;
@@ -4702,6 +5141,8 @@ let messagingInstance = null;
       email: '',
       photo: '',
       paymentType: '',
+      billingType: 'daily',
+      monthlyPaidThrough: '',
       paymentReported: false,
       pixOrderId: '',
       pixQrCode: '',
@@ -4768,6 +5209,25 @@ let messagingInstance = null;
   const liveStatsCount = document.getElementById('liveStatsCount');
   const liveStatsMatch = document.getElementById('liveStatsMatch');
   const liveStatsReadOnly = document.getElementById('liveStatsReadOnly');
+  const billingCurrentPlan = document.getElementById('billingCurrentPlan');
+  const financeView = document.getElementById('financeView');
+  const financeBalance = document.getElementById('financeBalance');
+  const financeReceivedToday = document.getElementById('financeReceivedToday');
+  const financeReceivedMonth = document.getElementById('financeReceivedMonth');
+  const financeExpensesToday = document.getElementById('financeExpensesToday');
+  const financeExpensesMonth = document.getElementById('financeExpensesMonth');
+  const financeMonthlyCount = document.getElementById('financeMonthlyCount');
+  const financeMonthlyPaidCount = document.getElementById('financeMonthlyPaidCount');
+  const financeDailyCount = document.getElementById('financeDailyCount');
+  const financeDailyPrice = document.getElementById('financeDailyPrice');
+  const financeMonthlyPrice = document.getElementById('financeMonthlyPrice');
+  const financeOpeningBalance = document.getElementById('financeOpeningBalance');
+  const financeMovements = document.getElementById('financeMovements');
+  const financePlayers = document.getElementById('financePlayers');
+  const expenseDescription = document.getElementById('expenseDescription');
+  const expenseAmount = document.getElementById('expenseAmount');
+  const expenseCategory = document.getElementById('expenseCategory');
+  const expenseMethod = document.getElementById('expenseMethod');
   const remainingCount = document.getElementById('remainingCount');
   const ringConfirmed = document.getElementById('ringConfirmed');
   const ringMax = document.getElementById('ringMax');
@@ -5208,6 +5668,15 @@ let messagingInstance = null;
       if(!snap.exists()) return;
 
       const data = snap.data();
+
+      if(typeof data.billingType === 'string'){
+        state.currentUser.billingType = data.billingType;
+        state.currentUser.paymentType = data.billingType === 'monthly' ? 'monthly' : 'daily';
+      }
+
+      if(typeof data.monthlyPaidThrough === 'string'){
+        state.currentUser.monthlyPaidThrough = data.monthlyPaidThrough;
+      }
 
       if(data.status === 'confirmed'){
         state.currentUser.status = 'confirmed';
@@ -6581,6 +7050,333 @@ let messagingInstance = null;
     }
   }
 
+
+  // ============================================================
+  // FINANCEIRO / MENSALISTAS
+  // ============================================================
+  let financePlayersCache = [];
+  let financeDashboardLoading = false;
+
+  function moneyBR(value){
+    return Number(value || 0).toLocaleString(
+      'pt-BR',
+      {style:'currency', currency:'BRL'}
+    );
+  }
+
+  function currentMonthBR(){
+    const now = new Date();
+    return `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+  }
+
+  function monthLabel(value){
+    const match = String(value || '').match(/^(\d{4})-(\d{2})$/);
+    if(!match) return value || '';
+    return `${match[2]}/${match[1]}`;
+  }
+
+  function renderBillingPlan(plan){
+    if(!billingCurrentPlan) return;
+
+    const billingType = plan?.billingType === 'monthly' ? 'monthly' : 'daily';
+    const paid = plan?.monthlyActive === true;
+
+    state.currentUser.billingType = billingType;
+    state.currentUser.paymentType = billingType;
+    state.currentUser.monthlyPaidThrough = plan?.monthlyPaidThrough || '';
+    selectedPaymentType = billingType;
+
+    billingCurrentPlan.classList.toggle(
+      'monthly-active',
+      billingType === 'monthly' && paid
+    );
+
+    if(billingType === 'monthly'){
+      billingCurrentPlan.innerHTML = paid
+        ? `<strong>Mensalista • mês pago ✓</strong>Você só precisa confirmar presença. Não haverá cobrança diária.`
+        : `<strong>Mensalista • mensalidade pendente</strong>Procure o administrador para regularizar o mês antes de confirmar.`;
+    }else{
+      billingCurrentPlan.innerHTML =
+        `<strong>Diarista</strong>Para entrar na lista deste racha, faça o pagamento da diária via Pix.`;
+    }
+
+    renderPaymentType();
+  }
+
+  async function loadMyBillingPlan(){
+    try{
+      const user = await ensureFirebasePlayer();
+      if(user.uid === ADMIN_UID) return null;
+
+      const result = await obterMeuPlanoCall();
+      const plan = result.data || {};
+      renderBillingPlan(plan);
+      return plan;
+    }catch(error){
+      console.warn('Plano do jogador:', error);
+      renderBillingPlan({
+        billingType:'daily',
+        monthlyActive:false
+      });
+      return {
+        billingType:'daily',
+        monthlyActive:false
+      };
+    }
+  }
+
+  async function confirmMonthlyAttendance(){
+    try{
+      const result = await confirmarPresencaMensalistaCall({
+        rachaDate:String(state.config.date || ''),
+        rachaTime:String(state.config.time || '')
+      });
+
+      if(!result.data?.confirmed){
+        throw new Error('Não foi possível confirmar sua presença.');
+      }
+
+      state.currentUser.status = 'confirmed';
+      state.currentUser.billingType = 'monthly';
+      state.currentUser.paymentType = 'monthly';
+      state.currentUser.paymentReported = true;
+
+      saveState();
+      syncLocalUserConfirmation();
+      renderHome();
+
+      alert('Presença confirmada ✓\nMensalista: nenhuma cobrança diária foi gerada.');
+      showView('homeView');
+      return true;
+    }catch(error){
+      alert(error?.message || 'Não foi possível confirmar a presença.');
+      return false;
+    }
+  }
+
+  function activateFinanceTab(name){
+    document.querySelectorAll('[data-finance-tab]').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.financeTab === name);
+    });
+
+    document.querySelectorAll('[data-finance-panel]').forEach(panel => {
+      panel.classList.toggle('active', panel.dataset.financePanel === name);
+    });
+  }
+
+  function renderFinanceMovements(items){
+    financeMovements.innerHTML = '';
+
+    if(!Array.isArray(items) || items.length === 0){
+      financeMovements.innerHTML =
+        '<div class="finance-empty">Nenhuma movimentação registrada.</div>';
+      return;
+    }
+
+    items.slice(0,15).forEach(item => {
+      const row = document.createElement('div');
+      row.className = 'finance-movement';
+
+      const main = document.createElement('div');
+      main.className = 'finance-movement-main';
+
+      const title = document.createElement('div');
+      title.className = 'finance-movement-title';
+      title.textContent = item.title || (item.kind === 'expense' ? 'Despesa' : 'Recebimento');
+
+      const meta = document.createElement('div');
+      meta.className = 'finance-movement-meta';
+      meta.textContent =
+        [item.method, item.dateLabel].filter(Boolean).join(' • ');
+
+      const value = document.createElement('div');
+      value.className =
+        'finance-movement-value ' +
+        (item.kind === 'expense' ? 'out' : 'in');
+      value.textContent =
+        (item.kind === 'expense' ? '− ' : '+ ') +
+        moneyBR(item.amount);
+
+      main.append(title, meta);
+      row.append(main, value);
+      financeMovements.appendChild(row);
+    });
+  }
+
+  function renderFinancePlayers(){
+    financePlayers.innerHTML = '';
+
+    if(!financePlayersCache.length){
+      financePlayers.innerHTML =
+        '<div class="finance-empty">Nenhum jogador cadastrado ainda.</div>';
+      return;
+    }
+
+    financePlayersCache.forEach(player => {
+      const card = document.createElement('article');
+      card.className = 'finance-player';
+
+      const top = document.createElement('div');
+      top.className = 'finance-player-top';
+
+      const name = document.createElement('div');
+      name.className = 'finance-player-name';
+      name.textContent = player.name || 'Jogador';
+
+      const badge = document.createElement('div');
+      badge.className =
+        'finance-plan-badge ' +
+        (player.billingType === 'monthly' ? 'monthly' : '');
+      badge.textContent =
+        player.billingType === 'monthly' ? 'MENSALISTA' : 'DIARISTA';
+
+      top.append(name, badge);
+
+      const actions = document.createElement('div');
+      actions.className = 'finance-player-actions';
+
+      const select = document.createElement('select');
+      select.className = 'finance-player-select';
+      select.innerHTML =
+        '<option value="daily">Diarista</option>' +
+        '<option value="monthly">Mensalista</option>';
+      select.value = player.billingType === 'monthly' ? 'monthly' : 'daily';
+
+      const monthlyButton = document.createElement('button');
+      monthlyButton.type = 'button';
+      monthlyButton.className = 'finance-mini-btn pay';
+      monthlyButton.textContent =
+        player.monthlyActive ? 'MÊS PAGO ✓' : 'MARCAR MÊS PAGO';
+      monthlyButton.style.display =
+        select.value === 'monthly' ? 'block' : 'none';
+
+      select.addEventListener('change', async () => {
+        select.disabled = true;
+        monthlyButton.disabled = true;
+
+        try{
+          await definirPlanoJogadorCall({
+            playerId:player.id,
+            billingType:select.value
+          });
+
+          player.billingType = select.value;
+
+          if(select.value === 'daily'){
+            player.monthlyActive = false;
+          }
+
+          await loadFinanceDashboard();
+        }catch(error){
+          alert('Não foi possível alterar o plano: ' + (error.message || 'erro'));
+          select.value = player.billingType === 'monthly' ? 'monthly' : 'daily';
+        }finally{
+          select.disabled = false;
+          monthlyButton.disabled = false;
+          renderFinancePlayers();
+        }
+      });
+
+      monthlyButton.addEventListener('click', async () => {
+        if(player.billingType !== 'monthly') return;
+
+        if(player.monthlyActive){
+          alert(`Mensalidade de ${player.name} já está paga para ${monthLabel(player.monthlyPaidThrough)}.`);
+          return;
+        }
+
+        const method = prompt(
+          'Forma de recebimento da mensalidade:\nPix, Dinheiro, Cartão ou Transferência',
+          'Pix'
+        );
+
+        if(method === null) return;
+
+        monthlyButton.disabled = true;
+        monthlyButton.textContent = 'SALVANDO...';
+
+        try{
+          await registrarMensalidadeCall({
+            playerId:player.id,
+            method:String(method || 'Pix').trim()
+          });
+
+          await loadFinanceDashboard();
+        }catch(error){
+          alert('Não foi possível registrar a mensalidade: ' + (error.message || 'erro'));
+        }finally{
+          monthlyButton.disabled = false;
+        }
+      });
+
+      actions.append(select, monthlyButton);
+
+      const status = document.createElement('div');
+      status.className =
+        'finance-monthly-status ' +
+        (player.monthlyActive ? 'ok' : '');
+
+      if(player.billingType === 'monthly'){
+        status.textContent = player.monthlyActive
+          ? `Mensalidade paga até ${monthLabel(player.monthlyPaidThrough)}`
+          : 'Mensalidade deste mês pendente';
+      }else{
+        status.textContent = 'Pagamento por racha';
+      }
+
+      card.append(top, actions, status);
+      financePlayers.appendChild(card);
+    });
+  }
+
+  async function loadFinanceDashboard(){
+    if(!isAdminUser() || financeDashboardLoading) return;
+
+    financeDashboardLoading = true;
+
+    try{
+      const [dashboardResult, playersResult] = await Promise.all([
+        obterDashboardFinanceiroCall(),
+        listarControlePagamentosCall()
+      ]);
+
+      const dashboard = dashboardResult.data || {};
+      const playersData = playersResult.data || {};
+
+      financeBalance.textContent = moneyBR(dashboard.balance);
+      financeReceivedToday.textContent = moneyBR(dashboard.receivedToday);
+      financeReceivedMonth.textContent =
+        'Mês: ' + moneyBR(dashboard.receivedMonth);
+      financeExpensesToday.textContent = moneyBR(dashboard.expensesToday);
+      financeExpensesMonth.textContent =
+        'Mês: ' + moneyBR(dashboard.expensesMonth);
+
+      financeMonthlyCount.textContent = Number(dashboard.monthlyCount || 0);
+      financeMonthlyPaidCount.textContent =
+        `${Number(dashboard.monthlyPaidCount || 0)} com mês pago`;
+      financeDailyCount.textContent = Number(dashboard.dailyCount || 0);
+
+      financeDailyPrice.value = Number(dashboard.settings?.dailyPrice ?? 15);
+      financeMonthlyPrice.value = Number(dashboard.settings?.monthlyPrice ?? 70);
+      financeOpeningBalance.value = Number(dashboard.settings?.openingBalance ?? 0);
+
+      renderFinanceMovements(dashboard.movements || []);
+
+      financePlayersCache =
+        Array.isArray(playersData.players) ? playersData.players : [];
+
+      renderFinancePlayers();
+    }catch(error){
+      console.error('Financeiro:', error);
+      financeMovements.innerHTML =
+        '<div class="finance-empty">Financeiro ainda não conectado ao Firebase.</div>';
+      financePlayers.innerHTML =
+        '<div class="finance-empty">Publique as Functions para carregar os jogadores.</div>';
+    }finally{
+      financeDashboardLoading = false;
+    }
+  }
+
   let liveStatsCache = [];
   let liveStatsLoading = false;
   const liveStatsActionRunning = new Set();
@@ -7306,7 +8102,19 @@ let messagingInstance = null;
     showView('confirmationView');
   });
 
-  document.getElementById('yesButton').addEventListener('click', () => {
+  document.getElementById('yesButton').addEventListener('click', async () => {
+    const plan = await loadMyBillingPlan();
+
+    // Mensalista já cadastrado e com mês pago: entra direto na lista.
+    if(
+      plan?.billingType === 'monthly' &&
+      plan?.monthlyActive === true &&
+      state.currentUser.name
+    ){
+      await confirmMonthlyAttendance();
+      return;
+    }
+
     playerName.value = state.currentUser.name || '';
     playerPhone.value = state.currentUser.phone || '';
     playerEmail.value = state.currentUser.email || '';
@@ -7464,17 +8272,8 @@ let messagingInstance = null;
     pixPollTimer = setInterval(() => consultarPixAtual(), 3000);
   }
 
-  dailyPayment.addEventListener('click', () => {
-    if(currentPixOrderId) return;
-    selectedPaymentType = 'daily';
-    renderPaymentType();
-  });
-
-  monthlyPayment.addEventListener('click', () => {
-    if(currentPixOrderId) return;
-    selectedPaymentType = 'monthly';
-    renderPaymentType();
-  });
+  dailyPayment.addEventListener('click', () => {});
+  monthlyPayment.addEventListener('click', () => {});
 
   cancelPixButton.addEventListener('click', () => {
     const ok = confirm(
@@ -7519,17 +8318,18 @@ let messagingInstance = null;
 
       state.currentUser.id = user.uid;
       state.currentUser.email = email;
-      state.currentUser.paymentType = selectedPaymentType;
+      selectedPaymentType = 'daily';
+      state.currentUser.billingType = 'daily';
+      state.currentUser.paymentType = 'daily';
 
       await setDoc(doc(db, 'players', user.uid), {
         uid: user.uid,
         email,
-        paymentType: selectedPaymentType,
         updatedAt: serverTimestamp()
       }, {merge:true});
 
       const result = await criarPagamentoPixCall({
-        type: selectedPaymentType,
+        type: 'daily',
         email
       });
       const data = result.data || {};
@@ -7674,9 +8474,24 @@ let messagingInstance = null;
       else state.players.push(playerRecord);
 
       saveState();
-      selectedPaymentType = state.currentUser.paymentType || 'daily';
-        paymentFlow.classList.add('show');
+
+      const plan = await loadMyBillingPlan();
+
+      if(
+        plan?.billingType === 'monthly' &&
+        plan?.monthlyActive === true
+      ){
+        await confirmMonthlyAttendance();
+        return;
+      }
+
+      // O plano é definido pelo Admin. Novo jogador/diarista paga diária.
+      selectedPaymentType = 'daily';
+      state.currentUser.billingType = 'daily';
+      state.currentUser.paymentType = 'daily';
+      paymentFlow.classList.add('show');
       confirmationView.classList.add('payment-mode');
+      renderBillingPlan(plan || {billingType:'daily', monthlyActive:false});
       renderPixFromState();
       showView('confirmationView');
       setTimeout(() => paymentFlow.scrollIntoView({behavior:'smooth',block:'start'}),100);
@@ -7870,6 +8685,80 @@ let messagingInstance = null;
     openFeatureView('sponsorsView');
   });
 
+
+  document.getElementById('financeBack')?.addEventListener('click', () => {
+    prepareAdminAccordion?.();
+    showView('adminView');
+  });
+
+  document.querySelectorAll('[data-finance-tab]').forEach(button => {
+    button.addEventListener('click', () => {
+      activateFinanceTab(button.dataset.financeTab || 'dashboard');
+    });
+  });
+
+  document.getElementById('financeSaveSettings')?.addEventListener('click', async () => {
+    if(!isAdminUser()) return;
+
+    const button = document.getElementById('financeSaveSettings');
+    button.disabled = true;
+
+    try{
+      await salvarConfiguracaoFinanceiraCall({
+        dailyPrice:Number(financeDailyPrice.value || 0),
+        monthlyPrice:Number(financeMonthlyPrice.value || 0),
+        openingBalance:Number(financeOpeningBalance.value || 0)
+      });
+
+      await loadFinanceDashboard();
+      alert('Configuração financeira salva.');
+    }catch(error){
+      alert('Não foi possível salvar: ' + (error.message || 'erro'));
+    }finally{
+      button.disabled = false;
+    }
+  });
+
+  document.getElementById('expenseSaveButton')?.addEventListener('click', async () => {
+    if(!isAdminUser()) return;
+
+    const description = String(expenseDescription.value || '').trim();
+    const amount = Number(expenseAmount.value || 0);
+
+    if(description.length < 2){
+      alert('Informe a descrição da despesa.');
+      return;
+    }
+
+    if(!(amount > 0)){
+      alert('Informe o valor da despesa.');
+      return;
+    }
+
+    const button = document.getElementById('expenseSaveButton');
+    button.disabled = true;
+
+    try{
+      await registrarDespesaCall({
+        description,
+        amount,
+        category:String(expenseCategory.value || 'Outros'),
+        method:String(expenseMethod.value || 'Pix')
+      });
+
+      expenseDescription.value = '';
+      expenseAmount.value = '';
+
+      await loadFinanceDashboard();
+      activateFinanceTab('dashboard');
+      alert('Despesa registrada.');
+    }catch(error){
+      alert('Não foi possível registrar: ' + (error.message || 'erro'));
+    }finally{
+      button.disabled = false;
+    }
+  });
+
   galleryFileInput.addEventListener('change', () => {
     const count = galleryFileInput.files?.length || 0;
 
@@ -7963,14 +8852,14 @@ let messagingInstance = null;
   });
 
   document.getElementById('adminPaymentsButton')?.addEventListener('click', () => {
-    const section = document.querySelector('[data-admin-accordion="attendance"]');
+    if(!isAdminUser()){
+      alert('Entre como administrador.');
+      return;
+    }
 
-    document.querySelectorAll('[data-admin-accordion]').forEach(item => {
-      item.classList.remove('open');
-    });
-
-    section?.classList.add('open');
-    section?.scrollIntoView({behavior:'smooth', block:'start'});
+    activateFinanceTab('dashboard');
+    showView('financeView');
+    loadFinanceDashboard();
   });
 
   document.getElementById('adminStatsButton')?.addEventListener('click', () => {
@@ -8121,6 +9010,32 @@ let messagingInstance = null;
 
   document.getElementById('saveRachaButton').addEventListener('click', async () => {
     const locationText = matchLocation.value.trim();
+
+    const previousRachaDate = String(remoteRacha?.date || state.config.date || '');
+    const nextRachaDate = String(matchDate.value || '');
+
+    if(
+      isAdminUser() &&
+      previousRachaDate &&
+      nextRachaDate &&
+      previousRachaDate !== nextRachaDate
+    ){
+      const shouldReset = confirm(
+        'Você está criando um novo racha. Zerar somente as presenças do racha anterior e manter os cadastros, mensalistas e diaristas?'
+      );
+
+      if(!shouldReset) return;
+
+      try{
+        await prepararNovoRachaCall({
+          date:nextRachaDate,
+          time:String(matchTime.value || '')
+        });
+      }catch(error){
+        alert('Não foi possível preparar o novo racha: ' + (error.message || 'erro'));
+        return;
+      }
+    }
 
     state.config.date = matchDate.value;
     state.config.time = matchTime.value;

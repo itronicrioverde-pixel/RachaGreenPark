@@ -1694,3 +1694,1446 @@ exports.removerPatrocinador = onCall(
       return {ok: true};
     },
 );
+
+
+
+/*
+ * ==========================================================
+ * GREEN PARK FC — FINANCEIRO / MENSALISTAS
+ * ==========================================================
+ */
+
+const GREEN_PARK_ADMIN_UID_FINANCE =
+  "d3nVt6SbQlO6lYnOcCUDbLBhoU02";
+
+
+function financeAuthOrThrow(request) {
+  if (!request.auth) {
+    throw new HttpsError(
+        "unauthenticated",
+        "É necessário estar autenticado.",
+    );
+  }
+}
+
+
+function financeAdminOrThrow(request) {
+  financeAuthOrThrow(request);
+
+  if (
+    request.auth.uid !==
+    GREEN_PARK_ADMIN_UID_FINANCE
+  ) {
+    throw new HttpsError(
+        "permission-denied",
+        "Apenas o administrador pode acessar o financeiro.",
+    );
+  }
+}
+
+
+function financeNumber(value) {
+  const number = Number(value);
+  return Number.isFinite(number) ?
+    number :
+    0;
+}
+
+
+function financeMoney(value) {
+  return Math.round(
+      Math.max(
+          0,
+          financeNumber(value),
+      ) * 100,
+  ) / 100;
+}
+
+
+function financeString(
+    value,
+    max = 120,
+) {
+  return String(value || "")
+      .trim()
+      .slice(0, max);
+}
+
+
+function financeSaoPauloParts() {
+  const formatter =
+    new Intl.DateTimeFormat(
+        "en-US",
+        {
+          timeZone:
+            "America/Sao_Paulo",
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+        },
+    );
+
+  const parts =
+    formatter.formatToParts(
+        new Date(),
+    );
+
+  const map = {};
+
+  parts.forEach((part) => {
+    map[part.type] =
+      part.value;
+  });
+
+  return {
+    year: map.year,
+    month: map.month,
+    day: map.day,
+    monthKey:
+      map.year +
+      "-" +
+      map.month,
+    dayKey:
+      map.year +
+      "-" +
+      map.month +
+      "-" +
+      map.day,
+  };
+}
+
+
+function financeTimestampMs(value) {
+  if (!value) return 0;
+
+  if (
+    typeof value.toMillis ===
+    "function"
+  ) {
+    return value.toMillis();
+  }
+
+  if (
+    typeof value === "number"
+  ) {
+    return value;
+  }
+
+  const parsed =
+    Date.parse(value);
+
+  return Number.isFinite(parsed) ?
+    parsed :
+    0;
+}
+
+
+function financeDayMonthKeys(ms) {
+  if (!ms) {
+    return {
+      dayKey: "",
+      monthKey: "",
+      dateLabel: "",
+    };
+  }
+
+  const date =
+    new Date(ms);
+
+  const formatter =
+    new Intl.DateTimeFormat(
+        "en-US",
+        {
+          timeZone:
+            "America/Sao_Paulo",
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+        },
+    );
+
+  const parts =
+    formatter.formatToParts(
+        date,
+    );
+
+  const map = {};
+
+  parts.forEach((part) => {
+    map[part.type] =
+      part.value;
+  });
+
+  return {
+    dayKey:
+      map.year +
+      "-" +
+      map.month +
+      "-" +
+      map.day,
+    monthKey:
+      map.year +
+      "-" +
+      map.month,
+    dateLabel:
+      map.day +
+      "/" +
+      map.month +
+      "/" +
+      map.year,
+  };
+}
+
+
+function financeApproved(data) {
+  const status =
+    String(
+        data?.status || "",
+    )
+        .toLowerCase()
+        .trim();
+
+  return (
+    data?.webhookConfirmed ===
+      true ||
+    data?.paid === true ||
+    [
+      "approved",
+      "paid",
+      "processed",
+      "accredited",
+    ].includes(status)
+  );
+}
+
+
+function financePaymentAmount(data) {
+  const candidates = [
+    data?.amount,
+    data?.transactionAmount,
+    data?.transaction_amount,
+    data?.totalAmount,
+    data?.total_amount,
+    data?.total,
+  ];
+
+  for (
+    const value of
+    candidates
+  ) {
+    const amount =
+      financeMoney(value);
+
+    if (amount > 0) {
+      return amount;
+    }
+  }
+
+  return 0;
+}
+
+
+function financePaymentMs(data) {
+  const candidates = [
+    data?.approvedAt,
+    data?.paidAt,
+    data?.webhookConfirmedAt,
+    data?.updatedAt,
+    data?.createdAt,
+  ];
+
+  for (
+    const value of
+    candidates
+  ) {
+    const ms =
+      financeTimestampMs(
+          value,
+      );
+
+    if (ms) return ms;
+  }
+
+  return 0;
+}
+
+
+async function financeSettings(db) {
+  const snapshot =
+    await db
+        .collection(
+            "finance_settings",
+        )
+        .doc("current")
+        .get();
+
+  const data =
+    snapshot.exists ?
+      snapshot.data() || {} :
+      {};
+
+  return {
+    dailyPrice:
+      financeMoney(
+          data.dailyPrice || 15,
+      ),
+    monthlyPrice:
+      financeMoney(
+          data.monthlyPrice || 70,
+      ),
+    openingBalance:
+      financeNumber(
+          data.openingBalance || 0,
+      ),
+  };
+}
+
+
+async function financeUpdateConfirmedCount(
+    db,
+) {
+  const snapshot =
+    await db
+        .collection("players")
+        .where(
+            "status",
+            "==",
+            "confirmed",
+        )
+        .get();
+
+  await db
+      .collection("racha")
+      .doc("current")
+      .set(
+          {
+            confirmedCount:
+              snapshot.size,
+            countUpdatedAt:
+              FieldValue
+                  .serverTimestamp(),
+          },
+          {merge: true},
+      );
+
+  return snapshot.size;
+}
+
+
+exports.salvarConfiguracaoFinanceira = onCall(
+    {
+      region:
+        "southamerica-east1",
+      timeoutSeconds: 15,
+    },
+    async (request) => {
+      financeAdminOrThrow(
+          request,
+      );
+
+      const dailyPrice =
+        financeMoney(
+            request.data
+                ?.dailyPrice,
+        );
+
+      const monthlyPrice =
+        financeMoney(
+            request.data
+                ?.monthlyPrice,
+        );
+
+      const openingBalance =
+        Math.round(
+            financeNumber(
+                request.data
+                    ?.openingBalance,
+            ) * 100,
+        ) / 100;
+
+      if (
+        dailyPrice <= 0 ||
+        monthlyPrice <= 0
+      ) {
+        throw new HttpsError(
+            "invalid-argument",
+            "Os valores da diária e mensalidade devem ser maiores que zero.",
+        );
+      }
+
+      const db =
+        getFirestore();
+
+      await db
+          .collection(
+              "finance_settings",
+          )
+          .doc("current")
+          .set(
+              {
+                dailyPrice,
+                monthlyPrice,
+                openingBalance,
+                updatedAt:
+                  FieldValue
+                      .serverTimestamp(),
+                updatedBy:
+                  request.auth.uid,
+              },
+              {merge: true},
+          );
+
+      return {ok: true};
+    },
+);
+
+
+exports.listarControlePagamentos = onCall(
+    {
+      region:
+        "southamerica-east1",
+      timeoutSeconds: 20,
+    },
+    async (request) => {
+      financeAdminOrThrow(
+          request,
+      );
+
+      const db =
+        getFirestore();
+
+      const current =
+        financeSaoPauloParts();
+
+      const snapshot =
+        await db
+            .collection("players")
+            .get();
+
+      const players =
+        snapshot.docs.map(
+            (docSnap) => {
+              const data =
+                docSnap.data() || {};
+
+              const billingType =
+                data.billingType ===
+                  "monthly" ?
+                  "monthly" :
+                  "daily";
+
+              const monthlyPaidThrough =
+                financeString(
+                    data
+                        .monthlyPaidThrough,
+                    7,
+                );
+
+              return {
+                id:
+                  docSnap.id,
+                name:
+                  financeString(
+                      data.name ||
+                      "Jogador",
+                      60,
+                  ),
+                billingType,
+                monthlyPaidThrough,
+                monthlyActive:
+                  billingType ===
+                    "monthly" &&
+                  monthlyPaidThrough >=
+                    current.monthKey,
+                status:
+                  financeString(
+                      data.status,
+                      30,
+                  ),
+              };
+            },
+        )
+            .filter(
+                (item) =>
+                  item.name &&
+                  item.name !==
+                    "Jogador",
+            )
+            .sort(
+                (a, b) =>
+                  a.name.localeCompare(
+                      b.name,
+                      "pt-BR",
+                  ),
+            );
+
+      return {players};
+    },
+);
+
+
+exports.definirPlanoJogador = onCall(
+    {
+      region:
+        "southamerica-east1",
+      timeoutSeconds: 15,
+    },
+    async (request) => {
+      financeAdminOrThrow(
+          request,
+      );
+
+      const playerId =
+        financeString(
+            request.data
+                ?.playerId,
+            128,
+        );
+
+      const billingType =
+        request.data
+            ?.billingType ===
+          "monthly" ?
+          "monthly" :
+          "daily";
+
+      if (!playerId) {
+        throw new HttpsError(
+            "invalid-argument",
+            "Jogador inválido.",
+        );
+      }
+
+      const db =
+        getFirestore();
+
+      const ref =
+        db
+            .collection("players")
+            .doc(playerId);
+
+      const snapshot =
+        await ref.get();
+
+      if (!snapshot.exists) {
+        throw new HttpsError(
+            "not-found",
+            "Jogador não encontrado.",
+        );
+      }
+
+      const patch = {
+        billingType,
+        updatedAt:
+          FieldValue
+              .serverTimestamp(),
+      };
+
+      if (
+        billingType ===
+        "daily"
+      ) {
+        patch.monthlyPaidThrough =
+          "";
+      }
+
+      await ref.set(
+          patch,
+          {merge: true},
+      );
+
+      return {
+        ok: true,
+        billingType,
+      };
+    },
+);
+
+
+exports.registrarMensalidade = onCall(
+    {
+      region:
+        "southamerica-east1",
+      timeoutSeconds: 20,
+    },
+    async (request) => {
+      financeAdminOrThrow(
+          request,
+      );
+
+      const playerId =
+        financeString(
+            request.data
+                ?.playerId,
+            128,
+        );
+
+      const method =
+        financeString(
+            request.data
+                ?.method || "Pix",
+            30,
+        );
+
+      if (!playerId) {
+        throw new HttpsError(
+            "invalid-argument",
+            "Jogador inválido.",
+        );
+      }
+
+      const db =
+        getFirestore();
+
+      const playerRef =
+        db
+            .collection("players")
+            .doc(playerId);
+
+      const playerSnapshot =
+        await playerRef.get();
+
+      if (!playerSnapshot.exists) {
+        throw new HttpsError(
+            "not-found",
+            "Jogador não encontrado.",
+        );
+      }
+
+      const player =
+        playerSnapshot.data() || {};
+
+      const settings =
+        await financeSettings(db);
+
+      const current =
+        financeSaoPauloParts();
+
+      const receiptId =
+        playerId +
+        "__" +
+        current.monthKey;
+
+      const receiptRef =
+        db
+            .collection(
+                "finance_receipts",
+            )
+            .doc(receiptId);
+
+      const existing =
+        await receiptRef.get();
+
+      if (existing.exists) {
+        throw new HttpsError(
+            "already-exists",
+            "A mensalidade deste jogador já foi registrada neste mês.",
+        );
+      }
+
+      const batch =
+        db.batch();
+
+      batch.set(
+          receiptRef,
+          {
+            playerId,
+            name:
+              financeString(
+                  player.name ||
+                  "Jogador",
+                  60,
+              ),
+            amount:
+              settings
+                  .monthlyPrice,
+            type:
+              "monthly",
+            method,
+            paidMonth:
+              current.monthKey,
+            status:
+              "approved",
+            createdAt:
+              FieldValue
+                  .serverTimestamp(),
+            createdBy:
+              request.auth.uid,
+          },
+      );
+
+      batch.set(
+          playerRef,
+          {
+            billingType:
+              "monthly",
+            monthlyPaidThrough:
+              current.monthKey,
+            updatedAt:
+              FieldValue
+                  .serverTimestamp(),
+          },
+          {merge: true},
+      );
+
+      await batch.commit();
+
+      return {
+        ok: true,
+        month:
+          current.monthKey,
+        amount:
+          settings.monthlyPrice,
+      };
+    },
+);
+
+
+exports.registrarDespesa = onCall(
+    {
+      region:
+        "southamerica-east1",
+      timeoutSeconds: 15,
+    },
+    async (request) => {
+      financeAdminOrThrow(
+          request,
+      );
+
+      const description =
+        financeString(
+            request.data
+                ?.description,
+            100,
+        );
+
+      const amount =
+        financeMoney(
+            request.data
+                ?.amount,
+        );
+
+      const category =
+        financeString(
+            request.data
+                ?.category ||
+              "Outros",
+            40,
+        );
+
+      const method =
+        financeString(
+            request.data
+                ?.method || "Pix",
+            30,
+        );
+
+      if (
+        description.length < 2 ||
+        amount <= 0
+      ) {
+        throw new HttpsError(
+            "invalid-argument",
+            "Descrição e valor são obrigatórios.",
+        );
+      }
+
+      const db =
+        getFirestore();
+
+      const ref =
+        await db
+            .collection(
+                "finance_expenses",
+            )
+            .add(
+                {
+                  description,
+                  amount,
+                  category,
+                  method,
+                  createdAt:
+                    FieldValue
+                        .serverTimestamp(),
+                  createdBy:
+                    request.auth.uid,
+                },
+            );
+
+      return {
+        ok: true,
+        id: ref.id,
+      };
+    },
+);
+
+
+exports.obterMeuPlano = onCall(
+    {
+      region:
+        "southamerica-east1",
+      timeoutSeconds: 15,
+    },
+    async (request) => {
+      financeAuthOrThrow(
+          request,
+      );
+
+      const db =
+        getFirestore();
+
+      const snapshot =
+        await db
+            .collection("players")
+            .doc(
+                request.auth.uid,
+            )
+            .get();
+
+      const current =
+        financeSaoPauloParts();
+
+      if (!snapshot.exists) {
+        return {
+          billingType:
+            "daily",
+          monthlyPaidThrough:
+            "",
+          monthlyActive:
+            false,
+        };
+      }
+
+      const data =
+        snapshot.data() || {};
+
+      const billingType =
+        data.billingType ===
+          "monthly" ?
+          "monthly" :
+          "daily";
+
+      const monthlyPaidThrough =
+        financeString(
+            data
+                .monthlyPaidThrough,
+            7,
+        );
+
+      return {
+        billingType,
+        monthlyPaidThrough,
+        monthlyActive:
+          billingType ===
+            "monthly" &&
+          monthlyPaidThrough >=
+            current.monthKey,
+      };
+    },
+);
+
+
+exports.confirmarPresencaMensalista = onCall(
+    {
+      region:
+        "southamerica-east1",
+      timeoutSeconds: 20,
+    },
+    async (request) => {
+      financeAuthOrThrow(
+          request,
+      );
+
+      if (
+        request.auth.uid ===
+        GREEN_PARK_ADMIN_UID_FINANCE
+      ) {
+        throw new HttpsError(
+            "failed-precondition",
+            "O administrador não pode confirmar presença como jogador.",
+        );
+      }
+
+      const db =
+        getFirestore();
+
+      const ref =
+        db
+            .collection("players")
+            .doc(
+                request.auth.uid,
+            );
+
+      const snapshot =
+        await ref.get();
+
+      if (!snapshot.exists) {
+        throw new HttpsError(
+            "not-found",
+            "Faça seu cadastro primeiro.",
+        );
+      }
+
+      const data =
+        snapshot.data() || {};
+
+      const current =
+        financeSaoPauloParts();
+
+      if (
+        data.billingType !==
+        "monthly"
+      ) {
+        throw new HttpsError(
+            "failed-precondition",
+            "Seu plano atual é diarista.",
+        );
+      }
+
+      const paidThrough =
+        financeString(
+            data
+                .monthlyPaidThrough,
+            7,
+        );
+
+      if (
+        paidThrough <
+        current.monthKey
+      ) {
+        throw new HttpsError(
+            "failed-precondition",
+            "Sua mensalidade deste mês ainda não foi marcada como paga.",
+        );
+      }
+
+      await ref.set(
+          {
+            status:
+              "confirmed",
+            confirmedAt:
+              FieldValue
+                  .serverTimestamp(),
+            attendanceType:
+              "monthly",
+            updatedAt:
+              FieldValue
+                  .serverTimestamp(),
+          },
+          {merge: true},
+      );
+
+      const count =
+        await financeUpdateConfirmedCount(
+            db,
+        );
+
+      return {
+        confirmed: true,
+        confirmedCount:
+          count,
+      };
+    },
+);
+
+
+exports.prepararNovoRacha = onCall(
+    {
+      region:
+        "southamerica-east1",
+      timeoutSeconds: 60,
+    },
+    async (request) => {
+      financeAdminOrThrow(
+          request,
+      );
+
+      const db =
+        getFirestore();
+
+      const snapshot =
+        await db
+            .collection("players")
+            .get();
+
+      const docs =
+        snapshot.docs;
+
+      for (
+        let index = 0;
+        index < docs.length;
+        index += 400
+      ) {
+        const batch =
+          db.batch();
+
+        docs
+            .slice(
+                index,
+                index + 400,
+            )
+            .forEach(
+                (docSnap) => {
+                  batch.set(
+                      docSnap.ref,
+                      {
+                        status:
+                          "registered",
+                        attendanceType:
+                          "",
+                        confirmedAt:
+                          FieldValue
+                              .delete(),
+                        updatedAt:
+                          FieldValue
+                              .serverTimestamp(),
+                      },
+                      {merge: true},
+                  );
+                },
+            );
+
+        await batch.commit();
+      }
+
+      await db
+          .collection("racha")
+          .doc("current")
+          .set(
+              {
+                confirmedCount:
+                  0,
+                nextDate:
+                  financeString(
+                      request.data
+                          ?.date,
+                      20,
+                  ),
+                nextTime:
+                  financeString(
+                      request.data
+                          ?.time,
+                      10,
+                  ),
+                attendanceResetAt:
+                  FieldValue
+                      .serverTimestamp(),
+              },
+              {merge: true},
+          );
+
+      return {
+        ok: true,
+        playersPreserved:
+          docs.length,
+      };
+    },
+);
+
+
+exports.obterDashboardFinanceiro = onCall(
+    {
+      region:
+        "southamerica-east1",
+      timeoutSeconds: 30,
+    },
+    async (request) => {
+      financeAdminOrThrow(
+          request,
+      );
+
+      const db =
+        getFirestore();
+
+      const current =
+        financeSaoPauloParts();
+
+      const [
+        settings,
+        playersSnapshot,
+        expensesSnapshot,
+        receiptsSnapshot,
+        paymentsSnapshot,
+        pixSnapshot,
+      ] = await Promise.all([
+        financeSettings(db),
+        db
+            .collection(
+                "players",
+            )
+            .get(),
+        db
+            .collection(
+                "finance_expenses",
+            )
+            .get(),
+        db
+            .collection(
+                "finance_receipts",
+            )
+            .get(),
+        db
+            .collection(
+                "payments",
+            )
+            .get(),
+        db
+            .collection(
+                "pix_orders",
+            )
+            .get(),
+      ]);
+
+      let monthlyCount = 0;
+      let dailyCount = 0;
+      let monthlyPaidCount = 0;
+
+      playersSnapshot.docs.forEach(
+          (docSnap) => {
+            const data =
+              docSnap.data() || {};
+
+            if (
+              data.billingType ===
+              "monthly"
+            ) {
+              monthlyCount += 1;
+
+              const paidThrough =
+                financeString(
+                    data
+                        .monthlyPaidThrough,
+                    7,
+                );
+
+              if (
+                paidThrough >=
+                current.monthKey
+              ) {
+                monthlyPaidCount +=
+                  1;
+              }
+            } else {
+              dailyCount += 1;
+            }
+          },
+      );
+
+      const incomes =
+        new Map();
+
+      function addIncome(
+          key,
+          data,
+          source,
+      ) {
+        if (
+          !financeApproved(data)
+        ) {
+          return;
+        }
+
+        const amount =
+          financePaymentAmount(
+              data,
+          );
+
+        if (
+          amount <= 0
+        ) {
+          return;
+        }
+
+        const ms =
+          financePaymentMs(
+              data,
+          );
+
+        const keys =
+          financeDayMonthKeys(
+              ms,
+          );
+
+        incomes.set(
+            key,
+            {
+              amount,
+              ms,
+              dayKey:
+                keys.dayKey,
+              monthKey:
+                keys.monthKey,
+              dateLabel:
+                keys.dateLabel,
+              type:
+                financeString(
+                    data.type ||
+                    data.paymentType ||
+                    "daily",
+                    30,
+                ),
+              method:
+                financeString(
+                    data.method ||
+                    (source ===
+                      "pix" ?
+                      "Pix" :
+                      "Pagamento"),
+                    30,
+                ),
+              name:
+                financeString(
+                    data.name ||
+                    data.payerName ||
+                    "Jogador",
+                    60,
+                ),
+              source,
+            },
+        );
+      }
+
+      /*
+       * Pix automático.
+       */
+      pixSnapshot.docs.forEach(
+          (docSnap) => {
+            const data =
+              docSnap.data() || {};
+
+            const externalId =
+              financeString(
+                  data.orderId ||
+                  data.id ||
+                  docSnap.id,
+                  180,
+              );
+
+            addIncome(
+                "pix:" +
+                externalId,
+                data,
+                "pix",
+            );
+          },
+      );
+
+      /*
+       * Pagamentos antigos/manuais.
+       * Se tiver orderId igual ao Pix,
+       * usa a mesma chave para não
+       * contar duas vezes.
+       */
+      paymentsSnapshot.docs.forEach(
+          (docSnap) => {
+            const data =
+              docSnap.data() || {};
+
+            const orderId =
+              financeString(
+                  data.orderId ||
+                  data.providerOrderId,
+                  180,
+              );
+
+            const key =
+              orderId ?
+                "pix:" +
+                  orderId :
+                "payment:" +
+                  docSnap.id;
+
+            addIncome(
+                key,
+                data,
+                "payment",
+            );
+          },
+      );
+
+      /*
+       * Mensalidades registradas
+       * pelo painel financeiro.
+       */
+      receiptsSnapshot.docs.forEach(
+          (docSnap) => {
+            const data =
+              docSnap.data() || {};
+
+            addIncome(
+                "receipt:" +
+                docSnap.id,
+                data,
+                "monthly",
+            );
+          },
+      );
+
+      let receivedTotal = 0;
+      let receivedToday = 0;
+      let receivedMonth = 0;
+
+      const movements = [];
+
+      incomes.forEach((item) => {
+        receivedTotal +=
+          item.amount;
+
+        if (
+          item.dayKey ===
+          current.dayKey
+        ) {
+          receivedToday +=
+            item.amount;
+        }
+
+        if (
+          item.monthKey ===
+          current.monthKey
+        ) {
+          receivedMonth +=
+            item.amount;
+        }
+
+        movements.push(
+            {
+              kind:
+                "income",
+              title:
+                (
+                  item.type ===
+                  "monthly" ?
+                  "Mensalidade • " :
+                  "Diária • "
+                ) +
+                item.name,
+              amount:
+                item.amount,
+              method:
+                item.method,
+              dateLabel:
+                item.dateLabel,
+              ms:
+                item.ms,
+            },
+        );
+      });
+
+      let expensesTotal = 0;
+      let expensesToday = 0;
+      let expensesMonth = 0;
+
+      expensesSnapshot.docs.forEach(
+          (docSnap) => {
+            const data =
+              docSnap.data() || {};
+
+            const amount =
+              financeMoney(
+                  data.amount,
+              );
+
+            const ms =
+              financePaymentMs(
+                  data,
+              );
+
+            const keys =
+              financeDayMonthKeys(
+                  ms,
+              );
+
+            expensesTotal +=
+              amount;
+
+            if (
+              keys.dayKey ===
+              current.dayKey
+            ) {
+              expensesToday +=
+                amount;
+            }
+
+            if (
+              keys.monthKey ===
+              current.monthKey
+            ) {
+              expensesMonth +=
+                amount;
+            }
+
+            movements.push(
+                {
+                  kind:
+                    "expense",
+                  title:
+                    financeString(
+                        data.description ||
+                        "Despesa",
+                        100,
+                    ),
+                  amount,
+                  method:
+                    financeString(
+                        data.method ||
+                        data.category ||
+                        "Despesa",
+                        30,
+                    ),
+                  dateLabel:
+                    keys.dateLabel,
+                  ms,
+                },
+            );
+          },
+      );
+
+      movements.sort(
+          (a, b) =>
+            b.ms - a.ms,
+      );
+
+      const balance =
+        Math.round(
+            (
+              settings
+                  .openingBalance +
+              receivedTotal -
+              expensesTotal
+            ) * 100,
+        ) / 100;
+
+      return {
+        balance,
+        receivedToday:
+          Math.round(
+              receivedToday *
+              100,
+          ) / 100,
+        receivedMonth:
+          Math.round(
+              receivedMonth *
+              100,
+          ) / 100,
+        expensesToday:
+          Math.round(
+              expensesToday *
+              100,
+          ) / 100,
+        expensesMonth:
+          Math.round(
+              expensesMonth *
+              100,
+          ) / 100,
+        monthlyCount,
+        monthlyPaidCount,
+        dailyCount,
+        settings,
+        movements:
+          movements.slice(
+              0,
+              30,
+          ),
+      };
+    },
+);

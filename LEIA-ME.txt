@@ -1,23 +1,83 @@
-GREEN PARK FC — CONFIRMADOS UNIFICADOS
+GREEN PARK FC — FINANCEIRO + MENSALISTAS
 
-REGRA:
-players.status == confirmed
+NOVO PAINEL FINANCEIRO
+======================
+No Admin > Organização > Pagamentos:
 
-Assim que o Pix confirmar o jogador:
+DASHBOARD
+- Saldo em caixa
+- Recebido hoje
+- Recebido no mês
+- Despesas hoje
+- Despesas no mês
+- Quantidade de mensalistas
+- Mensalistas com mês pago
+- Quantidade de diaristas
+- Últimas movimentações
 
-1. LISTA
-   - aparece automaticamente para todos.
+JOGADORES
+- Admin define Diarista ou Mensalista.
+- Mensalista: botão MARCAR MÊS PAGO.
+- Diarista: pagamento por racha.
 
-2. RANKING
-   - aparece imediatamente, mesmo com 0 gols.
-   - depois os gols alteram a posição.
+DESPESAS
+- Descrição
+- Valor
+- Categoria
+- Forma de pagamento
 
-3. ESTATÍSTICAS
-   - aparece imediatamente.
-   - Admin pode lançar gols e marcar goleiro.
+REGRA DO JOGADOR
+================
+DIARISTA:
+- confirma que vai jogar;
+- paga a diária via Pix;
+- depois entra na Lista, Ranking e Estatísticas.
 
-Não existe cadastro separado para Lista, Ranking ou Estatísticas.
+MENSALISTA COM MÊS PAGO:
+- confirma que vai jogar;
+- NÃO gera Pix diário;
+- entra direto na Lista, Ranking e Estatísticas.
 
-IMPORTANTE:
-As Functions precisam ser publicadas para a Lista, Ranking,
-Estatísticas, Galeria e Patrocinadores funcionarem com o Firebase.
+MENSALISTA COM MÊS PENDENTE:
+- não entra sem regularizar;
+- o Admin marca o mês como pago no Financeiro.
+
+NOVO RACHA
+==========
+Quando o Admin muda a DATA para um novo racha, o app pergunta se deve
+zerar as presenças anteriores.
+
+Ele preserva:
+- cadastro dos jogadores
+- mensalistas e diaristas
+- mensalidades
+- histórico financeiro
+- ranking/histórico
+
+Ele zera somente:
+- presença/confirmed do racha anterior
+- contador de confirmados
+
+SALDO EM CAIXA
+==============
+O saldo exibido é calculado pelo APP:
+saldo inicial + recebimentos registrados - despesas.
+
+Não é o saldo bancário real.
+Para mostrar o saldo real da conta bancária/Mercado Pago seria necessária
+uma integração financeira específica com a conta.
+
+VALORES
+=======
+A diária e a mensalidade ficam editáveis pelo Admin no Dashboard.
+Valores iniciais mantidos:
+- Diária: R$ 15,00
+- Mensalidade: R$ 70,00
+
+ARQUIVOS
+========
+index.html
+greenpark-addons-final.js
+storage.rules
+
+Ainda precisam ser publicados no Firebase/Cloud Shell.
