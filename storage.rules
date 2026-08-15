@@ -12,23 +12,22 @@ service firebase.storage {
         && request.auth.uid == 'd3nVt6SbQlO6lYnOcCUDbLBhoU02';
     }
 
-    // Fotos e vídeos da galeria.
-    match /gallery/{fileName} {
+
+    // Foto de perfil do próprio jogador.
+    match /players/{uid}/{fileName} {
       allow read: if signedIn();
 
-      allow create, update: if isAdmin()
-        && request.resource.size < 250 * 1024 * 1024
-        && (
-          request.resource.contentType.matches('image/.*')
-          || request.resource.contentType.matches('video/.*')
-        );
+      allow create, update: if signedIn()
+        && request.auth.uid == uid
+        && request.resource.size < 5 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*');
 
-      allow delete: if isAdmin();
+      allow delete: if signedIn()
+        && (request.auth.uid == uid || isAdmin());
     }
 
-
-    // Mídias anexadas aos comunicados.
-    match /notices/{allPaths=**} {
+    // Fotos e vídeos da galeria.
+    match /gallery/{fileName} {
       allow read: if signedIn();
 
       allow create, update: if isAdmin()

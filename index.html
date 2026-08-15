@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- GREEN PARK BUILD: 2026-08-15-player-photo-storage -->
 <html lang="pt-BR">
 <head>
   <!-- GREEN PARK BUILD: 2026-08-15-stats-compact-photo-list -->
@@ -3009,104 +3010,6 @@
       display:grid;
     }
 
-
-    .notice-media-picker{
-      display:flex;
-      flex-direction:column;
-      gap:7px;
-    }
-
-    .notice-media-label{
-      min-height:52px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:9px 12px;
-      border:1px dashed #45605a;
-      border-radius:13px;
-      background:#0b151b;
-      color:var(--green);
-      font-size:12px;
-      font-weight:950;
-      text-align:center;
-      cursor:pointer;
-    }
-
-    .notice-media-label input{
-      display:none;
-    }
-
-    .notice-media-hint{
-      color:#7f8d93;
-      font-size:10px;
-      line-height:1.35;
-      text-align:center;
-    }
-
-    .notice-progress{
-      display:none;
-      height:7px;
-      overflow:hidden;
-      border-radius:999px;
-      background:#19252b;
-    }
-
-    .notice-progress.show{display:block;}
-
-    .notice-progress-bar{
-      width:0%;
-      height:100%;
-      background:var(--green);
-      transition:width .18s ease;
-    }
-
-    .notice-media{
-      overflow:hidden;
-      margin:-15px -15px 13px;
-      border-bottom:1px solid #293a42;
-      background:#05090b;
-    }
-
-    .notice-media img,
-    .notice-media video{
-      display:block;
-      width:100%;
-      max-height:430px;
-      object-fit:contain;
-      background:#05090b;
-    }
-
-    .notice-media img{
-      cursor:pointer;
-    }
-
-    .notice-media-badge{
-      position:absolute;
-      left:10px;
-      top:10px;
-      z-index:2;
-      min-height:25px;
-      display:flex;
-      align-items:center;
-      padding:0 9px;
-      border-radius:999px;
-      background:rgba(5,11,14,.82);
-      color:#fff;
-      font-size:9px;
-      font-weight:950;
-      letter-spacing:.05em;
-      text-transform:uppercase;
-      pointer-events:none;
-    }
-
-    .notice-card.has-media{
-      padding-top:15px;
-    }
-
-    .notice-card.has-media .notice-date{
-      margin-top:0;
-    }
-
     /* PATROCINADORES ADMIN */
     .sponsor-slot{
       flex-direction:column;
@@ -4586,29 +4489,11 @@
             placeholder="Ex.: Campeonato, churrasco ou aviso importante"
           >
 
-          <div class="notice-media-picker">
-            <label class="notice-media-label" id="noticeMediaLabel">
-              ADICIONAR MÍDIA (FOTO OU VÍDEO)
-              <input
-                id="noticeMediaInput"
-                type="file"
-                accept="image/*,video/*"
-              >
-            </label>
-            <div class="notice-media-hint">
-              Você pode anexar um folder, uma foto ou um vídeo ao comunicado.
-            </div>
-          </div>
-
           <textarea
             id="noticeTextInput"
             maxlength="1200"
             placeholder="Escreva aqui todas as informações do comunicado..."
           ></textarea>
-
-          <div class="notice-progress" id="noticeProgress">
-            <div class="notice-progress-bar" id="noticeProgressBar"></div>
-          </div>
 
           <button class="content-primary-btn" id="noticePublishButton" type="button">
             PUBLICAR COMUNICADO
@@ -5510,9 +5395,9 @@ const marcarGoleiroRachaCall = httpsCallable(functions, 'marcarGoleiroRacha');
 const listarGaleriaCall = httpsCallable(functions, 'listarGaleria');
 const salvarMidiaGaleriaCall = httpsCallable(functions, 'salvarMidiaGaleria');
 const excluirMidiaGaleriaCall = httpsCallable(functions, 'excluirMidiaGaleria');
-const listarComunicadosCall = httpsCallable(functions, 'listarComunicadosMidia');
-const publicarComunicadoCall = httpsCallable(functions, 'publicarComunicadoMidia');
-const excluirComunicadoCall = httpsCallable(functions, 'excluirComunicadoMidia');
+const listarComunicadosCall = httpsCallable(functions, 'listarComunicados');
+const publicarComunicadoCall = httpsCallable(functions, 'publicarComunicado');
+const excluirComunicadoCall = httpsCallable(functions, 'excluirComunicado');
 const listarPatrocinadoresCall = httpsCallable(functions, 'listarPatrocinadores');
 const salvarPatrocinadorCall = httpsCallable(functions, 'salvarPatrocinador');
 const removerPatrocinadorCall = httpsCallable(functions, 'removerPatrocinador');
@@ -5611,10 +5496,6 @@ let messagingInstance = null;
   const mediaLightboxCaption = document.getElementById('mediaLightboxCaption');
   const noticeTitleInput = document.getElementById('noticeTitleInput');
   const noticeTextInput = document.getElementById('noticeTextInput');
-  const noticeMediaInput = document.getElementById('noticeMediaInput');
-  const noticeMediaLabel = document.getElementById('noticeMediaLabel');
-  const noticeProgress = document.getElementById('noticeProgress');
-  const noticeProgressBar = document.getElementById('noticeProgressBar');
   const noticePublishButton = document.getElementById('noticePublishButton');
   const noticeAdminStatus = document.getElementById('noticeAdminStatus');
   const noticeList = document.getElementById('noticeList');
@@ -6179,6 +6060,32 @@ let messagingInstance = null;
     return result.user;
   }
 
+  async function uploadPlayerPhoto(user){
+    const photoData = String(state.currentUser.photo || '');
+
+    if(!photoData.startsWith('data:image/')){
+      return String(state.currentUser.photoURL || '');
+    }
+
+    const response = await fetch(photoData);
+    if(!response.ok){
+      throw new Error('Não foi possível preparar a foto do jogador.');
+    }
+
+    const blob = await response.blob();
+    const photoRef = storageRef(storage, `players/${user.uid}/profile.jpg`);
+    const uploadTask = uploadBytesResumable(photoRef, blob, {
+      contentType:'image/jpeg',
+      cacheControl:'public,max-age=3600'
+    });
+
+    await new Promise((resolve, reject) => {
+      uploadTask.on('state_changed', null, reject, resolve);
+    });
+
+    return await getDownloadURL(uploadTask.snapshot.ref);
+  }
+
   async function savePlayerToCloud(){
     const user = await ensureFirebasePlayer();
 
@@ -6188,11 +6095,15 @@ let messagingInstance = null;
 
     state.currentUser.id = user.uid;
 
+    const photoURL = await uploadPlayerPhoto(user);
+    state.currentUser.photoURL = photoURL;
+
     await setDoc(doc(db, 'players', user.uid), {
       uid: user.uid,
       name: state.currentUser.name,
       phone: state.currentUser.phone,
       email: state.currentUser.email || '',
+      photoURL,
       status: state.currentUser.status === 'confirmed' ? 'confirmed' : 'registered',
       updatedAt: serverTimestamp()
     }, {merge:true});
@@ -7154,38 +7065,6 @@ let messagingInstance = null;
   }
 
   // ---------------- NOTICES ----------------
-  function noticeMediaTypeFromFile(file){
-    const type = String(file?.type || '').toLowerCase();
-
-    if(type.startsWith('video/')) return 'video';
-    if(type.startsWith('image/')) return 'image';
-
-    return '';
-  }
-
-  function validateNoticeMedia(file){
-    if(!file) return '';
-
-    const type = noticeMediaTypeFromFile(file);
-
-    if(!type){
-      return 'Use uma foto ou um vídeo válido.';
-    }
-
-    const max =
-      type === 'video' ?
-        250 * 1024 * 1024 :
-        25 * 1024 * 1024;
-
-    if(file.size > max){
-      return type === 'video' ?
-        'O vídeo deve ter no máximo 250 MB.' :
-        'A foto deve ter no máximo 25 MB.';
-    }
-
-    return '';
-  }
-
   function renderNotices(items){
     noticeList.innerHTML = '';
 
@@ -7198,7 +7077,7 @@ let messagingInstance = null;
 
       const span = document.createElement('span');
       span.textContent =
-        'Campeonatos, churrascos e avisos oficiais aparecerão aqui.';
+        'Os avisos oficiais do Green Park aparecerão aqui.';
 
       empty.appendChild(strong);
       empty.appendChild(span);
@@ -7208,47 +7087,7 @@ let messagingInstance = null;
 
     items.forEach(item => {
       const card = document.createElement('article');
-      card.className = 'notice-card' + (item.mediaUrl ? ' has-media' : '');
-
-      if(item.mediaUrl){
-        const media = document.createElement('div');
-        media.className = 'notice-media';
-
-        const badge = document.createElement('div');
-        badge.className = 'notice-media-badge';
-        badge.textContent =
-          item.mediaType === 'video' ? 'VÍDEO' : 'FOTO / FOLDER';
-
-        media.appendChild(badge);
-
-        if(item.mediaType === 'video'){
-          const video = document.createElement('video');
-          video.src = item.mediaUrl;
-          video.controls = true;
-          video.playsInline = true;
-          video.preload = 'metadata';
-          media.appendChild(video);
-        }else{
-          const img = document.createElement('img');
-          img.src = item.mediaUrl;
-          img.alt = item.title || 'Comunicado Green Park';
-          img.loading = 'lazy';
-
-          img.addEventListener('click', () => {
-            openMediaLightbox({
-              type:'image',
-              url:item.mediaUrl,
-              caption:item.title || 'Comunicado',
-              category:'Comunicado',
-              createdAt:item.createdAt
-            });
-          });
-
-          media.appendChild(img);
-        }
-
-        card.appendChild(media);
-      }
+      card.className = 'notice-card';
 
       const date = document.createElement('div');
       date.className = 'notice-date';
@@ -7272,7 +7111,6 @@ let messagingInstance = null;
         del.type = 'button';
         del.className = 'notice-delete admin-visible';
         del.textContent = '×';
-        del.title = 'Excluir comunicado';
 
         del.addEventListener('click', async () => {
           if(!confirm('Excluir este comunicado?')) return;
@@ -7326,7 +7164,6 @@ let messagingInstance = null;
 
     const title = String(noticeTitleInput.value || '').trim();
     const text = String(noticeTextInput.value || '').trim();
-    const mediaFile = noticeMediaInput.files?.[0] || null;
 
     if(title.length < 3){
       setContentStatus(
@@ -7346,77 +7183,19 @@ let messagingInstance = null;
       return;
     }
 
-    const mediaValidation = validateNoticeMedia(mediaFile);
-
-    if(mediaValidation){
-      setContentStatus(
-        noticeAdminStatus,
-        mediaValidation,
-        'error'
-      );
-      return;
-    }
-
     noticePublishButton.disabled = true;
     noticePublishButton.textContent = 'PUBLICANDO...';
     setContentStatus(noticeAdminStatus);
 
-    let mediaData = {
-      mediaUrl:'',
-      storagePath:'',
-      mediaType:'',
-      mimeType:'',
-      fileName:'',
-      size:0
-    };
-
     try{
-      if(mediaFile){
-        noticeProgress.classList.add('show');
-        noticeProgressBar.style.width = '0%';
-
-        const mediaType = noticeMediaTypeFromFile(mediaFile);
-        const path =
-          `notices/${Date.now()}_${safeStorageFileName(mediaFile.name)}`;
-
-        const uploaded = await uploadStorageFile(
-          mediaFile,
-          path,
-          percent => {
-            noticeProgressBar.style.width =
-              Math.min(100, percent) + '%';
-          }
-        );
-
-        mediaData = {
-          mediaUrl:uploaded.url,
-          storagePath:uploaded.storagePath,
-          mediaType,
-          mimeType:String(mediaFile.type || '').slice(0,120),
-          fileName:String(mediaFile.name || '').slice(0,120),
-          size:Number(mediaFile.size || 0)
-        };
-
-        noticeProgressBar.style.width = '100%';
-      }
-
-      await publicarComunicadoCall({
-        title,
-        text,
-        ...mediaData
-      });
+      await publicarComunicadoCall({title, text});
 
       noticeTitleInput.value = '';
       noticeTextInput.value = '';
-      noticeMediaInput.value = '';
-      noticeMediaLabel.childNodes[0].nodeValue =
-        'ADICIONAR MÍDIA (FOTO OU VÍDEO)';
 
       setContentStatus(
         noticeAdminStatus,
-        mediaFile ?
-          'Comunicado com mídia publicado.' :
-          'Comunicado publicado.',
+        'Comunicado publicado.',
         'ok'
       );
 
@@ -7430,11 +7209,6 @@ let messagingInstance = null;
     }finally{
       noticePublishButton.disabled = false;
       noticePublishButton.textContent = 'PUBLICAR COMUNICADO';
-
-      setTimeout(() => {
-        noticeProgress.classList.remove('show');
-        noticeProgressBar.style.width = '0%';
-      }, 900);
     }
   }
 
@@ -9045,7 +8819,8 @@ let messagingInstance = null;
         id:state.currentUser.id,
         name:state.currentUser.name,
         phone:state.currentUser.phone,
-        photo:state.currentUser.photo
+        photo:state.currentUser.photo,
+        photoURL:state.currentUser.photoURL || ''
       };
 
       if(playerIndex >= 0) state.players[playerIndex] = playerRecord;
@@ -9376,15 +9151,6 @@ let messagingInstance = null;
     if(event.target === mediaLightbox){
       closeMediaLightbox();
     }
-  });
-
-  noticeMediaInput.addEventListener('change', () => {
-    const file = noticeMediaInput.files?.[0];
-
-    noticeMediaLabel.childNodes[0].nodeValue =
-      file ?
-        `MÍDIA: ${String(file.name || 'ARQUIVO').slice(0,42)} ` :
-        'ADICIONAR MÍDIA (FOTO OU VÍDEO)';
   });
 
   noticePublishButton.addEventListener('click', publishNotice);
