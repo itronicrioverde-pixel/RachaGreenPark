@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- GREEN PARK BUILD: 2026-08-15-ranking-photo-fix -->
+<!-- GREEN PARK BUILD: 2026-08-15-team-draw-arrival-cart -->
 <html lang="pt-BR">
 <head>
   <!-- GREEN PARK BUILD: 2026-08-15-stats-compact-photo-list -->
@@ -4175,6 +4175,380 @@
       line-height:1.45;
       font-weight:750;
     }
+
+
+    /* SORTEIO DOS TIMES — ADMIN */
+    .team-draw-shell{
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+    }
+
+    .team-draw-mode-title{
+      margin:2px 0 8px;
+      color:#fff;
+      font-size:13px;
+      font-weight:900;
+      letter-spacing:.02em;
+    }
+
+    .team-draw-mode-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:9px;
+    }
+
+    .team-draw-mode{
+      min-height:88px;
+      padding:13px 12px;
+      text-align:left;
+      border:1px solid #2d3d45;
+      border-radius:16px;
+      background:#0d171d;
+      color:#fff;
+    }
+
+    .team-draw-mode.active{
+      border-color:var(--green);
+      box-shadow:0 0 0 1px rgba(70,222,39,.18) inset;
+      background:#102019;
+    }
+
+    .team-draw-mode strong{
+      display:block;
+      font-size:12px;
+      font-weight:950;
+      line-height:1.15;
+    }
+
+    .team-draw-mode small{
+      display:block;
+      margin-top:7px;
+      color:var(--muted);
+      font-size:10px;
+      line-height:1.35;
+    }
+
+    .team-draw-cart{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:13px 14px;
+      border:1px solid #2b3b43;
+      border-radius:16px;
+      background:#0d171d;
+    }
+
+    .team-draw-cart-main{
+      min-width:0;
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+
+    .team-draw-cart-icon{
+      width:38px;
+      height:38px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border-radius:12px;
+      background:#15252a;
+      color:var(--green);
+      font-size:19px;
+      flex:0 0 38px;
+    }
+
+    .team-draw-cart-copy strong{
+      display:block;
+      color:#fff;
+      font-size:13px;
+      font-weight:950;
+    }
+
+    .team-draw-cart-copy small{
+      display:block;
+      margin-top:3px;
+      color:var(--muted);
+      font-size:10px;
+    }
+
+    .team-draw-count{
+      color:var(--green);
+      font-size:13px;
+      font-weight:950;
+      white-space:nowrap;
+    }
+
+    .team-draw-section{
+      padding:14px;
+      border:1px solid #293840;
+      border-radius:18px;
+      background:#0b151a;
+    }
+
+    .team-draw-section-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom:10px;
+    }
+
+    .team-draw-section-head strong{
+      color:#fff;
+      font-size:13px;
+      font-weight:950;
+    }
+
+    .team-draw-mini-btn{
+      min-height:30px;
+      padding:0 10px;
+      border:1px solid #33454d;
+      border-radius:10px;
+      background:#111e24;
+      color:#cdd6d9;
+      font-size:10px;
+      font-weight:900;
+    }
+
+    .team-draw-list{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+
+    .team-draw-player{
+      display:grid;
+      grid-template-columns:40px minmax(0,1fr) 38px;
+      align-items:center;
+      gap:10px;
+      min-height:58px;
+      padding:8px 9px;
+      border:1px solid #27373f;
+      border-radius:14px;
+      background:#0e191f;
+    }
+
+    .team-draw-player.selected{
+      border-color:#3b6b4a;
+      background:#102019;
+    }
+
+    .team-draw-avatar{
+      width:38px;
+      height:38px;
+      overflow:hidden;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border-radius:50%;
+      background:#162229;
+      color:var(--green);
+      font-size:11px;
+      font-weight:950;
+    }
+
+    .team-draw-avatar img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+    }
+
+    .team-draw-player-main{
+      min-width:0;
+    }
+
+    .team-draw-player-name{
+      overflow:hidden;
+      color:#fff;
+      font-size:13px;
+      font-weight:900;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+    }
+
+    .team-draw-player-meta{
+      margin-top:3px;
+      color:var(--muted);
+      font-size:9px;
+      line-height:1.2;
+    }
+
+    .team-draw-add{
+      width:36px;
+      height:36px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border:1px solid #3a4b53;
+      border-radius:12px;
+      background:#142127;
+      color:#fff;
+      font-size:22px;
+      font-weight:500;
+      line-height:1;
+    }
+
+    .team-draw-player.selected .team-draw-add{
+      border-color:var(--green);
+      background:var(--green);
+      color:#071009;
+      font-size:16px;
+      font-weight:950;
+    }
+
+    .team-draw-order-row{
+      display:grid;
+      grid-template-columns:28px 36px minmax(0,1fr) 30px;
+      align-items:center;
+      gap:9px;
+      min-height:50px;
+      padding:7px 8px;
+      border-bottom:1px solid #213039;
+    }
+
+    .team-draw-order-row:last-child{border-bottom:0;}
+
+    .team-draw-order{
+      color:var(--green);
+      font-size:10px;
+      font-weight:950;
+      text-align:center;
+    }
+
+    .team-draw-order-row .team-draw-avatar{
+      width:34px;
+      height:34px;
+    }
+
+    .team-draw-remove{
+      width:28px;
+      height:28px;
+      border:0;
+      border-radius:9px;
+      background:#1c292f;
+      color:#91a0a6;
+      font-size:16px;
+    }
+
+    .team-draw-empty{
+      padding:18px 10px;
+      text-align:center;
+      color:var(--muted);
+      font-size:11px;
+      line-height:1.45;
+    }
+
+    .team-draw-primary{
+      width:100%;
+      min-height:50px;
+      border:0;
+      border-radius:15px;
+      background:var(--green);
+      color:#071009;
+      font-size:13px;
+      font-weight:950;
+      letter-spacing:.02em;
+    }
+
+    .team-draw-primary:disabled{
+      opacity:.45;
+    }
+
+    .team-draw-help{
+      margin:-4px 2px 0;
+      color:#74848b;
+      font-size:10px;
+      line-height:1.45;
+      text-align:center;
+    }
+
+    .team-draw-results{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+    }
+
+    .team-card{
+      min-width:0;
+      overflow:hidden;
+      border:1px solid #2d3d45;
+      border-radius:17px;
+      background:#0d171d;
+    }
+
+    .team-card.green-team{border-color:#356846;}
+
+    .team-card-head{
+      padding:12px 10px;
+      border-bottom:1px solid #25343b;
+      text-align:center;
+    }
+
+    .team-card-head strong{
+      display:block;
+      color:#fff;
+      font-size:12px;
+      font-weight:950;
+    }
+
+    .green-team .team-card-head strong{color:var(--green);}
+
+    .team-card-head small{
+      display:block;
+      margin-top:3px;
+      color:var(--muted);
+      font-size:9px;
+    }
+
+    .team-card-list{
+      display:flex;
+      flex-direction:column;
+      padding:4px 8px 8px;
+    }
+
+    .team-card-player{
+      display:grid;
+      grid-template-columns:28px minmax(0,1fr);
+      align-items:center;
+      gap:7px;
+      min-height:42px;
+      padding:6px 0;
+      border-bottom:1px solid #1e2c33;
+    }
+
+    .team-card-player:last-child{border-bottom:0;}
+
+    .team-card-player .team-draw-avatar{
+      width:28px;
+      height:28px;
+      font-size:8px;
+    }
+
+    .team-card-player span{
+      overflow:hidden;
+      color:#fff;
+      font-size:10px;
+      font-weight:850;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+    }
+
+    .team-draw-loading{
+      padding:20px 10px;
+      color:var(--muted);
+      font-size:11px;
+      text-align:center;
+    }
+
+    @media (max-width:360px){
+      .team-draw-mode-grid{grid-template-columns:1fr;}
+      .team-draw-results{grid-template-columns:1fr;}
+    }
+
 </style>
 </head>
 
@@ -4833,6 +5207,89 @@
     </section>
   </main>
 
+
+
+  <!-- SORTEIO DOS TIMES — ADMIN -->
+  <main class="content view" id="teamDrawView">
+    <div class="page-head">
+      <button class="back-btn" id="teamDrawBack" type="button">←</button>
+      <div class="page-head-title">SORTEIO DOS TIMES</div>
+      <div></div>
+    </div>
+
+    <section class="feature-page-card team-draw-shell">
+      <div class="feature-page-title-row" style="margin-bottom:0;">
+        <h2>Montar racha</h2>
+        <div class="feature-page-kicker">ADMIN</div>
+      </div>
+
+      <p class="feature-page-subtitle" style="margin-bottom:0;">
+        Escolha como os jogadores entram na lista do sorteio neste dia.
+      </p>
+
+      <div>
+        <div class="team-draw-mode-title">Como montar a lista?</div>
+        <div class="team-draw-mode-grid">
+          <button class="team-draw-mode" id="teamDrawImportMode" type="button">
+            <strong>IMPORTAR CONFIRMADOS</strong>
+            <small>Traz todos da lista de confirmados de uma vez.</small>
+          </button>
+
+          <button class="team-draw-mode" id="teamDrawArrivalMode" type="button">
+            <strong>POR ORDEM DE CHEGADA</strong>
+            <small>Use o + em cada nome conforme o jogador chegar.</small>
+          </button>
+        </div>
+      </div>
+
+      <div class="team-draw-cart">
+        <div class="team-draw-cart-main">
+          <div class="team-draw-cart-icon">🛒</div>
+          <div class="team-draw-cart-copy">
+            <strong>Lista do sorteio</strong>
+            <small id="teamDrawModeLabel">Escolha uma opção acima</small>
+          </div>
+        </div>
+        <div class="team-draw-count" id="teamDrawSelectedCount">0 JOGADORES</div>
+      </div>
+
+      <section class="team-draw-section" id="teamDrawArrivalSection" hidden>
+        <div class="team-draw-section-head">
+          <strong>Confirmados</strong>
+          <span style="color:var(--muted);font-size:9px;">TOQUE NO + AO CHEGAR</span>
+        </div>
+        <div class="team-draw-list" id="teamDrawConfirmedList">
+          <div class="team-draw-loading">Carregando confirmados...</div>
+        </div>
+      </section>
+
+      <section class="team-draw-section">
+        <div class="team-draw-section-head">
+          <strong>Selecionados para o sorteio</strong>
+          <button class="team-draw-mini-btn" id="teamDrawClear" type="button">LIMPAR</button>
+        </div>
+        <div id="teamDrawSelectedList">
+          <div class="team-draw-empty">Nenhum jogador selecionado ainda.</div>
+        </div>
+      </section>
+
+      <button class="team-draw-primary" id="teamDrawButton" type="button" disabled>
+        SORTEAR TIME VERDE X TIME PRETO
+      </button>
+      <div class="team-draw-help">
+        No modo chegada, a ordem 01, 02, 03... é a ordem em que você adicionou cada jogador.
+      </div>
+
+      <section class="team-draw-section" id="teamDrawResultSection" hidden>
+        <div class="team-draw-section-head">
+          <strong>Resultado do sorteio</strong>
+          <button class="team-draw-mini-btn" id="teamDrawAgain" type="button">SORTEAR DE NOVO</button>
+        </div>
+        <div class="team-draw-results" id="teamDrawResults"></div>
+      </section>
+    </section>
+  </main>
+
   <!-- FINANCEIRO -->
   <main class="content view" id="financeView">
     <div class="page-head">
@@ -5478,6 +5935,12 @@ let messagingInstance = null;
     },
     payments: [],
     teams: [],
+    teamDraw: {
+      mode: '',
+      selected: [],
+      green: [],
+      black: []
+    },
     stats: []
   });
 
@@ -5494,6 +5957,10 @@ let messagingInstance = null;
   state.players = Array.isArray(state.players) ? state.players : [];
   state.confirmations = Array.isArray(state.confirmations) ? state.confirmations : [];
   state.currentUser = {...freshState().currentUser, ...(state.currentUser || {})};
+  state.teamDraw = {...freshState().teamDraw, ...(state.teamDraw || {})};
+  state.teamDraw.selected = Array.isArray(state.teamDraw.selected) ? state.teamDraw.selected : [];
+  state.teamDraw.green = Array.isArray(state.teamDraw.green) ? state.teamDraw.green : [];
+  state.teamDraw.black = Array.isArray(state.teamDraw.black) ? state.teamDraw.black : [];
 
   const app = document.getElementById('app');
   const views = document.querySelectorAll('.view');
@@ -5506,6 +5973,17 @@ let messagingInstance = null;
   const confirmedListCount = document.getElementById('confirmedListCount');
   const confirmedListMatch = document.getElementById('confirmedListMatch');
   const confirmedListItems = document.getElementById('confirmedListItems');
+  const teamDrawView = document.getElementById('teamDrawView');
+  const teamDrawImportMode = document.getElementById('teamDrawImportMode');
+  const teamDrawArrivalMode = document.getElementById('teamDrawArrivalMode');
+  const teamDrawArrivalSection = document.getElementById('teamDrawArrivalSection');
+  const teamDrawConfirmedList = document.getElementById('teamDrawConfirmedList');
+  const teamDrawSelectedList = document.getElementById('teamDrawSelectedList');
+  const teamDrawSelectedCount = document.getElementById('teamDrawSelectedCount');
+  const teamDrawModeLabel = document.getElementById('teamDrawModeLabel');
+  const teamDrawButton = document.getElementById('teamDrawButton');
+  const teamDrawResultSection = document.getElementById('teamDrawResultSection');
+  const teamDrawResults = document.getElementById('teamDrawResults');
   const rankingScorersList = document.getElementById('rankingScorersList');
   const rankingKeepersList = document.getElementById('rankingKeepersList');
   const rankScorerEntries = document.getElementById('rankScorerEntries');
@@ -6284,6 +6762,335 @@ let messagingInstance = null;
     }, 5000);
   }
 
+
+
+  // -------------------------------
+  // SORTEIO DOS TIMES — ADMIN
+  // Duas formas de montar a lista:
+  // 1) importar todos os confirmados
+  // 2) adicionar um a um por ordem de chegada
+  // A seleção fica salva localmente no aparelho do administrador.
+  // -------------------------------
+  let teamDrawConfirmedCache = [];
+  let teamDrawLoading = false;
+
+  function normalizeTeamDrawPlayer(player){
+    return {
+      id:String(player?.id || ''),
+      name:String(player?.name || 'Jogador'),
+      photoURL:String(player?.photoURL || '')
+    };
+  }
+
+  function teamDrawInitials(name){
+    return String(name || 'J')
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean)
+      .slice(0,2)
+      .map(part => part.charAt(0).toUpperCase())
+      .join('') || 'J';
+  }
+
+  function buildTeamDrawAvatar(player, small=false){
+    const avatar = document.createElement('div');
+    avatar.className = 'team-draw-avatar';
+
+    const fallback = () => {
+      avatar.innerHTML = '';
+      avatar.textContent = teamDrawInitials(player?.name);
+    };
+
+    if(player?.photoURL){
+      const img = document.createElement('img');
+      img.src = player.photoURL;
+      img.alt = player.name || 'Jogador';
+      img.loading = 'lazy';
+      img.addEventListener('error', fallback, {once:true});
+      avatar.appendChild(img);
+    }else{
+      fallback();
+    }
+
+    return avatar;
+  }
+
+  function clearTeamDrawResult(){
+    state.teamDraw.green = [];
+    state.teamDraw.black = [];
+    state.teams = [];
+    saveState();
+  }
+
+  function renderTeamDrawModes(){
+    const mode = String(state.teamDraw.mode || '');
+    teamDrawImportMode?.classList.toggle('active', mode === 'import');
+    teamDrawArrivalMode?.classList.toggle('active', mode === 'arrival');
+
+    if(teamDrawArrivalSection){
+      teamDrawArrivalSection.hidden = mode !== 'arrival';
+    }
+
+    if(teamDrawModeLabel){
+      teamDrawModeLabel.textContent =
+        mode === 'import' ? 'Lista importada dos confirmados' :
+        mode === 'arrival' ? 'Selecionando por ordem de chegada' :
+        'Escolha uma opção acima';
+    }
+  }
+
+  function renderTeamDrawConfirmed(){
+    if(!teamDrawConfirmedList) return;
+    teamDrawConfirmedList.innerHTML = '';
+
+    if(teamDrawLoading){
+      teamDrawConfirmedList.innerHTML =
+        '<div class="team-draw-loading">Carregando confirmados...</div>';
+      return;
+    }
+
+    if(!teamDrawConfirmedCache.length){
+      teamDrawConfirmedList.innerHTML =
+        '<div class="team-draw-empty">Nenhum jogador confirmado no momento.</div>';
+      return;
+    }
+
+    teamDrawConfirmedCache.forEach(player => {
+      const selectedIndex = state.teamDraw.selected.findIndex(item =>
+        String(item.id) === String(player.id)
+      );
+      const isSelected = selectedIndex >= 0;
+
+      const row = document.createElement('div');
+      row.className = 'team-draw-player' + (isSelected ? ' selected' : '');
+
+      row.appendChild(buildTeamDrawAvatar(player));
+
+      const main = document.createElement('div');
+      main.className = 'team-draw-player-main';
+
+      const name = document.createElement('div');
+      name.className = 'team-draw-player-name';
+      name.textContent = player.name;
+
+      const meta = document.createElement('div');
+      meta.className = 'team-draw-player-meta';
+      meta.textContent = isSelected ?
+        `ADICIONADO • ORDEM ${String(selectedIndex + 1).padStart(2,'0')}` :
+        'CONFIRMADO • AGUARDANDO CHEGADA';
+
+      main.appendChild(name);
+      main.appendChild(meta);
+
+      const add = document.createElement('button');
+      add.type = 'button';
+      add.className = 'team-draw-add';
+      add.textContent = isSelected ? '✓' : '+';
+      add.setAttribute('aria-label', isSelected ? 'Remover do sorteio' : 'Adicionar ao sorteio');
+
+      add.addEventListener('click', () => {
+        const index = state.teamDraw.selected.findIndex(item =>
+          String(item.id) === String(player.id)
+        );
+
+        if(index >= 0){
+          state.teamDraw.selected.splice(index, 1);
+        }else{
+          state.teamDraw.selected.push(normalizeTeamDrawPlayer(player));
+        }
+
+        clearTeamDrawResult();
+        saveState();
+        renderTeamDraw();
+      });
+
+      row.appendChild(main);
+      row.appendChild(add);
+      teamDrawConfirmedList.appendChild(row);
+    });
+  }
+
+  function renderTeamDrawSelected(){
+    if(!teamDrawSelectedList || !teamDrawSelectedCount || !teamDrawButton) return;
+
+    const selected = Array.isArray(state.teamDraw.selected) ? state.teamDraw.selected : [];
+    teamDrawSelectedCount.textContent =
+      `${selected.length} ${selected.length === 1 ? 'JOGADOR' : 'JOGADORES'}`;
+    teamDrawButton.disabled = selected.length < 2;
+
+    teamDrawSelectedList.innerHTML = '';
+
+    if(!selected.length){
+      teamDrawSelectedList.innerHTML =
+        '<div class="team-draw-empty">Nenhum jogador selecionado ainda.</div>';
+      return;
+    }
+
+    selected.forEach((player, index) => {
+      const row = document.createElement('div');
+      row.className = 'team-draw-order-row';
+
+      const order = document.createElement('div');
+      order.className = 'team-draw-order';
+      order.textContent = String(index + 1).padStart(2,'0');
+
+      row.appendChild(order);
+      row.appendChild(buildTeamDrawAvatar(player, true));
+
+      const main = document.createElement('div');
+      main.className = 'team-draw-player-main';
+      const name = document.createElement('div');
+      name.className = 'team-draw-player-name';
+      name.textContent = player.name;
+      const meta = document.createElement('div');
+      meta.className = 'team-draw-player-meta';
+      meta.textContent = state.teamDraw.mode === 'arrival' ?
+        `ORDEM DE CHEGADA ${String(index + 1).padStart(2,'0')}` :
+        'IMPORTADO DA LISTA';
+      main.appendChild(name);
+      main.appendChild(meta);
+      row.appendChild(main);
+
+      const remove = document.createElement('button');
+      remove.type = 'button';
+      remove.className = 'team-draw-remove';
+      remove.textContent = '×';
+      remove.setAttribute('aria-label','Remover jogador');
+      remove.addEventListener('click', () => {
+        state.teamDraw.selected.splice(index, 1);
+        clearTeamDrawResult();
+        saveState();
+        renderTeamDraw();
+      });
+      row.appendChild(remove);
+
+      teamDrawSelectedList.appendChild(row);
+    });
+  }
+
+  function renderTeamCard(title, players, green=false){
+    const card = document.createElement('div');
+    card.className = 'team-card' + (green ? ' green-team' : '');
+
+    const head = document.createElement('div');
+    head.className = 'team-card-head';
+    const strong = document.createElement('strong');
+    strong.textContent = title;
+    const small = document.createElement('small');
+    small.textContent = `${players.length} ${players.length === 1 ? 'JOGADOR' : 'JOGADORES'}`;
+    head.appendChild(strong);
+    head.appendChild(small);
+    card.appendChild(head);
+
+    const list = document.createElement('div');
+    list.className = 'team-card-list';
+
+    players.forEach(player => {
+      const row = document.createElement('div');
+      row.className = 'team-card-player';
+      row.appendChild(buildTeamDrawAvatar(player, true));
+      const name = document.createElement('span');
+      name.textContent = player.name;
+      row.appendChild(name);
+      list.appendChild(row);
+    });
+
+    card.appendChild(list);
+    return card;
+  }
+
+  function renderTeamDrawResult(){
+    if(!teamDrawResultSection || !teamDrawResults) return;
+
+    const green = Array.isArray(state.teamDraw.green) ? state.teamDraw.green : [];
+    const black = Array.isArray(state.teamDraw.black) ? state.teamDraw.black : [];
+    const hasResult = green.length + black.length > 0;
+
+    teamDrawResultSection.hidden = !hasResult;
+    teamDrawResults.innerHTML = '';
+
+    if(!hasResult) return;
+
+    teamDrawResults.appendChild(renderTeamCard('TIME VERDE', green, true));
+    teamDrawResults.appendChild(renderTeamCard('TIME PRETO', black, false));
+  }
+
+  function renderTeamDraw(){
+    renderTeamDrawModes();
+    renderTeamDrawConfirmed();
+    renderTeamDrawSelected();
+    renderTeamDrawResult();
+  }
+
+  async function loadTeamDrawConfirmed(){
+    if(teamDrawLoading) return;
+    teamDrawLoading = true;
+    renderTeamDrawConfirmed();
+
+    try{
+      await ensureFirebasePlayer();
+      const result = await listarConfirmadosCall();
+      teamDrawConfirmedCache = Array.isArray(result.data?.players) ?
+        result.data.players.map(normalizeTeamDrawPlayer).filter(item => item.id) : [];
+    }catch(error){
+      console.error('Sorteio — confirmados:', error);
+      teamDrawConfirmedCache = [];
+    }finally{
+      teamDrawLoading = false;
+      renderTeamDraw();
+    }
+  }
+
+  async function openTeamDraw(){
+    if(!isAdminUser()){
+      alert('Entre como administrador para abrir o sorteio.');
+      return;
+    }
+
+    showView('teamDrawView');
+    renderTeamDraw();
+    await loadTeamDrawConfirmed();
+  }
+
+  function shufflePlayers(players){
+    const copy = players.map(normalizeTeamDrawPlayer);
+    for(let i = copy.length - 1; i > 0; i--){
+      const j = Math.floor(Math.random() * (i + 1));
+      [copy[i], copy[j]] = [copy[j], copy[i]];
+    }
+    return copy;
+  }
+
+  function runTeamDraw(){
+    const selected = Array.isArray(state.teamDraw.selected) ? state.teamDraw.selected : [];
+
+    if(selected.length < 2){
+      alert('Selecione pelo menos 2 jogadores para sortear.');
+      return;
+    }
+
+    const shuffled = shufflePlayers(selected);
+    const green = [];
+    const black = [];
+
+    shuffled.forEach((player, index) => {
+      if(index % 2 === 0) green.push(player);
+      else black.push(player);
+    });
+
+    state.teamDraw.green = green;
+    state.teamDraw.black = black;
+    state.teams = [
+      {name:'Time Verde', players:green},
+      {name:'Time Preto', players:black}
+    ];
+    saveState();
+    renderTeamDrawResult();
+
+    setTimeout(() => {
+      teamDrawResultSection?.scrollIntoView({behavior:'smooth', block:'start'});
+    }, 50);
+  }
 
 
   let rankingPlayersCache = [];
@@ -9280,9 +10087,63 @@ let messagingInstance = null;
     openFeatureView('statsView');
   });
 
-  document.getElementById('adminTeamsButton')?.addEventListener('click', () => {
-    alert('O sorteio dos times será a próxima função a ser configurada.');
+  document.getElementById('adminTeamsButton')?.addEventListener('click', openTeamDraw);
+
+  document.getElementById('teamDrawBack')?.addEventListener('click', () => {
+    prepareAdminAccordion();
+    showView('adminView');
   });
+
+  teamDrawImportMode?.addEventListener('click', async () => {
+    if(!isAdminUser()) return;
+
+    if(!teamDrawConfirmedCache.length){
+      await loadTeamDrawConfirmed();
+    }
+
+    if(!teamDrawConfirmedCache.length){
+      alert('Ainda não há jogadores confirmados para importar.');
+      return;
+    }
+
+    state.teamDraw.mode = 'import';
+    state.teamDraw.selected = teamDrawConfirmedCache.map(normalizeTeamDrawPlayer);
+    clearTeamDrawResult();
+    saveState();
+    renderTeamDraw();
+  });
+
+  teamDrawArrivalMode?.addEventListener('click', () => {
+    if(!isAdminUser()) return;
+
+    const changingFromImport =
+      state.teamDraw.mode === 'import' && state.teamDraw.selected.length > 0;
+
+    if(changingFromImport){
+      const ok = confirm(
+        'Iniciar a lista por ordem de chegada? A seleção importada será limpa.'
+      );
+      if(!ok) return;
+      state.teamDraw.selected = [];
+    }
+
+    state.teamDraw.mode = 'arrival';
+    clearTeamDrawResult();
+    saveState();
+    renderTeamDraw();
+  });
+
+  document.getElementById('teamDrawClear')?.addEventListener('click', () => {
+    if(!state.teamDraw.selected.length) return;
+    if(!confirm('Limpar a lista atual do sorteio?')) return;
+    state.teamDraw.selected = [];
+    clearTeamDrawResult();
+    saveState();
+    renderTeamDraw();
+  });
+
+  teamDrawButton?.addEventListener('click', runTeamDraw);
+  document.getElementById('teamDrawAgain')?.addEventListener('click', runTeamDraw);
 
   document.querySelectorAll('[data-feature-back]').forEach(button => {
     button.addEventListener('click', () => {
