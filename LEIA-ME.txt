@@ -1,24 +1,39 @@
-GREEN PARK FC — ESTATÍSTICAS AO VIVO V2
+GREEN PARK FC — ADMIN ACORDEÃO + FIX GALERIA/PATROCINADORES
 
-A página ESTATÍSTICAS agora mostra todos os jogadores confirmados.
+ADMIN
+=====
+Agora existem 5 grupos independentes:
+1. Acesso do administrador
+2. Notificações
+3. Próximo racha
+4. Conferência de presença
+5. Organização
 
-ADMIN DURANTE O RACHA:
-- + em GOLS para cada gol marcado.
-- - para corrigir.
-- MARCAR GOLEIRO para definir quem jogou no gol.
-- + em GOLS SOFRIDOS para cada gol que o goleiro tomar.
-- - para corrigir.
+Toque no título para abrir.
+Toque novamente para fechar.
+Ao abrir outro, o anterior fecha.
 
-SALDO:
-- jogador normal = gols.
-- goleiro = gols feitos - gols sofridos.
+GALERIA E PATROCINADORES
+========================
+O erro mostrado no app acontece porque o index.html já possui as telas,
+mas as novas Cloud Functions ainda precisam ser publicadas no Firebase.
 
-RANKING:
-- Artilharia soma todos os gols.
-- Goleiro menos vazado usa média de gols sofridos por jogo.
-- mínimo de 3 jogos como goleiro.
+Arquivos necessários:
+- greenpark-addons-final.js
+- storage.rules
+- index.html
+
+greenpark-addons-final.js reúne:
+- Estatísticas ao vivo
+- Ranking
+- Lista de confirmados
+- Galeria
+- Comunicados
+- Patrocinadores
 
 IMPORTANTE:
-Mesmo que o goleiro não tome gol, marque GOLEIRO para o jogo contar como 0 sofridos.
+Não substitua o functions/index.js inteiro.
+Faça backup e ANEXE greenpark-addons-final.js ao FINAL do arquivo atual.
 
-Use ESTE ranking-functions.js no pacote final.
+Depois publique as Functions específicas e as regras do Storage.
+A sequência de comandos deve ser feita passo a passo pelo chat.

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <!-- GREEN PARK BUILD: 2026-08-14-estatisticas-ao-vivo-v2 -->
+  <!-- GREEN PARK BUILD: 2026-08-14-admin-acordeao-midias -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#071018">
@@ -3335,6 +3335,254 @@
       .live-stat-btn{width:35px;height:35px;}
     }
 
+  
+    /* ESTATÍSTICAS — VISUAL FINAL */
+    #statsView .live-stats-shell{
+      padding:0;
+      border:0;
+      background:transparent;
+    }
+
+    #statsView .live-stats-head{
+      margin-bottom:10px;
+    }
+
+    #statsView .live-stats-help{
+      margin:0 0 16px;
+      padding:0 2px;
+      color:#83c98b;
+      font-size:12px;
+      line-height:1.5;
+      text-transform:uppercase;
+    }
+
+    #statsView .live-player-list{
+      gap:11px;
+    }
+
+    #statsView .live-player-card{
+      padding:14px;
+      border:1.5px solid #28583d;
+      border-radius:18px;
+      background:#0b1b13;
+      box-shadow:none;
+    }
+
+    #statsView .live-player-top{
+      gap:11px;
+      margin-bottom:12px;
+    }
+
+    #statsView .live-player-avatar{
+      width:48px;
+      height:48px;
+      flex-basis:48px;
+      border-color:#2b5d42;
+    }
+
+    #statsView .live-player-name{
+      font-size:17px;
+      letter-spacing:0;
+    }
+
+    #statsView .live-goalie-toggle{
+      min-height:32px;
+      padding:0 10px;
+      font-size:9px;
+    }
+
+    #statsView .live-player-counters{
+      margin-top:0;
+      gap:10px;
+    }
+
+    #statsView .live-counter{
+      min-height:98px;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      padding:10px 8px;
+      background:#08170f;
+      border-radius:14px;
+    }
+
+    #statsView .live-counter-label{
+      min-height:auto;
+      margin-bottom:8px;
+      color:#86d08f;
+      font-size:11px;
+      font-weight:800;
+    }
+
+    #statsView .live-counter-controls{
+      gap:12px;
+      margin-top:0;
+    }
+
+    #statsView .live-stat-btn{
+      width:36px;
+      height:36px;
+      border-radius:9px;
+    }
+
+    #statsView .live-stat-value{
+      min-width:28px;
+      font-size:27px;
+    }
+
+    #statsView .live-player-bottom{
+      margin-top:9px;
+    }
+
+    #statsView .live-balance{
+      min-height:28px;
+      padding:0 9px;
+      font-size:9px;
+    }
+
+  
+    /* =====================================================
+       ADMIN — ACORDEÃO COMPACTO
+       ===================================================== */
+    #adminView .admin-accordion-stack{
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+
+    #adminView .admin-accordion{
+      overflow:hidden;
+      border:1px solid var(--line);
+      border-radius:20px;
+      background:var(--panel);
+    }
+
+    #adminView .admin-accordion-summary{
+      width:100%;
+      min-height:76px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:16px 18px;
+      border:0;
+      background:transparent;
+      color:#fff;
+      text-align:left;
+      cursor:pointer;
+      -webkit-tap-highlight-color:transparent;
+    }
+
+    #adminView .admin-accordion-summary-main{
+      min-width:0;
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+    }
+
+    #adminView .admin-accordion-summary-title{
+      color:#fff;
+      font-size:18px;
+      line-height:1.1;
+      font-weight:950;
+    }
+
+    #adminView .admin-accordion-summary-subtitle{
+      color:#89979d;
+      font-size:11px;
+      line-height:1.3;
+    }
+
+    #adminView .admin-accordion-summary-right{
+      flex:0 0 auto;
+      display:flex;
+      align-items:center;
+      gap:9px;
+    }
+
+    #adminView .admin-accordion-chevron{
+      width:32px;
+      height:32px;
+      display:grid;
+      place-items:center;
+      border:1px solid #314149;
+      border-radius:50%;
+      color:var(--green);
+      font-size:18px;
+      font-weight:900;
+      transition:transform .18s ease;
+    }
+
+    #adminView .admin-accordion.open .admin-accordion-chevron{
+      transform:rotate(180deg);
+    }
+
+    #adminView .admin-accordion-body{
+      display:none;
+      padding:0 18px 18px;
+    }
+
+    #adminView .admin-accordion.open .admin-accordion-body{
+      display:block;
+    }
+
+    #adminView .admin-accordion .admin-tag{
+      font-size:10px;
+    }
+
+    /* reaproveita conteúdos antigos sem "card dentro de card" */
+    #adminView .admin-accordion-body .firebase-status{
+      margin-top:0;
+    }
+
+    #adminView .admin-accordion-body .push-admin-box{
+      margin:0;
+      border:0;
+      padding:0;
+      background:transparent;
+    }
+
+    #adminView .admin-accordion-body .admin-options{
+      display:flex;
+      flex-direction:column;
+      gap:9px;
+      margin:0;
+    }
+
+    #adminView .admin-accordion-body .admin-option{
+      width:100%;
+    }
+
+    #adminView .admin-accordion-body .danger-zone{
+      margin-top:14px;
+    }
+
+    #adminView .admin-accordion-body #approvalList:empty::before{
+      content:"Nenhum pagamento aguardando conferência.";
+      display:block;
+      padding:18px 12px;
+      border:1px dashed #33454d;
+      border-radius:13px;
+      color:#7e8d93;
+      text-align:center;
+      font-size:12px;
+    }
+
+    @media (max-width:420px){
+      #adminView .admin-accordion-summary{
+        min-height:70px;
+        padding:14px 15px;
+      }
+
+      #adminView .admin-accordion-summary-title{
+        font-size:16px;
+      }
+
+      #adminView .admin-accordion-body{
+        padding:0 15px 15px;
+      }
+    }
+
   </style>
 </head>
 
@@ -3513,9 +3761,9 @@
       <div class="live-stats-match" id="liveStatsMatch">Próximo racha</div>
 
       <p class="live-stats-help">
-        <b>Admin:</b> marque cada gol na hora.
-        Quem estiver no gol deve ser marcado como <b>GOLEIRO</b>;
-        depois marque cada gol sofrido.
+        Controle os gols de cada jogador durante o racha.
+        Marque quem está no gol e registre também cada gol sofrido.
+        Os dados atualizam o ranking automaticamente.
       </p>
 
       <div class="live-stats-readonly" id="liveStatsReadOnly">
@@ -4086,165 +4334,243 @@
       </div>
     </div>
 
-    <section class="admin-card" id="adminLoginCard">
-      <div class="admin-head">
-        <h2>Acesso do administrador</h2>
-        <span class="admin-tag" id="adminAuthTag">DESCONECTADO</span>
-      </div>
+    <div class="admin-accordion-stack">
 
-      <div class="firebase-status" id="firebaseStatus">
-        Conectando ao Firebase...
-      </div>
+      <!-- 1. ACESSO -->
+      <section class="admin-accordion" data-admin-accordion="access">
+        <button class="admin-accordion-summary" type="button">
+          <span class="admin-accordion-summary-main">
+            <span class="admin-accordion-summary-title">Acesso do administrador</span>
+            <span class="admin-accordion-summary-subtitle">Login e conexão com o Firebase</span>
+          </span>
 
-      <div class="admin-login-grid" id="adminLoginFields">
-        <input id="adminEmail" type="email" value="itronicrioverde@gmail.com" placeholder="E-mail do administrador" autocomplete="username">
-        <input id="adminPassword" type="password" placeholder="Senha do administrador" autocomplete="current-password">
-
-        <div class="admin-login-actions">
-          <button class="admin-login-btn" id="adminLoginButton">ENTRAR COMO ADMIN</button>
-          <button class="admin-logout-btn" id="adminLogoutButton">SAIR</button>
-        </div>
-      </div>
-
-      <div class="push-admin-box" id="pushAdminBox">
-        <div class="push-admin-title">Notificações do administrador</div>
-        <div class="push-admin-help">
-          Ative neste iPhone para receber avisos do Green Park FC.
-        </div>
-
-        <button class="push-enable-btn" id="enablePushButton" type="button">
-          ATIVAR NOTIFICAÇÕES NESTE IPHONE
+          <span class="admin-accordion-summary-right">
+            <span class="admin-tag" id="adminAuthTag">DESCONECTADO</span>
+            <span class="admin-accordion-chevron">⌄</span>
+          </span>
         </button>
 
-        <div class="push-state" id="pushState">
-          Notificações ainda não ativadas neste aparelho.
-        </div>
-
-        <textarea class="push-token" id="adminFcmToken" readonly></textarea>
-
-        <button class="push-copy-btn" id="copyFcmTokenButton" type="button">
-          COPIAR TOKEN FCM PARA TESTE
-        </button>
-      </div>
-    </section>
-
-    <section class="admin-card">
-      <div class="admin-head">
-        <h2>Próximo racha</h2>
-        <span class="admin-tag">GREEN PARK FC</span>
-      </div>
-
-      <div class="fields">
-        <div class="date-time">
-          <div class="field">
-            <label>Data</label>
-            <div class="native-picker-shell">
-              <input id="matchDate" type="date" aria-label="Data do próximo racha">
-              <span class="native-picker-display" id="matchDateDisplay">Selecione a data</span>
-            </div>
+        <div class="admin-accordion-body" id="adminLoginCard">
+          <div class="firebase-status" id="firebaseStatus">
+            Conectando ao Firebase...
           </div>
 
-          <div class="field">
-            <label>Horário</label>
-            <div class="native-picker-shell">
-              <input id="matchTime" type="time" aria-label="Horário do próximo racha">
-              <span class="native-picker-display" id="matchTimeDisplay">Selecione o horário</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="field">
-          <label>Máximo de jogadores</label>
-          <input id="maxPlayers" type="number" inputmode="numeric" min="2" max="100" value="40">
-        </div>
-
-        <div class="field location-block">
-          <label>Local</label>
-
-          <div class="location-row">
+          <div class="admin-login-grid" id="adminLoginFields">
             <input
-              id="matchLocation"
-              type="text"
-              placeholder="Digite o nome do local ou endereço..."
-              autocomplete="off"
+              id="adminEmail"
+              type="email"
+              value="itronicrioverde@gmail.com"
+              placeholder="E-mail do administrador"
+              autocomplete="username"
             >
+
+            <input
+              id="adminPassword"
+              type="password"
+              placeholder="Senha do administrador"
+              autocomplete="current-password"
+            >
+
+            <div class="admin-login-actions">
+              <button class="admin-login-btn" id="adminLoginButton">
+                ENTRAR COMO ADMIN
+              </button>
+
+              <button class="admin-logout-btn" id="adminLogoutButton">
+                SAIR
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2. NOTIFICAÇÕES -->
+      <section class="admin-accordion" data-admin-accordion="notifications">
+        <button class="admin-accordion-summary" type="button">
+          <span class="admin-accordion-summary-main">
+            <span class="admin-accordion-summary-title">Notificações</span>
+            <span class="admin-accordion-summary-subtitle">Avisos do administrador neste iPhone</span>
+          </span>
+
+          <span class="admin-accordion-summary-right">
+            <span class="admin-accordion-chevron">⌄</span>
+          </span>
+        </button>
+
+        <div class="admin-accordion-body">
+          <div class="push-admin-box" id="pushAdminBox">
+            <div class="push-admin-help">
+              Ative neste iPhone para receber avisos do Green Park FC.
+            </div>
+
+            <button class="push-enable-btn" id="enablePushButton" type="button">
+              ATIVAR NOTIFICAÇÕES NESTE IPHONE
+            </button>
+
+            <div class="push-state" id="pushState">
+              Notificações ainda não ativadas neste aparelho.
+            </div>
+
+            <textarea class="push-token" id="adminFcmToken" readonly></textarea>
+
+            <button class="push-copy-btn" id="copyFcmTokenButton" type="button">
+              COPIAR TOKEN FCM PARA TESTE
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. PRÓXIMO RACHA -->
+      <section class="admin-accordion" data-admin-accordion="next-match">
+        <button class="admin-accordion-summary" type="button">
+          <span class="admin-accordion-summary-main">
+            <span class="admin-accordion-summary-title">Próximo racha</span>
+            <span class="admin-accordion-summary-subtitle">Data, horário, limite e local</span>
+          </span>
+
+          <span class="admin-accordion-summary-right">
+            <span class="admin-tag">GREEN PARK FC</span>
+            <span class="admin-accordion-chevron">⌄</span>
+          </span>
+        </button>
+
+        <div class="admin-accordion-body">
+          <div class="fields">
+            <div class="date-time">
+              <div class="field">
+                <label>Data</label>
+                <div class="native-picker-shell">
+                  <input id="matchDate" type="date" aria-label="Data do próximo racha">
+                  <span class="native-picker-display" id="matchDateDisplay">
+                    Selecione a data
+                  </span>
+                </div>
+              </div>
+
+              <div class="field">
+                <label>Horário</label>
+                <div class="native-picker-shell">
+                  <input id="matchTime" type="time" aria-label="Horário do próximo racha">
+                  <span class="native-picker-display" id="matchTimeDisplay">
+                    Selecione o horário
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div class="field">
+              <label>Máximo de jogadores</label>
+              <input
+                id="maxPlayers"
+                type="number"
+                inputmode="numeric"
+                min="2"
+                max="100"
+                value="40"
+              >
+            </div>
+
+            <div class="field location-block">
+              <label>Local</label>
+
+              <div class="location-row">
+                <input
+                  id="matchLocation"
+                  type="text"
+                  placeholder="Digite o nome do local ou endereço..."
+                  autocomplete="off"
+                >
+              </div>
+
+              <div class="suggestions" id="locationSuggestions"></div>
+              <div class="search-state" id="locationState"></div>
+            </div>
           </div>
 
-          <div class="suggestions" id="locationSuggestions"></div>
-          <div class="search-state" id="locationState"></div>
-
+          <button class="save-admin" id="saveRachaButton">
+            Salvar informações do racha
+          </button>
         </div>
-      </div>
+      </section>
 
-      <button class="save-admin" id="saveRachaButton">Salvar informações do racha</button>
-    </section>
+      <!-- 4. CONFERÊNCIA -->
+      <section
+        class="admin-accordion"
+        data-admin-accordion="attendance"
+        id="adminPendingPaymentsSection"
+      >
+        <button class="admin-accordion-summary" type="button">
+          <span class="admin-accordion-summary-main">
+            <span class="admin-accordion-summary-title">Conferência de presença</span>
+            <span class="admin-accordion-summary-subtitle">Pagamentos e confirmações do racha</span>
+          </span>
 
-
-    <section class="admin-ranking-card" id="adminRankingCard">
-      <h3>Resultado do racha</h3>
-      <p>
-        Lance os gols e os goleiros deste racha. Se salvar novamente a mesma data e horário,
-        o resultado anterior é substituído e não duplica os números.
-      </p>
-
-      <div class="rank-admin-section">
-        <div class="rank-admin-section-title">Artilheiros do racha</div>
-        <div class="rank-entry-list" id="rankScorerEntries"></div>
-        <button class="rank-add-btn" id="rankAddScorer" type="button">
-          + ADICIONAR ARTILHEIRO
+          <span class="admin-accordion-summary-right">
+            <span class="admin-tag" id="pendingApprovalCount">0 PENDENTES</span>
+            <span class="admin-accordion-chevron">⌄</span>
+          </span>
         </button>
-      </div>
 
-      <div class="rank-admin-section">
-        <div class="rank-admin-section-title">Goleiros do racha</div>
-        <div class="rank-entry-list" id="rankKeeperEntries"></div>
-        <button class="rank-add-btn" id="rankAddKeeper" type="button">
-          + ADICIONAR GOLEIRO
+        <div class="admin-accordion-body">
+          <div id="approvalList"></div>
+        </div>
+      </section>
+
+      <!-- 5. ORGANIZAÇÃO -->
+      <section class="admin-accordion" data-admin-accordion="organization">
+        <button class="admin-accordion-summary" type="button">
+          <span class="admin-accordion-summary-main">
+            <span class="admin-accordion-summary-title">Organização</span>
+            <span class="admin-accordion-summary-subtitle">Jogadores, pagamentos, times e estatísticas</span>
+          </span>
+
+          <span class="admin-accordion-summary-right">
+            <span class="admin-accordion-chevron">⌄</span>
+          </span>
         </button>
-      </div>
 
-      <button class="rank-save-btn" id="rankSaveResult" type="button">
-        SALVAR RESULTADO DO RACHA
-      </button>
+        <div class="admin-accordion-body">
+          <section class="admin-options">
+            <button class="admin-option" id="adminPlayersButton" type="button">
+              <span>Jogadores</span>
+              <small>Cadastros, confirmados e lista de espera</small>
+            </button>
 
-      <div class="rank-admin-status" id="rankAdminStatus"></div>
-    </section>
+            <button class="admin-option" id="adminPaymentsButton" type="button">
+              <span>Pagamentos</span>
+              <small>Pix, diária e mensalidade</small>
+            </button>
 
-    <section class="admin-card" id="adminPendingPaymentsSection">
-      <div class="admin-head">
-        <h2>Conferência de presença</h2>
-        <span class="admin-tag" id="pendingApprovalCount">0 PENDENTES</span>
-      </div>
+            <button class="admin-option" id="adminTeamsButton" type="button">
+              <span>Sorteio dos times</span>
+              <small>Time Verde x Time Preto</small>
+            </button>
 
-      <div id="approvalList"></div>
-    </section>
+            <button class="admin-option" id="adminStatsButton" type="button">
+              <span>Estatísticas</span>
+              <small>Gols e ranking dos jogadores</small>
+            </button>
+          </section>
 
-    <section class="admin-options">
-      <button class="admin-option">
-        <span>Jogadores</span>
-        <small>Cadastros, confirmados e lista de espera</small>
-      </button>
+          <section class="danger-zone">
+            <strong>Zerar aplicativo</strong>
+            <small>
+              Zera jogadores, confirmações e pagamentos de teste.
+            </small>
+            <button class="reset-btn" id="resetAppButton">ZERAR APP</button>
+          </section>
+        </div>
+      </section>
+    </div>
 
-      <button class="admin-option">
-        <span>Pagamentos</span>
-        <small>Confirmar Pix, diária e mensalidade</small>
-      </button>
-
-      <button class="admin-option">
-        <span>Sorteio dos times</span>
-        <small>Time Verde x Time Preto</small>
-      </button>
-
-      <button class="admin-option">
-        <span>Estatísticas</span>
-        <small>Gols e ranking dos jogadores</small>
-      </button>
-    </section>
-
-    <section class="danger-zone">
-      <strong>Zerar aplicativo</strong>
-      <small>Apaga completamente configurações do racha, confirmações, jogadores, pagamentos, listas, sorteios e estatísticas salvos neste aparelho.</small>
-      <button class="reset-btn" id="resetAppButton">ZERAR APP</button>
+    <!-- Compatibilidade com scripts antigos; oculto nesta versão -->
+    <section class="admin-ranking-card" id="adminRankingCard" style="display:none!important;">
+      <div class="rank-entry-list" id="rankScorerEntries"></div>
+      <div class="rank-entry-list" id="rankKeeperEntries"></div>
+      <button id="rankAddScorer" type="button"></button>
+      <button id="rankAddKeeper" type="button"></button>
+      <button id="rankSaveResult" type="button"></button>
+      <div id="rankAdminStatus"></div>
     </section>
   </main>
 
@@ -5770,7 +6096,7 @@ let messagingInstance = null;
     }catch(error){
       console.error('Galeria:', error);
       galleryGrid.innerHTML =
-        '<div class="gallery-empty"><strong>Não foi possível carregar a galeria.</strong><span>Tente novamente em alguns segundos.</span></div>';
+        '<div class="gallery-empty"><strong>Galeria ainda não conectada ao Firebase.</strong><span>Publique as Functions e as regras do Storage para ativar fotos e vídeos.</span></div>';
     }
   }
 
@@ -6143,7 +6469,7 @@ let messagingInstance = null;
 
       setContentStatus(
         sponsorAdminStatus,
-        'Não foi possível carregar as logos.',
+        'As funções de Patrocinadores ainda não estão publicadas no Firebase.',
         'error'
       );
     }
@@ -6331,7 +6657,7 @@ let messagingInstance = null;
       const goalie = document.createElement('button');
       goalie.type = 'button';
       goalie.className = 'live-goalie-toggle' + (player.isGoalkeeper ? ' active' : '');
-      goalie.textContent = player.isGoalkeeper ? '🧤 GOLEIRO' : 'MARCAR GOLEIRO';
+      goalie.textContent = player.isGoalkeeper ? '🧤 GOLEIRO' : 'GOLEIRO';
       goalie.style.display = admin ? 'block' : (player.isGoalkeeper ? 'block' : 'none');
 
       goalie.addEventListener('click', async () => {
@@ -6573,6 +6899,20 @@ let messagingInstance = null;
 
     refreshContentAdminUI();
     showView(viewId);
+  }
+
+
+  function prepareAdminAccordion(){
+    const sections =
+      Array.from(document.querySelectorAll('[data-admin-accordion]'));
+
+    sections.forEach(item => item.classList.remove('open'));
+
+    if(!isAdminUser()){
+      document
+        .querySelector('[data-admin-accordion="access"]')
+        ?.classList.add('open');
+    }
   }
 
   function showView(id){
@@ -7453,6 +7793,7 @@ let messagingInstance = null;
 
   document.getElementById('menuButton').addEventListener('click', () => {
     renderApprovals();
+    prepareAdminAccordion();
     showView('adminView');
 
     if(isAdminUser()){
@@ -7461,6 +7802,7 @@ let messagingInstance = null;
   });
   document.getElementById('adminNavButton').addEventListener('click', () => {
     renderApprovals();
+    prepareAdminAccordion();
     showView('adminView');
 
     if(isAdminUser()){
@@ -7589,6 +7931,50 @@ let messagingInstance = null;
       const slot = Number(button.dataset.sponsorRemove);
       removeSponsorLogo(slot);
     });
+  });
+
+
+  // ADMIN — somente um grupo aberto por vez.
+  document.querySelectorAll('[data-admin-accordion]').forEach(section => {
+    const summary = section.querySelector('.admin-accordion-summary');
+
+    if(!summary) return;
+
+    summary.addEventListener('click', () => {
+      const willOpen = !section.classList.contains('open');
+
+      document.querySelectorAll('[data-admin-accordion]').forEach(item => {
+        item.classList.remove('open');
+      });
+
+      if(willOpen){
+        section.classList.add('open');
+      }
+    });
+  });
+
+  // Atalhos da Organização.
+  document.getElementById('adminPlayersButton')?.addEventListener('click', () => {
+    openConfirmedList();
+  });
+
+  document.getElementById('adminPaymentsButton')?.addEventListener('click', () => {
+    const section = document.querySelector('[data-admin-accordion="attendance"]');
+
+    document.querySelectorAll('[data-admin-accordion]').forEach(item => {
+      item.classList.remove('open');
+    });
+
+    section?.classList.add('open');
+    section?.scrollIntoView({behavior:'smooth', block:'start'});
+  });
+
+  document.getElementById('adminStatsButton')?.addEventListener('click', () => {
+    openFeatureView('statsView');
+  });
+
+  document.getElementById('adminTeamsButton')?.addEventListener('click', () => {
+    alert('O sorteio dos times será a próxima função a ser configurada.');
   });
 
   document.querySelectorAll('[data-feature-back]').forEach(button => {
