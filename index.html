@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <!-- GREEN PARK BUILD: 2026-08-14-admin-acordeao-midias -->
+  <!-- GREEN PARK BUILD: 2026-08-14-confirmados-unificados -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#071018">
@@ -3697,7 +3697,7 @@
       </div>
 
       <div class="confirmed-list-note">
-        A lista mostra somente jogadores com presença confirmada.
+        Todos que tiverem o pagamento confirmado entram aqui automaticamente.
       </div>
     </section>
   </main>
@@ -5580,7 +5580,7 @@ let messagingInstance = null;
       empty.className = 'ranking-empty';
       empty.textContent =
         type === 'scorer' ?
-          'Ainda não há gols lançados.' :
+          'Nenhum gol lançado ainda.' :
           'Ainda não há goleiros com 3 jogos no gol.';
       container.appendChild(empty);
       return;
@@ -5608,9 +5608,13 @@ let messagingInstance = null;
       value.className = 'ranking-value';
 
       if(type === 'scorer'){
-        meta.textContent = 'Artilharia da temporada';
-
         const goals = Number(item.goals || 0);
+
+        meta.textContent =
+          goals > 0 ?
+            'Artilharia da temporada' :
+            'Confirmado • ainda sem gols';
+
         value.textContent = goals;
 
         const small = document.createElement('small');

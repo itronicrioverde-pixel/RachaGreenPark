@@ -1,39 +1,23 @@
-GREEN PARK FC — ADMIN ACORDEÃO + FIX GALERIA/PATROCINADORES
+GREEN PARK FC — CONFIRMADOS UNIFICADOS
 
-ADMIN
-=====
-Agora existem 5 grupos independentes:
-1. Acesso do administrador
-2. Notificações
-3. Próximo racha
-4. Conferência de presença
-5. Organização
+REGRA:
+players.status == confirmed
 
-Toque no título para abrir.
-Toque novamente para fechar.
-Ao abrir outro, o anterior fecha.
+Assim que o Pix confirmar o jogador:
 
-GALERIA E PATROCINADORES
-========================
-O erro mostrado no app acontece porque o index.html já possui as telas,
-mas as novas Cloud Functions ainda precisam ser publicadas no Firebase.
+1. LISTA
+   - aparece automaticamente para todos.
 
-Arquivos necessários:
-- greenpark-addons-final.js
-- storage.rules
-- index.html
+2. RANKING
+   - aparece imediatamente, mesmo com 0 gols.
+   - depois os gols alteram a posição.
 
-greenpark-addons-final.js reúne:
-- Estatísticas ao vivo
-- Ranking
-- Lista de confirmados
-- Galeria
-- Comunicados
-- Patrocinadores
+3. ESTATÍSTICAS
+   - aparece imediatamente.
+   - Admin pode lançar gols e marcar goleiro.
+
+Não existe cadastro separado para Lista, Ranking ou Estatísticas.
 
 IMPORTANTE:
-Não substitua o functions/index.js inteiro.
-Faça backup e ANEXE greenpark-addons-final.js ao FINAL do arquivo atual.
-
-Depois publique as Functions específicas e as regras do Storage.
-A sequência de comandos deve ser feita passo a passo pelo chat.
+As Functions precisam ser publicadas para a Lista, Ranking,
+Estatísticas, Galeria e Patrocinadores funcionarem com o Firebase.
