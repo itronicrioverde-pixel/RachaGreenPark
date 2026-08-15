@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <!-- GREEN PARK BUILD: 2026-08-14-paginas-acessos-rapidos -->
+  <!-- GREEN PARK BUILD: 2026-08-14-patrocinadores-v1 -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#071018">
@@ -2089,6 +2089,469 @@
       text-align:center;
     }
 
+  
+    /* RANKING V1 */
+    .ranking-tabs{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:8px;
+      margin-bottom:14px;
+    }
+
+    .ranking-tab{
+      min-height:44px;
+      border:1px solid #2c3c44;
+      border-radius:12px;
+      background:#0d171d;
+      color:var(--muted);
+      font-weight:900;
+      font-size:13px;
+    }
+
+    .ranking-tab.active{
+      background:var(--green);
+      color:#061007;
+      border-color:var(--green);
+    }
+
+    .ranking-panel{display:none;}
+    .ranking-panel.active{display:block;}
+
+    .ranking-table{
+      display:flex;
+      flex-direction:column;
+      gap:9px;
+    }
+
+    .ranking-row{
+      display:grid;
+      grid-template-columns:46px minmax(0,1fr) auto;
+      align-items:center;
+      gap:11px;
+      min-height:62px;
+      padding:10px 12px;
+      border:1px solid #293840;
+      border-radius:16px;
+      background:#0d171d;
+    }
+
+    .ranking-position{
+      width:38px;
+      height:38px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border-radius:50%;
+      background:#162229;
+      color:var(--green);
+      font-size:13px;
+      font-weight:950;
+    }
+
+    .ranking-main{min-width:0;}
+
+    .ranking-name{
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+      color:#fff;
+      font-size:16px;
+      font-weight:900;
+    }
+
+    .ranking-meta{
+      margin-top:3px;
+      color:var(--muted);
+      font-size:11px;
+      font-weight:700;
+    }
+
+    .ranking-value{
+      text-align:right;
+      color:#fff;
+      font-size:20px;
+      font-weight:950;
+      white-space:nowrap;
+    }
+
+    .ranking-value small{
+      display:block;
+      margin-top:3px;
+      color:var(--muted);
+      font-size:10px;
+      font-weight:800;
+    }
+
+    .ranking-empty{
+      padding:26px 14px;
+      text-align:center;
+      color:var(--muted);
+      border:1px dashed #33444c;
+      border-radius:16px;
+      line-height:1.45;
+    }
+
+    .ranking-rule{
+      margin-top:12px;
+      padding:11px 13px;
+      border-radius:13px;
+      border:1px solid #293840;
+      color:#849298;
+      font-size:11px;
+      line-height:1.45;
+    }
+
+    .admin-ranking-card{
+      margin-top:18px;
+      padding:18px;
+      border:1px solid var(--line);
+      border-radius:24px;
+      background:var(--panel);
+    }
+
+    .admin-ranking-card h3{
+      margin:0 0 5px;
+      font-size:20px;
+    }
+
+    .admin-ranking-card > p{
+      margin:0 0 15px;
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.45;
+    }
+
+    .rank-admin-section{margin-top:16px;}
+
+    .rank-admin-section-title{
+      margin-bottom:9px;
+      color:#fff;
+      font-size:13px;
+      font-weight:950;
+      letter-spacing:.05em;
+      text-transform:uppercase;
+    }
+
+    .rank-entry-list{
+      display:flex;
+      flex-direction:column;
+      gap:9px;
+    }
+
+    .rank-entry-row{
+      display:grid;
+      grid-template-columns:minmax(0,1fr) 92px 38px;
+      gap:8px;
+      align-items:center;
+    }
+
+    .rank-entry-row select,
+    .rank-entry-row input{
+      width:100%;
+      min-width:0;
+      min-height:46px;
+      box-sizing:border-box;
+      border:1px solid #34454d;
+      border-radius:12px;
+      background:#0d171d;
+      color:#fff;
+      padding:0 12px;
+      font:inherit;
+      font-size:14px;
+    }
+
+    .rank-entry-remove{
+      width:38px;
+      height:38px;
+      border:0;
+      border-radius:10px;
+      background:#202c32;
+      color:#fff;
+      font-size:18px;
+      font-weight:900;
+    }
+
+    .rank-add-btn{
+      width:100%;
+      min-height:42px;
+      margin-top:8px;
+      border:1px dashed #3a4d56;
+      border-radius:12px;
+      background:transparent;
+      color:var(--green);
+      font-weight:900;
+    }
+
+    .rank-save-btn{
+      width:100%;
+      min-height:52px;
+      margin-top:18px;
+      border:0;
+      border-radius:14px;
+      background:var(--green);
+      color:#061007;
+      font-weight:950;
+      font-size:15px;
+    }
+
+    .rank-save-btn:disabled{opacity:.6;}
+
+    .rank-admin-status{
+      display:none;
+      margin-top:10px;
+      padding:10px 12px;
+      border-radius:12px;
+      font-size:12px;
+      line-height:1.4;
+    }
+
+    .rank-admin-status.show{display:block;}
+
+    .rank-admin-status.ok{
+      background:#10271a;
+      color:#8fffa4;
+      border:1px solid #285c39;
+    }
+
+    .rank-admin-status.error{
+      background:#2b1414;
+      color:#ff9b9b;
+      border:1px solid #633535;
+    }
+
+    @media (max-width:420px){
+      .rank-entry-row{
+        grid-template-columns:minmax(0,1fr) 80px 36px;
+      }
+    }
+
+  
+    /* PATROCINADORES V1 — inspirado no layout premium escolhido */
+    #sponsorsView{
+      background:
+        radial-gradient(circle at 18% 18%, rgba(56,255,68,.08), transparent 34%),
+        linear-gradient(180deg, #071017 0%, #081319 48%, #071016 100%);
+    }
+
+    .sponsors-hero{
+      position:relative;
+      overflow:hidden;
+      border:1px solid rgba(82,255,76,.16);
+      border-radius:26px;
+      padding:24px 18px 20px;
+      background:
+        linear-gradient(180deg, rgba(9,30,22,.72), rgba(7,18,22,.92));
+      box-shadow:0 18px 44px rgba(0,0,0,.18);
+    }
+
+    .sponsors-hero::before{
+      content:"";
+      position:absolute;
+      inset:-60px auto auto -80px;
+      width:230px;
+      height:230px;
+      border:1px solid rgba(79,255,74,.08);
+      transform:rotate(35deg);
+      border-radius:36px;
+      pointer-events:none;
+    }
+
+    .sponsors-brand-mark{
+      width:52px;
+      height:52px;
+      margin:0 auto 14px;
+      display:grid;
+      place-items:center;
+      border:1px solid rgba(78,255,72,.32);
+      border-radius:14px;
+      color:var(--green);
+      font-size:13px;
+      font-weight:950;
+      letter-spacing:.06em;
+      line-height:1.05;
+      text-align:center;
+      background:rgba(7,20,16,.58);
+    }
+
+    .sponsors-title{
+      margin:0;
+      text-align:center;
+      color:#fff;
+      font-size:24px;
+      font-weight:950;
+      letter-spacing:.14em;
+      line-height:1.1;
+      text-transform:uppercase;
+    }
+
+    .sponsors-subtitle{
+      margin:9px 0 0;
+      text-align:center;
+      color:var(--green);
+      font-size:12px;
+      font-weight:900;
+      letter-spacing:.22em;
+      text-transform:uppercase;
+    }
+
+    .sponsors-separator{
+      width:82%;
+      height:1px;
+      margin:18px auto 6px;
+      background:linear-gradient(
+        90deg,
+        transparent,
+        rgba(75,255,69,.42),
+        transparent
+      );
+    }
+
+    .sponsors-stage{
+      margin-top:18px;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+
+    .sponsors-row{
+      display:grid;
+      gap:0;
+      overflow:hidden;
+      border:1px solid rgba(75,255,69,.20);
+      border-radius:20px;
+      background:rgba(6,18,18,.64);
+    }
+
+    .sponsors-row.row-five{
+      grid-template-columns:repeat(5,minmax(0,1fr));
+    }
+
+    .sponsors-row.row-four{
+      grid-template-columns:repeat(4,minmax(0,1fr));
+    }
+
+    .sponsor-slot{
+      position:relative;
+      min-width:0;
+      min-height:126px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:16px 10px;
+    }
+
+    .sponsor-slot + .sponsor-slot::before{
+      content:"";
+      position:absolute;
+      left:0;
+      top:22%;
+      bottom:22%;
+      width:1px;
+      background:rgba(75,255,69,.13);
+    }
+
+    .sponsor-logo{
+      display:block;
+      width:100%;
+      max-width:150px;
+      max-height:64px;
+      object-fit:contain;
+      object-position:center;
+      filter:grayscale(1) brightness(0) invert(1);
+      opacity:.96;
+    }
+
+    .sponsor-fallback{
+      display:flex;
+      min-height:58px;
+      width:100%;
+      align-items:center;
+      justify-content:center;
+      padding:6px;
+      color:#fff;
+      text-align:center;
+      font-size:11px;
+      font-weight:900;
+      line-height:1.25;
+      letter-spacing:.04em;
+      opacity:.52;
+      text-transform:uppercase;
+    }
+
+    .sponsors-guide{
+      margin-top:18px;
+      padding:15px 16px;
+      border:1px dashed rgba(121,142,150,.38);
+      border-radius:16px;
+      background:rgba(10,22,27,.72);
+    }
+
+    .sponsors-guide-title{
+      color:#fff;
+      font-size:12px;
+      font-weight:950;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      margin-bottom:8px;
+    }
+
+    .sponsors-guide-text{
+      margin:0;
+      color:#829097;
+      font-size:11px;
+      line-height:1.55;
+    }
+
+    .sponsors-guide-text b{
+      color:#c7d0d4;
+    }
+
+    .sponsors-footer-note{
+      margin-top:12px;
+      color:#617078;
+      font-size:10px;
+      line-height:1.45;
+      text-align:center;
+    }
+
+    @media (max-width:520px){
+      .sponsors-hero{
+        padding:22px 14px 18px;
+      }
+
+      .sponsors-title{
+        font-size:20px;
+        letter-spacing:.10em;
+      }
+
+      .sponsors-row.row-five{
+        grid-template-columns:repeat(3,minmax(0,1fr));
+      }
+
+      .sponsors-row.row-five .sponsor-slot:nth-child(4),
+      .sponsors-row.row-five .sponsor-slot:nth-child(5){
+        border-top:1px solid rgba(75,255,69,.10);
+      }
+
+      .sponsors-row.row-four{
+        grid-template-columns:repeat(2,minmax(0,1fr));
+      }
+
+      .sponsors-row.row-four .sponsor-slot:nth-child(3),
+      .sponsors-row.row-four .sponsor-slot:nth-child(4){
+        border-top:1px solid rgba(75,255,69,.10);
+      }
+
+      .sponsor-slot{
+        min-height:112px;
+      }
+
+      .sponsor-logo{
+        max-width:122px;
+        max-height:56px;
+      }
+    }
+
   </style>
 </head>
 
@@ -2223,15 +2686,29 @@
       </div>
 
       <p class="feature-page-subtitle">
-        Classificação individual dos jogadores do racha.
+        Artilharia e goleiro menos vazado dos rachas.
       </p>
 
-      <div class="feature-empty">
-        <div class="feature-empty-icon">♛</div>
-        <strong>Ranking ainda não iniciado</strong>
-        <span>
-          Aqui vamos mostrar a classificação assim que definirmos a regra de pontos do racha.
-        </span>
+      <div class="ranking-tabs">
+        <button class="ranking-tab active" id="rankingTabScorers">ARTILHARIA</button>
+        <button class="ranking-tab" id="rankingTabKeepers">GOLEIROS</button>
+      </div>
+
+      <div class="ranking-panel active" id="rankingScorersPanel">
+        <div class="ranking-table" id="rankingScorersList">
+          <div class="ranking-empty">Carregando artilharia...</div>
+        </div>
+      </div>
+
+      <div class="ranking-panel" id="rankingKeepersPanel">
+        <div class="ranking-table" id="rankingKeepersList">
+          <div class="ranking-empty">Carregando goleiros...</div>
+        </div>
+
+        <div class="ranking-rule">
+          O goleiro menos vazado é definido pela média de gols sofridos por jogo.
+          Para entrar no ranking oficial, precisa ter pelo menos 3 jogos no gol.
+        </div>
       </div>
     </section>
   </main>
@@ -2346,21 +2823,145 @@
       <div></div>
     </div>
 
-    <section class="feature-page-card">
-      <div class="feature-page-title-row">
-        <h2>Parceiros</h2>
-        <div class="feature-page-kicker">GREEN PARK FC</div>
+    <section class="sponsors-hero">
+      <div class="sponsors-brand-mark">GP<br>FC</div>
+      <h2 class="sponsors-title">Patrocinadores Oficiais</h2>
+      <div class="sponsors-subtitle">Green Park FC</div>
+      <div class="sponsors-separator"></div>
+
+      <div class="sponsors-stage">
+        <div class="sponsors-row row-five">
+
+          <div class="sponsor-slot">
+            <img
+              class="sponsor-logo"
+              src="sponsors/sponsor-01.png"
+              alt="Patrocinador 01"
+              onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"
+            >
+            <div class="sponsor-fallback" style="display:none;">
+              Logo 01
+            </div>
+          </div>
+
+          <div class="sponsor-slot">
+            <img
+              class="sponsor-logo"
+              src="sponsors/sponsor-02.png"
+              alt="Patrocinador 02"
+              onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"
+            >
+            <div class="sponsor-fallback" style="display:none;">
+              Logo 02
+            </div>
+          </div>
+
+          <div class="sponsor-slot">
+            <img
+              class="sponsor-logo"
+              src="sponsors/sponsor-03.png"
+              alt="Patrocinador 03"
+              onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"
+            >
+            <div class="sponsor-fallback" style="display:none;">
+              Logo 03
+            </div>
+          </div>
+
+          <div class="sponsor-slot">
+            <img
+              class="sponsor-logo"
+              src="sponsors/sponsor-04.png"
+              alt="Patrocinador 04"
+              onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"
+            >
+            <div class="sponsor-fallback" style="display:none;">
+              Logo 04
+            </div>
+          </div>
+
+          <div class="sponsor-slot">
+            <img
+              class="sponsor-logo"
+              src="sponsors/sponsor-05.png"
+              alt="Patrocinador 05"
+              onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"
+            >
+            <div class="sponsor-fallback" style="display:none;">
+              Logo 05
+            </div>
+          </div>
+        </div>
+
+        <div class="sponsors-row row-four">
+
+          <div class="sponsor-slot">
+            <img
+              class="sponsor-logo"
+              src="sponsors/sponsor-06.png"
+              alt="Patrocinador 06"
+              onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"
+            >
+            <div class="sponsor-fallback" style="display:none;">
+              Logo 06
+            </div>
+          </div>
+
+          <div class="sponsor-slot">
+            <img
+              class="sponsor-logo"
+              src="sponsors/sponsor-07.png"
+              alt="Patrocinador 07"
+              onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"
+            >
+            <div class="sponsor-fallback" style="display:none;">
+              Logo 07
+            </div>
+          </div>
+
+          <div class="sponsor-slot">
+            <img
+              class="sponsor-logo"
+              src="sponsors/sponsor-08.png"
+              alt="Patrocinador 08"
+              onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"
+            >
+            <div class="sponsor-fallback" style="display:none;">
+              Logo 08
+            </div>
+          </div>
+
+          <div class="sponsor-slot">
+            <img
+              class="sponsor-logo"
+              src="sponsors/sponsor-09.png"
+              alt="Patrocinador 09"
+              onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"
+            >
+            <div class="sponsor-fallback" style="display:none;">
+              Logo 09
+            </div>
+          </div>
+        </div>
       </div>
 
-      <p class="feature-page-subtitle">
-        Empresas e marcas que apoiam o projeto.
-      </p>
+      <div class="sponsors-guide">
+        <div class="sponsors-guide-title">Como adicionar uma logo</div>
+        <p class="sponsors-guide-text">
+          Use arquivo <b>PNG com fundo transparente</b>, tamanho recomendado
+          <b>1000 × 500 px</b>, com a marca centralizada e uma margem interna
+          de aproximadamente <b>10%</b>. O app transforma automaticamente a
+          logo em <b>branco monocromático</b>.
+          <br><br>
+          Nomeie os arquivos como:
+          <b>sponsor-01.png</b>, <b>sponsor-02.png</b> ... até
+          <b>sponsor-09.png</b> e coloque todos na pasta
+          <b>sponsors</b> ao lado do index.html.
+        </p>
+      </div>
 
-      <div class="sponsor-placeholder-grid">
-        <div class="sponsor-placeholder">ESPAÇO PARA PATROCINADOR</div>
-        <div class="sponsor-placeholder">ESPAÇO PARA PATROCINADOR</div>
-        <div class="sponsor-placeholder">ESPAÇO PARA PATROCINADOR</div>
-        <div class="sponsor-placeholder">ESPAÇO PARA PATROCINADOR</div>
+      <div class="sponsors-footer-note">
+        Para melhor leitura no celular, evite logos com detalhes muito finos.
       </div>
     </section>
   </main>
@@ -2600,6 +3201,36 @@
     </section>
 
 
+    <section class="admin-ranking-card" id="adminRankingCard">
+      <h3>Resultado do racha</h3>
+      <p>
+        Lance os gols e os goleiros deste racha. Se salvar novamente a mesma data e horário,
+        o resultado anterior é substituído e não duplica os números.
+      </p>
+
+      <div class="rank-admin-section">
+        <div class="rank-admin-section-title">Artilheiros do racha</div>
+        <div class="rank-entry-list" id="rankScorerEntries"></div>
+        <button class="rank-add-btn" id="rankAddScorer" type="button">
+          + ADICIONAR ARTILHEIRO
+        </button>
+      </div>
+
+      <div class="rank-admin-section">
+        <div class="rank-admin-section-title">Goleiros do racha</div>
+        <div class="rank-entry-list" id="rankKeeperEntries"></div>
+        <button class="rank-add-btn" id="rankAddKeeper" type="button">
+          + ADICIONAR GOLEIRO
+        </button>
+      </div>
+
+      <button class="rank-save-btn" id="rankSaveResult" type="button">
+        SALVAR RESULTADO DO RACHA
+      </button>
+
+      <div class="rank-admin-status" id="rankAdminStatus"></div>
+    </section>
+
     <section class="admin-card" id="adminPendingPaymentsSection">
       <div class="admin-head">
         <h2>Conferência de presença</h2>
@@ -2707,6 +3338,9 @@ const criarPagamentoPixCall = httpsCallable(functions, 'criarPagamentoPix');
 const consultarPagamentoPixCall = httpsCallable(functions, 'consultarPagamentoPix');
 const buscarLocalCall = httpsCallable(functions, 'buscarLocal');
 const listarConfirmadosCall = httpsCallable(functions, 'listarConfirmados');
+const obterRankingCall = httpsCallable(functions, 'obterRanking');
+const salvarRankingRachaCall = httpsCallable(functions, 'salvarRankingRacha');
+const carregarRankingRachaCall = httpsCallable(functions, 'carregarRankingRacha');
 const ADMIN_UID = 'd3nVt6SbQlO6lYnOcCUDbLBhoU02';
 const VAPID_PUBLIC_KEY = 'BPBQyOZBpQS-uBaM5H0YhkyPNjQI2dNjrweS4zjvmB79e7TVQR-QuzkmpQyAGJgTCxxaFL_ZnRCelCsbK0T9Lg0';
 let messagingInstance = null;
@@ -2770,6 +3404,11 @@ let messagingInstance = null;
   const confirmedListCount = document.getElementById('confirmedListCount');
   const confirmedListMatch = document.getElementById('confirmedListMatch');
   const confirmedListItems = document.getElementById('confirmedListItems');
+  const rankingScorersList = document.getElementById('rankingScorersList');
+  const rankingKeepersList = document.getElementById('rankingKeepersList');
+  const rankScorerEntries = document.getElementById('rankScorerEntries');
+  const rankKeeperEntries = document.getElementById('rankKeeperEntries');
+  const rankAdminStatus = document.getElementById('rankAdminStatus');
   const remainingCount = document.getElementById('remainingCount');
   const ringConfirmed = document.getElementById('ringConfirmed');
   const ringMax = document.getElementById('ringMax');
@@ -3446,6 +4085,366 @@ let messagingInstance = null;
   }
 
 
+
+  let rankingPlayersCache = [];
+  let rankingLoading = false;
+
+  function rankingMatchKey(){
+    const date = String(state.config.date || '').trim();
+    const time = String(state.config.time || '').trim();
+
+    if(!date || !time) return '';
+
+    return `${date}_${time.replace(':','-')}`;
+  }
+
+  function showRankAdminStatus(message, type='ok'){
+    rankAdminStatus.textContent = message;
+    rankAdminStatus.className = 'rank-admin-status show ' + type;
+  }
+
+  function clearRankAdminStatus(){
+    rankAdminStatus.textContent = '';
+    rankAdminStatus.className = 'rank-admin-status';
+  }
+
+  function fillRankingPlayerSelect(select, selectedId=''){
+    select.innerHTML = '';
+
+    const first = document.createElement('option');
+    first.value = '';
+    first.textContent = 'Selecione o jogador';
+    select.appendChild(first);
+
+    rankingPlayersCache.forEach(player => {
+      const option = document.createElement('option');
+      option.value = String(player.id || '');
+      option.textContent = String(player.name || 'Jogador');
+
+      if(option.value === String(selectedId || '')){
+        option.selected = true;
+      }
+
+      select.appendChild(option);
+    });
+  }
+
+  function addRankEntry(type, data={}){
+    const isScorer = type === 'scorer';
+    const list = isScorer ? rankScorerEntries : rankKeeperEntries;
+
+    const row = document.createElement('div');
+    row.className = 'rank-entry-row';
+    row.dataset.type = type;
+
+    const select = document.createElement('select');
+    select.className = 'rank-player-select';
+    fillRankingPlayerSelect(select, data.playerId);
+
+    const amount = document.createElement('input');
+    amount.className = 'rank-amount-input';
+    amount.type = 'number';
+    amount.inputMode = 'numeric';
+    amount.min = '0';
+    amount.max = '99';
+    amount.step = '1';
+    amount.placeholder = isScorer ? 'Gols' : 'Sofridos';
+
+    if(data.amount !== undefined && data.amount !== null){
+      amount.value = String(data.amount);
+    }
+
+    const remove = document.createElement('button');
+    remove.type = 'button';
+    remove.className = 'rank-entry-remove';
+    remove.textContent = '×';
+    remove.addEventListener('click', () => row.remove());
+
+    row.appendChild(select);
+    row.appendChild(amount);
+    row.appendChild(remove);
+    list.appendChild(row);
+  }
+
+  function collectRankEntries(list){
+    const entries = [];
+
+    list.querySelectorAll('.rank-entry-row').forEach(row => {
+      const select = row.querySelector('.rank-player-select');
+      const input = row.querySelector('.rank-amount-input');
+
+      const playerId = String(select?.value || '').trim();
+
+      if(!playerId) return;
+
+      const amount = Number(input?.value);
+
+      if(!Number.isFinite(amount) || amount < 0) return;
+
+      const player =
+        rankingPlayersCache.find(item => String(item.id) === playerId);
+
+      entries.push({
+        playerId,
+        name: String(player?.name || 'Jogador'),
+        amount: Math.floor(amount)
+      });
+    });
+
+    return entries;
+  }
+
+  async function loadRankingPlayers(){
+    await ensureFirebasePlayer();
+
+    const result = await listarConfirmadosCall();
+
+    rankingPlayersCache =
+      Array.isArray(result.data?.players) ?
+        result.data.players :
+        [];
+
+    if(rankScorerEntries.children.length === 0){
+      addRankEntry('scorer');
+    }
+
+    if(rankKeeperEntries.children.length === 0){
+      addRankEntry('keeper');
+    }
+  }
+
+  function renderRankingRows(container, rows, type){
+    container.innerHTML = '';
+
+    if(!Array.isArray(rows) || rows.length === 0){
+      const empty = document.createElement('div');
+      empty.className = 'ranking-empty';
+      empty.textContent =
+        type === 'scorer' ?
+          'Ainda não há gols lançados.' :
+          'Ainda não há goleiros com 3 jogos no gol.';
+      container.appendChild(empty);
+      return;
+    }
+
+    rows.forEach((item, index) => {
+      const row = document.createElement('div');
+      row.className = 'ranking-row';
+
+      const position = document.createElement('div');
+      position.className = 'ranking-position';
+      position.textContent = String(index + 1).padStart(2, '0');
+
+      const main = document.createElement('div');
+      main.className = 'ranking-main';
+
+      const name = document.createElement('div');
+      name.className = 'ranking-name';
+      name.textContent = String(item.name || 'Jogador');
+
+      const meta = document.createElement('div');
+      meta.className = 'ranking-meta';
+
+      const value = document.createElement('div');
+      value.className = 'ranking-value';
+
+      if(type === 'scorer'){
+        meta.textContent = 'Artilharia da temporada';
+
+        const goals = Number(item.goals || 0);
+        value.textContent = goals;
+
+        const small = document.createElement('small');
+        small.textContent = goals === 1 ? 'GOL' : 'GOLS';
+        value.appendChild(small);
+      }else{
+        const games = Number(item.games || 0);
+        const conceded = Number(item.goalsConceded || 0);
+        const avg = Number(item.average || 0);
+
+        meta.textContent =
+          `${games} jogos no gol • ${conceded} gols sofridos`;
+
+        value.textContent =
+          avg.toFixed(2).replace('.', ',');
+
+        const small = document.createElement('small');
+        small.textContent = 'GOL/JOGO';
+        value.appendChild(small);
+      }
+
+      main.appendChild(name);
+      main.appendChild(meta);
+
+      row.appendChild(position);
+      row.appendChild(main);
+      row.appendChild(value);
+
+      container.appendChild(row);
+    });
+  }
+
+  async function loadRanking(){
+    if(rankingLoading) return;
+    rankingLoading = true;
+
+    try{
+      await ensureFirebasePlayer();
+      const result = await obterRankingCall();
+      const data = result.data || {};
+
+      renderRankingRows(
+        rankingScorersList,
+        Array.isArray(data.scorers) ? data.scorers : [],
+        'scorer'
+      );
+
+      renderRankingRows(
+        rankingKeepersList,
+        Array.isArray(data.goalkeepers) ? data.goalkeepers : [],
+        'keeper'
+      );
+    }catch(error){
+      console.error('Ranking:', error);
+
+      rankingScorersList.innerHTML =
+        '<div class="ranking-empty">Não foi possível carregar o ranking agora.</div>';
+
+      rankingKeepersList.innerHTML =
+        '<div class="ranking-empty">Não foi possível carregar o ranking agora.</div>';
+    }finally{
+      rankingLoading = false;
+    }
+  }
+
+  async function loadCurrentRankingRoundForAdmin(){
+    if(!isAdminUser()) return;
+
+    clearRankAdminStatus();
+
+    try{
+      await loadRankingPlayers();
+
+      const matchKey = rankingMatchKey();
+
+      rankScorerEntries.innerHTML = '';
+      rankKeeperEntries.innerHTML = '';
+
+      if(!matchKey){
+        addRankEntry('scorer');
+        addRankEntry('keeper');
+        return;
+      }
+
+      const result = await carregarRankingRachaCall({matchKey});
+      const data = result.data || {};
+
+      const scorers =
+        Array.isArray(data.scorers) ? data.scorers : [];
+
+      const keepers =
+        Array.isArray(data.goalkeepers) ? data.goalkeepers : [];
+
+      if(scorers.length){
+        scorers.forEach(item => addRankEntry('scorer', {
+          playerId:item.playerId,
+          amount:item.goals
+        }));
+      }else{
+        addRankEntry('scorer');
+      }
+
+      if(keepers.length){
+        keepers.forEach(item => addRankEntry('keeper', {
+          playerId:item.playerId,
+          amount:item.goalsConceded
+        }));
+      }else{
+        addRankEntry('keeper');
+      }
+    }catch(error){
+      console.warn('Carregar resultado do racha:', error);
+      showRankAdminStatus(
+        'Não foi possível carregar os jogadores para o ranking.',
+        'error'
+      );
+    }
+  }
+
+  async function saveRankingRound(){
+    if(!isAdminUser()){
+      showRankAdminStatus(
+        'Entre como administrador para salvar o resultado.',
+        'error'
+      );
+      return;
+    }
+
+    const matchKey = rankingMatchKey();
+
+    if(!matchKey){
+      showRankAdminStatus(
+        'Defina data e horário do racha antes de lançar o resultado.',
+        'error'
+      );
+      return;
+    }
+
+    const scorers = collectRankEntries(rankScorerEntries).map(item => ({
+      playerId:item.playerId,
+      name:item.name,
+      goals:item.amount
+    }));
+
+    const goalkeepers = collectRankEntries(rankKeeperEntries).map(item => ({
+      playerId:item.playerId,
+      name:item.name,
+      goalsConceded:item.amount
+    }));
+
+    if(scorers.length === 0 && goalkeepers.length === 0){
+      showRankAdminStatus(
+        'Adicione pelo menos um artilheiro ou goleiro.',
+        'error'
+      );
+      return;
+    }
+
+    const button = document.getElementById('rankSaveResult');
+    const original = button.textContent;
+
+    button.disabled = true;
+    button.textContent = 'SALVANDO...';
+    clearRankAdminStatus();
+
+    try{
+      await salvarRankingRachaCall({
+        matchKey,
+        date:String(state.config.date || ''),
+        time:String(state.config.time || ''),
+        scorers,
+        goalkeepers
+      });
+
+      showRankAdminStatus(
+        'Resultado salvo. Ranking atualizado automaticamente.',
+        'ok'
+      );
+
+      await loadRanking();
+    }catch(error){
+      console.error('Salvar ranking:', error);
+
+      showRankAdminStatus(
+        'Não foi possível salvar: ' + (error.message || 'erro desconhecido'),
+        'error'
+      );
+    }finally{
+      button.disabled = false;
+      button.textContent = original;
+    }
+  }
+
   function renderStatsPage(){
     const max = Math.max(1, Number(state.config.maxPlayers) || 40);
     const confirmed = confirmedTotal();
@@ -3475,6 +4474,10 @@ let messagingInstance = null;
   function openFeatureView(viewId){
     if(viewId === 'statsView'){
       renderStatsPage();
+    }
+
+    if(viewId === 'rankingView'){
+      loadRanking();
     }
 
     showView(viewId);
@@ -4351,10 +5354,18 @@ let messagingInstance = null;
   document.getElementById('menuButton').addEventListener('click', () => {
     renderApprovals();
     showView('adminView');
+
+    if(isAdminUser()){
+      loadCurrentRankingRoundForAdmin();
+    }
   });
   document.getElementById('adminNavButton').addEventListener('click', () => {
     renderApprovals();
     showView('adminView');
+
+    if(isAdminUser()){
+      loadCurrentRankingRoundForAdmin();
+    }
   });
 
   document.querySelector('[data-nav="home"]').addEventListener('click', () => showView('homeView'));
@@ -4372,6 +5383,30 @@ let messagingInstance = null;
   document.getElementById('openRankingQuick').addEventListener('click', () => {
     openFeatureView('rankingView');
   });
+
+  document.getElementById('rankingTabScorers').addEventListener('click', () => {
+    document.getElementById('rankingTabScorers').classList.add('active');
+    document.getElementById('rankingTabKeepers').classList.remove('active');
+    document.getElementById('rankingScorersPanel').classList.add('active');
+    document.getElementById('rankingKeepersPanel').classList.remove('active');
+  });
+
+  document.getElementById('rankingTabKeepers').addEventListener('click', () => {
+    document.getElementById('rankingTabKeepers').classList.add('active');
+    document.getElementById('rankingTabScorers').classList.remove('active');
+    document.getElementById('rankingKeepersPanel').classList.add('active');
+    document.getElementById('rankingScorersPanel').classList.remove('active');
+  });
+
+  document.getElementById('rankAddScorer').addEventListener('click', () => {
+    addRankEntry('scorer');
+  });
+
+  document.getElementById('rankAddKeeper').addEventListener('click', () => {
+    addRankEntry('keeper');
+  });
+
+  document.getElementById('rankSaveResult').addEventListener('click', saveRankingRound);
 
   document.getElementById('openStatsQuick').addEventListener('click', () => {
     openFeatureView('statsView');
@@ -4715,6 +5750,7 @@ let messagingInstance = null;
       startAdminPaymentsListener();
       await ensureRachaAggregate();
       startRachaListener();
+      setTimeout(() => loadCurrentRankingRoundForAdmin(), 0);
 
       if(wantsAdminPayment){
         openAdminPaymentTarget();
