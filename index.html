@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <!-- GREEN PARK BUILD: 2026-08-14-galeria-comunicados-final -->
+  <!-- GREEN PARK BUILD: 2026-08-14-estatisticas-ao-vivo-v2 -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#071018">
@@ -3080,6 +3080,261 @@
       }
     }
 
+  
+    /* ESTATÍSTICAS AO VIVO */
+    #adminRankingCard{display:none !important;}
+
+    .live-stats-shell{
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:24px;
+      padding:18px;
+    }
+
+    .live-stats-head{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:8px;
+    }
+
+    .live-stats-head h2{
+      margin:0;
+      color:#fff;
+      font-size:24px;
+      line-height:1.05;
+    }
+
+    .live-stats-badge{
+      min-height:30px;
+      display:flex;
+      align-items:center;
+      padding:0 11px;
+      border:1px solid rgba(81,255,72,.28);
+      border-radius:999px;
+      background:rgba(15,44,24,.62);
+      color:var(--green);
+      font-size:10px;
+      font-weight:950;
+      letter-spacing:.06em;
+      white-space:nowrap;
+    }
+
+    .live-stats-match{
+      margin:12px 0 14px;
+      padding:11px 13px;
+      border:1px solid #2a3a42;
+      border-radius:13px;
+      background:#0c161c;
+      color:#93a0a5;
+      font-size:12px;
+      line-height:1.4;
+    }
+
+    .live-stats-help{
+      margin:0 0 15px;
+      color:#8ea09a;
+      font-size:12px;
+      line-height:1.48;
+    }
+
+    .live-stats-help b{color:#dce5e1;}
+
+    .live-player-list{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+
+    .live-player-card{
+      padding:14px;
+      border:1px solid #28513b;
+      border-radius:18px;
+      background:linear-gradient(180deg,#0c1c14 0%,#0a1912 100%);
+    }
+
+    .live-player-top{
+      display:flex;
+      align-items:center;
+      gap:11px;
+      min-width:0;
+    }
+
+    .live-player-avatar{
+      width:46px;
+      height:46px;
+      flex:0 0 46px;
+      display:grid;
+      place-items:center;
+      overflow:hidden;
+      border:2px solid #29583e;
+      border-radius:50%;
+      background:#13271c;
+      color:#8dba98;
+      font-size:13px;
+      font-weight:950;
+    }
+
+    .live-player-avatar img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+    }
+
+    .live-player-name{
+      min-width:0;
+      flex:1;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+      color:#fff;
+      font-size:17px;
+      font-weight:950;
+      text-transform:uppercase;
+    }
+
+    .live-goalie-toggle{
+      flex:0 0 auto;
+      min-height:34px;
+      border:1px solid #365343;
+      border-radius:999px;
+      background:#0b1811;
+      color:#779084;
+      padding:0 10px;
+      font-size:9px;
+      font-weight:950;
+      letter-spacing:.05em;
+    }
+
+    .live-goalie-toggle.active{
+      border-color:#d7a92f;
+      background:#3a2d0c;
+      color:#ffd45b;
+    }
+
+    .live-player-counters{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:8px;
+      margin-top:12px;
+    }
+
+    .live-counter{
+      padding:11px 8px 10px;
+      border-radius:14px;
+      background:#08150f;
+      text-align:center;
+    }
+
+    .live-counter-label{
+      min-height:28px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:#83ca8e;
+      font-size:10px;
+      line-height:1.15;
+      font-weight:850;
+      text-transform:uppercase;
+    }
+
+    .live-counter-controls{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:12px;
+      margin-top:5px;
+    }
+
+    .live-stat-btn{
+      width:38px;
+      height:38px;
+      border:1px solid #225439;
+      border-radius:10px;
+      background:#091711;
+      color:#fff;
+      font-size:20px;
+      font-weight:950;
+    }
+
+    .live-stat-btn.plus{
+      border-color:#67c876;
+      background:#70ca7b;
+      color:#071108;
+    }
+
+    .live-stat-btn:disabled{opacity:.42;}
+
+    .live-stat-value{
+      min-width:28px;
+      color:#78d583;
+      font-size:27px;
+      font-weight:950;
+      line-height:1;
+    }
+
+    .live-stat-value.conceded{color:#f2bf3e;}
+
+    .live-player-bottom{
+      display:flex;
+      justify-content:flex-end;
+      margin-top:10px;
+    }
+
+    .live-balance{
+      min-height:30px;
+      display:flex;
+      align-items:center;
+      gap:5px;
+      padding:0 10px;
+      border-radius:999px;
+      background:#101d17;
+      color:#a5b1ab;
+      font-size:10px;
+      font-weight:900;
+    }
+
+    .live-balance strong{
+      color:#fff;
+      font-size:13px;
+    }
+
+    .live-balance.positive strong{color:#75df83;}
+    .live-balance.negative strong{color:#ff7676;}
+
+    .live-empty{
+      min-height:170px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:22px;
+      border:1px dashed #33484c;
+      border-radius:16px;
+      color:#809096;
+      text-align:center;
+      font-size:13px;
+      line-height:1.5;
+    }
+
+    .live-stats-readonly{
+      margin:0 0 12px;
+      padding:9px 11px;
+      border-radius:11px;
+      background:#111d22;
+      color:#86959b;
+      font-size:10px;
+      line-height:1.4;
+    }
+
+    @media (max-width:390px){
+      .live-player-card{padding:12px;}
+      .live-player-counters{gap:6px;}
+      .live-counter{padding-left:5px;padding-right:5px;}
+      .live-counter-controls{gap:8px;}
+      .live-stat-btn{width:35px;height:35px;}
+    }
+
   </style>
 </head>
 
@@ -3249,40 +3504,26 @@
       <div></div>
     </div>
 
-    <section class="feature-page-card">
-      <div class="feature-page-title-row">
-        <h2>Próximo racha</h2>
-        <div class="feature-page-kicker">AO VIVO</div>
+    <section class="live-stats-shell">
+      <div class="live-stats-head">
+        <h2>Racha de hoje</h2>
+        <div class="live-stats-badge" id="liveStatsCount">0 JOGADORES</div>
       </div>
 
-      <p class="feature-page-subtitle">
-        Números atuais de presença para o próximo futebol.
+      <div class="live-stats-match" id="liveStatsMatch">Próximo racha</div>
+
+      <p class="live-stats-help">
+        <b>Admin:</b> marque cada gol na hora.
+        Quem estiver no gol deve ser marcado como <b>GOLEIRO</b>;
+        depois marque cada gol sofrido.
       </p>
 
-      <div class="stats-grid">
-        <div class="stat-box">
-          <small>Confirmados</small>
-          <strong class="green" id="statsConfirmed">0</strong>
-        </div>
-
-        <div class="stat-box">
-          <small>Vagas restantes</small>
-          <strong id="statsRemaining">0</strong>
-        </div>
-
-        <div class="stat-box">
-          <small>Limite</small>
-          <strong id="statsMax">40</strong>
-        </div>
-
-        <div class="stat-box">
-          <small>Ocupação</small>
-          <strong id="statsPercent">0%</strong>
-        </div>
+      <div class="live-stats-readonly" id="liveStatsReadOnly">
+        Os botões de edição aparecem somente para o administrador.
       </div>
 
-      <div class="feature-match-info" id="statsMatchInfo">
-        Próximo racha
+      <div class="live-player-list" id="livePlayerList">
+        <div class="live-empty">Carregando jogadores confirmados...</div>
       </div>
     </section>
   </main>
@@ -4096,6 +4337,9 @@ const listarConfirmadosCall = httpsCallable(functions, 'listarConfirmados');
 const obterRankingCall = httpsCallable(functions, 'obterRanking');
 const salvarRankingRachaCall = httpsCallable(functions, 'salvarRankingRacha');
 const carregarRankingRachaCall = httpsCallable(functions, 'carregarRankingRacha');
+const obterEstatisticasRachaCall = httpsCallable(functions, 'obterEstatisticasRacha');
+const alterarEstatisticaJogadorCall = httpsCallable(functions, 'alterarEstatisticaJogador');
+const marcarGoleiroRachaCall = httpsCallable(functions, 'marcarGoleiroRacha');
 const listarGaleriaCall = httpsCallable(functions, 'listarGaleria');
 const salvarMidiaGaleriaCall = httpsCallable(functions, 'salvarMidiaGaleria');
 const excluirMidiaGaleriaCall = httpsCallable(functions, 'excluirMidiaGaleria');
@@ -4194,6 +4438,10 @@ let messagingInstance = null;
   const noticeList = document.getElementById('noticeList');
   const sponsorFileInput = document.getElementById('sponsorFileInput');
   const sponsorAdminStatus = document.getElementById('sponsorAdminStatus');
+  const livePlayerList = document.getElementById('livePlayerList');
+  const liveStatsCount = document.getElementById('liveStatsCount');
+  const liveStatsMatch = document.getElementById('liveStatsMatch');
+  const liveStatsReadOnly = document.getElementById('liveStatsReadOnly');
   const remainingCount = document.getElementById('remainingCount');
   const ringConfirmed = document.getElementById('ringConfirmed');
   const ringMax = document.getElementById('ringMax');
@@ -5238,6 +5486,7 @@ let messagingInstance = null;
   let galleryCurrentFilter = 'Todos';
   let sponsorUploadSlot = null;
   let contentRefreshTimer = null;
+  let liveStatsRefreshTimer = null;
 
   function refreshContentAdminUI(){
     const admin = isAdminUser();
@@ -5366,6 +5615,22 @@ let messagingInstance = null;
       clearInterval(contentRefreshTimer);
       contentRefreshTimer = null;
     }
+  }
+
+  function stopLiveStatsRefresh(){
+    if(liveStatsRefreshTimer){
+      clearInterval(liveStatsRefreshTimer);
+      liveStatsRefreshTimer = null;
+    }
+  }
+
+  function startLiveStatsRefresh(){
+    stopLiveStatsRefresh();
+    liveStatsRefreshTimer = setInterval(() => {
+      if(document.getElementById('statsView')?.classList.contains('active')){
+        loadLiveStats();
+      }
+    }, 5000);
   }
 
   function startContentAutoRefresh(viewId, loader){
@@ -5986,30 +6251,297 @@ let messagingInstance = null;
     }
   }
 
-  function renderStatsPage(){
-    const max = Math.max(1, Number(state.config.maxPlayers) || 40);
-    const confirmed = confirmedTotal();
-    const remaining = Math.max(0, max - confirmed);
-    const percent = Math.min(100, Math.round((confirmed / max) * 100));
+  let liveStatsCache = [];
+  let liveStatsLoading = false;
+  const liveStatsActionRunning = new Set();
 
-    document.getElementById('statsConfirmed').textContent = confirmed;
-    document.getElementById('statsRemaining').textContent = remaining;
-    document.getElementById('statsMax').textContent = max;
-    document.getElementById('statsPercent').textContent = percent + '%';
+  function currentLiveMatchKey(){
+    const date = String(state.config.date || '').trim();
+    const time = String(state.config.time || '').trim();
+    if(!date || !time) return '';
+    return `${date}_${time.replace(':','-')}`;
+  }
 
-    const dateText = state.config.date ?
-      formatDateBR(state.config.date) :
-      'Data não definida';
-
+  function liveStatsMatchText(){
+    const dateText = state.config.date ? formatDateBR(state.config.date) : 'Data não definida';
     const timeText = state.config.time || '--:--';
-
     const locationText =
       state.config.locationName ||
       state.config.locationAddress ||
       'Local não definido';
 
-    document.getElementById('statsMatchInfo').textContent =
-      `${dateText} • ${timeText} • ${locationText}`;
+    return `${dateText} • ${timeText} • ${locationText}`;
+  }
+
+  function playerInitials(name){
+    return String(name || 'J')
+      .trim()
+      .split(/\s+/)
+      .slice(0,2)
+      .map(part => part.charAt(0))
+      .join('')
+      .toUpperCase() || 'J';
+  }
+
+  function liveBalanceValue(player){
+    return Number(player.goals || 0) -
+      (player.isGoalkeeper ? Number(player.goalsConceded || 0) : 0);
+  }
+
+  function renderLiveStats(){
+    livePlayerList.innerHTML = '';
+
+    liveStatsCount.textContent =
+      `${liveStatsCache.length} ${liveStatsCache.length === 1 ? 'JOGADOR' : 'JOGADORES'}`;
+
+    liveStatsMatch.textContent = liveStatsMatchText();
+
+    const admin = isAdminUser();
+    liveStatsReadOnly.style.display = admin ? 'none' : 'block';
+
+    if(liveStatsCache.length === 0){
+      livePlayerList.innerHTML =
+        '<div class="live-empty">Ainda não há jogadores confirmados para este racha.</div>';
+      return;
+    }
+
+    liveStatsCache.forEach(player => {
+      const card = document.createElement('article');
+      card.className = 'live-player-card';
+
+      const top = document.createElement('div');
+      top.className = 'live-player-top';
+
+      const avatar = document.createElement('div');
+      avatar.className = 'live-player-avatar';
+
+      if(player.photoURL){
+        const img = document.createElement('img');
+        img.src = player.photoURL;
+        img.alt = player.name || 'Jogador';
+        avatar.appendChild(img);
+      }else{
+        avatar.textContent = playerInitials(player.name);
+      }
+
+      const name = document.createElement('div');
+      name.className = 'live-player-name';
+      name.textContent = player.name || 'Jogador';
+
+      const goalie = document.createElement('button');
+      goalie.type = 'button';
+      goalie.className = 'live-goalie-toggle' + (player.isGoalkeeper ? ' active' : '');
+      goalie.textContent = player.isGoalkeeper ? '🧤 GOLEIRO' : 'MARCAR GOLEIRO';
+      goalie.style.display = admin ? 'block' : (player.isGoalkeeper ? 'block' : 'none');
+
+      goalie.addEventListener('click', async () => {
+        if(!admin) return;
+
+        if(player.isGoalkeeper && Number(player.goalsConceded || 0) > 0){
+          if(!confirm('Retirar do gol? Os gols sofridos deste racha serão zerados.')) return;
+        }
+
+        await toggleLiveGoalkeeper(player.playerId, !player.isGoalkeeper);
+      });
+
+      top.append(avatar, name, goalie);
+
+      const counters = document.createElement('div');
+      counters.className = 'live-player-counters';
+
+      function counter(field, label, value, conceded=false){
+        const box = document.createElement('div');
+        box.className = 'live-counter';
+
+        const labelEl = document.createElement('div');
+        labelEl.className = 'live-counter-label';
+        labelEl.textContent = label;
+
+        const controls = document.createElement('div');
+        controls.className = 'live-counter-controls';
+
+        const minus = document.createElement('button');
+        minus.type = 'button';
+        minus.className = 'live-stat-btn';
+        minus.textContent = '−';
+
+        const val = document.createElement('div');
+        val.className = 'live-stat-value' + (conceded ? ' conceded' : '');
+        val.textContent = Number(value || 0);
+
+        const plus = document.createElement('button');
+        plus.type = 'button';
+        plus.className = 'live-stat-btn plus';
+        plus.textContent = '+';
+
+        const key = `${player.playerId}_${field}`;
+        const busy = liveStatsActionRunning.has(key);
+
+        minus.disabled =
+          !admin ||
+          busy ||
+          Number(value || 0) <= 0 ||
+          (field === 'goalsConceded' && !player.isGoalkeeper);
+
+        plus.disabled =
+          !admin ||
+          busy ||
+          (field === 'goalsConceded' && !player.isGoalkeeper);
+
+        if(!admin){
+          minus.style.display = 'none';
+          plus.style.display = 'none';
+        }
+
+        minus.addEventListener('click', () => changeLiveStat(player.playerId, field, -1));
+        plus.addEventListener('click', () => changeLiveStat(player.playerId, field, 1));
+
+        controls.append(minus, val, plus);
+        box.append(labelEl, controls);
+        return box;
+      }
+
+      counters.append(
+        counter('goals', 'GOLS', player.goals, false),
+        counter('goalsConceded', 'GOLS SOFRIDOS', player.goalsConceded, true)
+      );
+
+      const bottom = document.createElement('div');
+      bottom.className = 'live-player-bottom';
+
+      const saldo = liveBalanceValue(player);
+      const balance = document.createElement('div');
+      balance.className =
+        'live-balance ' +
+        (saldo > 0 ? 'positive' : saldo < 0 ? 'negative' : '');
+
+      const lbl = document.createElement('span');
+      lbl.textContent = 'SALDO';
+
+      const value = document.createElement('strong');
+      value.textContent = saldo > 0 ? `+${saldo}` : String(saldo);
+
+      balance.append(lbl, value);
+      bottom.appendChild(balance);
+
+      card.append(top, counters, bottom);
+      livePlayerList.appendChild(card);
+    });
+  }
+
+  async function loadLiveStats(){
+    if(liveStatsLoading) return;
+
+    const matchKey = currentLiveMatchKey();
+    liveStatsMatch.textContent = liveStatsMatchText();
+
+    if(!matchKey){
+      livePlayerList.innerHTML =
+        '<div class="live-empty">O administrador ainda não definiu data e horário do racha.</div>';
+      return;
+    }
+
+    liveStatsLoading = true;
+
+    try{
+      await ensureFirebasePlayer();
+
+      const result = await obterEstatisticasRachaCall({
+        matchKey,
+        date:String(state.config.date || ''),
+        time:String(state.config.time || '')
+      });
+
+      liveStatsCache = Array.isArray(result.data?.players) ? result.data.players : [];
+      renderLiveStats();
+    }catch(error){
+      console.error('Estatísticas:', error);
+      livePlayerList.innerHTML =
+        '<div class="live-empty">Não foi possível carregar as estatísticas agora.</div>';
+    }finally{
+      liveStatsLoading = false;
+    }
+  }
+
+  async function changeLiveStat(playerId, field, delta){
+    if(!isAdminUser()) return;
+
+    const matchKey = currentLiveMatchKey();
+    if(!matchKey) return;
+
+    const actionKey = `${playerId}_${field}`;
+    if(liveStatsActionRunning.has(actionKey)) return;
+
+    liveStatsActionRunning.add(actionKey);
+    renderLiveStats();
+
+    try{
+      const result = await alterarEstatisticaJogadorCall({
+        matchKey,
+        date:String(state.config.date || ''),
+        time:String(state.config.time || ''),
+        playerId,
+        field,
+        delta
+      });
+
+      const updated = result.data?.player;
+
+      if(updated){
+        const idx = liveStatsCache.findIndex(item => String(item.playerId) === String(playerId));
+        if(idx >= 0){
+          liveStatsCache[idx] = {...liveStatsCache[idx], ...updated};
+        }
+      }
+    }catch(error){
+      alert('Não foi possível salvar: ' + (error.message || 'erro'));
+      await loadLiveStats();
+    }finally{
+      liveStatsActionRunning.delete(actionKey);
+      renderLiveStats();
+    }
+  }
+
+  async function toggleLiveGoalkeeper(playerId, isGoalkeeper){
+    if(!isAdminUser()) return;
+
+    const matchKey = currentLiveMatchKey();
+    if(!matchKey) return;
+
+    const actionKey = `${playerId}_goalkeeper`;
+    if(liveStatsActionRunning.has(actionKey)) return;
+
+    liveStatsActionRunning.add(actionKey);
+    renderLiveStats();
+
+    try{
+      const result = await marcarGoleiroRachaCall({
+        matchKey,
+        date:String(state.config.date || ''),
+        time:String(state.config.time || ''),
+        playerId,
+        isGoalkeeper
+      });
+
+      const updated = result.data?.player;
+
+      if(updated){
+        const idx = liveStatsCache.findIndex(item => String(item.playerId) === String(playerId));
+        if(idx >= 0){
+          liveStatsCache[idx] = {...liveStatsCache[idx], ...updated};
+        }
+      }
+    }catch(error){
+      alert('Não foi possível alterar o goleiro: ' + (error.message || 'erro'));
+      await loadLiveStats();
+    }finally{
+      liveStatsActionRunning.delete(actionKey);
+      renderLiveStats();
+    }
+  }
+
+  function renderStatsPage(){
+    loadLiveStats();
   }
 
   function openFeatureView(viewId){
@@ -6017,6 +6549,7 @@ let messagingInstance = null;
 
     if(viewId === 'statsView'){
       renderStatsPage();
+      startLiveStatsRefresh();
     }
 
     if(viewId === 'rankingView'){
@@ -6052,6 +6585,10 @@ let messagingInstance = null;
 
     if(!['galleryView','noticesView','sponsorsView'].includes(id)){
       stopContentAutoRefresh();
+    }
+
+    if(id !== 'statsView'){
+      stopLiveStatsRefresh();
     }
 
     window.scrollTo({top:0, behavior:'smooth'});

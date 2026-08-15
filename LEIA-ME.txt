@@ -1,0 +1,24 @@
+GREEN PARK FC — ESTATÍSTICAS AO VIVO V2
+
+A página ESTATÍSTICAS agora mostra todos os jogadores confirmados.
+
+ADMIN DURANTE O RACHA:
+- + em GOLS para cada gol marcado.
+- - para corrigir.
+- MARCAR GOLEIRO para definir quem jogou no gol.
+- + em GOLS SOFRIDOS para cada gol que o goleiro tomar.
+- - para corrigir.
+
+SALDO:
+- jogador normal = gols.
+- goleiro = gols feitos - gols sofridos.
+
+RANKING:
+- Artilharia soma todos os gols.
+- Goleiro menos vazado usa média de gols sofridos por jogo.
+- mínimo de 3 jogos como goleiro.
+
+IMPORTANTE:
+Mesmo que o goleiro não tome gol, marque GOLEIRO para o jogo contar como 0 sofridos.
+
+Use ESTE ranking-functions.js no pacote final.

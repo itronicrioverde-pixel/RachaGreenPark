@@ -1,175 +1,70 @@
 /*
- * Green Park FC - Ranking V1
- * Artilharia + Goleiro Menos Vazado
- *
+ * GREEN PARK FC — Estatísticas Ao Vivo + Ranking
  * Anexar ao final de functions/index.js.
- * Usa onCall, HttpsError, getFirestore e FieldValue
- * já importados no arquivo principal.
  */
 
-const GREEN_PARK_ADMIN_UID_RANKING =
+const GREEN_PARK_ADMIN_UID_LIVE_STATS =
   "d3nVt6SbQlO6lYnOcCUDbLBhoU02";
 
-
-function rankingAdminOrThrow(request) {
+function liveStatsAuthOrThrow(request) {
   if (!request.auth) {
-    throw new HttpsError(
-        "unauthenticated",
-        "É necessário estar autenticado.",
-    );
-  }
-
-  if (
-    request.auth.uid !==
-    GREEN_PARK_ADMIN_UID_RANKING
-  ) {
-    throw new HttpsError(
-        "permission-denied",
-        "Apenas o administrador pode alterar o ranking.",
-    );
+    throw new HttpsError("unauthenticated", "É necessário estar autenticado.");
   }
 }
 
+function liveStatsAdminOrThrow(request) {
+  liveStatsAuthOrThrow(request);
 
-function safeRankingName(value) {
-  return String(value || "Jogador")
+  if (request.auth.uid !== GREEN_PARK_ADMIN_UID_LIVE_STATS) {
+    throw new HttpsError("permission-denied", "Apenas o administrador pode alterar as estatísticas.");
+  }
+}
+
+function safeLiveName(value) {
+  return String(value || "Jogador").trim().slice(0, 60);
+}
+
+function safeMatchKey(value) {
+  return String(value || "")
       .trim()
-      .slice(0, 60);
+      .replace(/[^a-zA-Z0-9_-]/g, "")
+      .slice(0, 90);
 }
 
+function liveStatDocId(matchKey, playerId) {
+  return matchKey + "__" +
+    String(playerId || "")
+        .replace(/[^a-zA-Z0-9_-]/g, "")
+        .slice(0, 128);
+}
 
-exports.listarConfirmados = onCall(
-    {
-      region: "southamerica-east1",
-      timeoutSeconds: 15,
-    },
-    async (request) => {
-      if (!request.auth) {
-        throw new HttpsError(
-            "unauthenticated",
-            "É necessário estar autenticado.",
-        );
-      }
+async function getConfirmedPlayerOrThrow(db, playerId) {
+  const ref = db.collection("players").doc(playerId);
+  const snapshot = await ref.get();
 
-      const db = getFirestore();
+  if (!snapshot.exists) {
+    throw new HttpsError("not-found", "Jogador não encontrado.");
+  }
 
-      const snapshot =
-        await db
-            .collection("players")
-            .where("status", "==", "confirmed")
-            .get();
+  const data = snapshot.data() || {};
 
-      const players =
-        snapshot.docs.map((docSnap) => {
-          const data = docSnap.data() || {};
+  if (data.status !== "confirmed") {
+    throw new HttpsError("failed-precondition", "Esse jogador não está confirmado.");
+  }
 
-          let confirmedAt = 0;
+  return {ref, data};
+}
 
-          if (
-            data.confirmedAt &&
-            typeof data.confirmedAt.toMillis ===
-              "function"
-          ) {
-            confirmedAt =
-              data.confirmedAt.toMillis();
-          }
-
-          return {
-            id: docSnap.id,
-            name: safeRankingName(data.name),
-            confirmedAt,
-          };
-        });
-
-      players.sort((a, b) => {
-        if (a.confirmedAt && b.confirmedAt) {
-          return a.confirmedAt -
-            b.confirmedAt;
-        }
-
-        if (a.confirmedAt) return -1;
-        if (b.confirmedAt) return 1;
-
-        return a.name.localeCompare(
-            b.name,
-            "pt-BR",
-        );
-      });
-
-      return {
-        count: players.length,
-        players: players.slice(0, 100),
-      };
-    },
-);
-
-
-exports.carregarRankingRacha = onCall(
-    {
-      region: "southamerica-east1",
-      timeoutSeconds: 15,
-    },
-    async (request) => {
-      rankingAdminOrThrow(request);
-
-      const matchKey =
-        String(request.data?.matchKey || "")
-            .trim()
-            .slice(0, 80);
-
-      if (!matchKey) {
-        throw new HttpsError(
-            "invalid-argument",
-            "Racha inválido.",
-        );
-      }
-
-      const db = getFirestore();
-
-      const snapshot =
-        await db
-            .collection("ranking_rounds")
-            .doc(matchKey)
-            .get();
-
-      if (!snapshot.exists) {
-        return {
-          exists: false,
-          scorers: [],
-          goalkeepers: [],
-        };
-      }
-
-      const data = snapshot.data() || {};
-
-      return {
-        exists: true,
-        scorers:
-          Array.isArray(data.scorers) ?
-            data.scorers :
-            [],
-        goalkeepers:
-          Array.isArray(data.goalkeepers) ?
-            data.goalkeepers :
-            [],
-      };
-    },
-);
-
-
-async function recomputeRankingGreenPark(db) {
-  const snapshot =
-    await db
-        .collection("ranking_rounds")
-        .get();
-
+async function recomputeLiveRanking(db) {
+  const snapshot = await db.collection("match_stats").get();
   const playerMap = new Map();
 
-  function getPlayer(playerId, name) {
+  function getEntry(playerId, name, photoURL) {
     if (!playerMap.has(playerId)) {
       playerMap.set(playerId, {
         playerId,
-        name: safeRankingName(name),
+        name: safeLiveName(name),
+        photoURL: String(photoURL || "").slice(0, 2000),
         goals: 0,
         goalkeeperGames: 0,
         goalsConceded: 0,
@@ -178,447 +73,348 @@ async function recomputeRankingGreenPark(db) {
 
     const entry = playerMap.get(playerId);
 
-    if (name) {
-      entry.name = safeRankingName(name);
-    }
+    if (name) entry.name = safeLiveName(name);
+    if (photoURL) entry.photoURL = String(photoURL).slice(0, 2000);
 
     return entry;
   }
 
   snapshot.docs.forEach((docSnap) => {
-    const round = docSnap.data() || {};
+    const data = docSnap.data() || {};
+    const playerId = String(data.playerId || "").trim();
+    if (!playerId) return;
 
-    const scorerMap = new Map();
+    const entry = getEntry(playerId, data.name, data.photoURL);
 
-    (
-      Array.isArray(round.scorers) ?
-        round.scorers :
-        []
-    ).forEach((item) => {
-      const playerId =
-        String(item.playerId || "").trim();
+    entry.goals += Math.max(0, Math.floor(Number(data.goals) || 0));
 
-      if (!playerId) return;
-
-      const goals =
-        Math.max(
-            0,
-            Math.floor(
-                Number(item.goals) || 0,
-            ),
-        );
-
-      if (!scorerMap.has(playerId)) {
-        scorerMap.set(playerId, {
-          playerId,
-          name: item.name,
-          goals: 0,
-        });
-      }
-
-      scorerMap.get(playerId).goals += goals;
-    });
-
-    scorerMap.forEach((item) => {
-      const player =
-        getPlayer(
-            item.playerId,
-            item.name,
-        );
-
-      player.goals += item.goals;
-    });
-
-    const goalkeeperMap = new Map();
-
-    (
-      Array.isArray(round.goalkeepers) ?
-        round.goalkeepers :
-        []
-    ).forEach((item) => {
-      const playerId =
-        String(item.playerId || "").trim();
-
-      if (!playerId) return;
-
-      goalkeeperMap.set(playerId, {
-        playerId,
-        name: item.name,
-        goalsConceded:
-          Math.max(
-              0,
-              Math.floor(
-                  Number(
-                      item.goalsConceded,
-                  ) || 0,
-              ),
-          ),
-      });
-    });
-
-    goalkeeperMap.forEach((item) => {
-      const player =
-        getPlayer(
-            item.playerId,
-            item.name,
-        );
-
-      player.goalkeeperGames += 1;
-      player.goalsConceded +=
-        item.goalsConceded;
-    });
+    if (data.isGoalkeeper === true) {
+      entry.goalkeeperGames += 1;
+      entry.goalsConceded += Math.max(
+          0,
+          Math.floor(Number(data.goalsConceded) || 0),
+      );
+    }
   });
 
-  const all =
-    Array.from(playerMap.values());
+  const players = Array.from(playerMap.values());
 
-  const scorers =
-    all
-        .filter((item) => item.goals > 0)
-        .sort((a, b) => {
-          if (b.goals !== a.goals) {
-            return b.goals - a.goals;
-          }
+  const scorers = players
+      .filter((item) => item.goals > 0)
+      .sort((a, b) => b.goals - a.goals || a.name.localeCompare(b.name, "pt-BR"))
+      .map((item) => ({
+        playerId: item.playerId,
+        name: item.name,
+        photoURL: item.photoURL || "",
+        goals: item.goals,
+      }));
 
-          return a.name.localeCompare(
-              b.name,
-              "pt-BR",
-          );
-        })
-        .map((item) => ({
-          playerId: item.playerId,
-          name: item.name,
-          goals: item.goals,
-        }));
-
-  const goalkeepers =
-    all
-        .filter(
-            (item) =>
-              item.goalkeeperGames >= 3,
-        )
-        .map((item) => ({
-          playerId: item.playerId,
-          name: item.name,
-          games: item.goalkeeperGames,
-          goalsConceded:
-            item.goalsConceded,
-          average:
-            item.goalkeeperGames > 0 ?
-              item.goalsConceded /
-                item.goalkeeperGames :
-              0,
-        }))
-        .sort((a, b) => {
-          if (a.average !== b.average) {
-            return a.average - b.average;
-          }
-
-          if (
-            a.goalsConceded !==
-            b.goalsConceded
-          ) {
-            return a.goalsConceded -
-              b.goalsConceded;
-          }
-
-          if (b.games !== a.games) {
-            return b.games - a.games;
-          }
-
-          return a.name.localeCompare(
-              b.name,
-              "pt-BR",
-          );
-        });
-
-  await db
-      .collection("ranking")
-      .doc("current")
-      .set(
-          {
-            scorers,
-            goalkeepers,
-            updatedAt:
-              FieldValue.serverTimestamp(),
-          },
-          {merge: true},
+  const goalkeepers = players
+      .filter((item) => item.goalkeeperGames >= 3)
+      .map((item) => ({
+        playerId: item.playerId,
+        name: item.name,
+        photoURL: item.photoURL || "",
+        games: item.goalkeeperGames,
+        goalsConceded: item.goalsConceded,
+        average: item.goalkeeperGames > 0 ?
+          item.goalsConceded / item.goalkeeperGames :
+          0,
+        balance: item.goals - item.goalsConceded,
+      }))
+      .sort((a, b) =>
+        a.average - b.average ||
+        a.goalsConceded - b.goalsConceded ||
+        b.games - a.games ||
+        a.name.localeCompare(b.name, "pt-BR"),
       );
 
-  return {
-    scorers,
-    goalkeepers,
-  };
+  await db.collection("ranking").doc("current").set(
+      {
+        scorers,
+        goalkeepers,
+        updatedAt: FieldValue.serverTimestamp(),
+      },
+      {merge: true},
+  );
+
+  return {scorers, goalkeepers};
 }
 
-
-exports.salvarRankingRacha = onCall(
-    {
-      region: "southamerica-east1",
-      timeoutSeconds: 30,
-    },
+exports.listarConfirmados = onCall(
+    {region: "southamerica-east1", timeoutSeconds: 15},
     async (request) => {
-      rankingAdminOrThrow(request);
+      liveStatsAuthOrThrow(request);
 
-      const matchKey =
-        String(request.data?.matchKey || "")
-            .trim()
-            .slice(0, 80);
+      const db = getFirestore();
+      const snapshot = await db
+          .collection("players")
+          .where("status", "==", "confirmed")
+          .get();
 
-      const date =
-        String(request.data?.date || "")
-            .trim()
-            .slice(0, 20);
+      const players = snapshot.docs.map((docSnap) => {
+        const data = docSnap.data() || {};
+        let confirmedAt = 0;
 
-      const time =
-        String(request.data?.time || "")
-            .trim()
-            .slice(0, 10);
-
-      if (!matchKey || !date || !time) {
-        throw new HttpsError(
-            "invalid-argument",
-            "Data e horário são obrigatórios.",
-        );
-      }
-
-      const rawScorers =
-        Array.isArray(
-            request.data?.scorers,
-        ) ?
-          request.data.scorers :
-          [];
-
-      const rawGoalkeepers =
-        Array.isArray(
-            request.data?.goalkeepers,
-        ) ?
-          request.data.goalkeepers :
-          [];
-
-      if (
-        rawScorers.length > 60 ||
-        rawGoalkeepers.length > 20
-      ) {
-        throw new HttpsError(
-            "invalid-argument",
-            "Quantidade de lançamentos inválida.",
-        );
-      }
-
-      const scorerMap = new Map();
-
-      rawScorers.forEach((item) => {
-        const playerId =
-          String(item?.playerId || "")
-              .trim()
-              .slice(0, 128);
-
-        if (!playerId) return;
-
-        const goals =
-          Math.max(
-              0,
-              Math.min(
-                  99,
-                  Math.floor(
-                      Number(item?.goals) ||
-                      0,
-                  ),
-              ),
-          );
-
-        if (!scorerMap.has(playerId)) {
-          scorerMap.set(playerId, {
-            playerId,
-            name:
-              safeRankingName(item?.name),
-            goals: 0,
-          });
+        if (data.confirmedAt && typeof data.confirmedAt.toMillis === "function") {
+          confirmedAt = data.confirmedAt.toMillis();
         }
 
-        scorerMap.get(playerId).goals +=
-          goals;
+        return {
+          id: docSnap.id,
+          name: safeLiveName(data.name),
+          photoURL: String(data.photoURL || "").slice(0, 2000),
+          confirmedAt,
+        };
       });
 
-      const goalkeeperMap =
-        new Map();
+      players.sort((a, b) =>
+        (a.confirmedAt && b.confirmedAt) ?
+          a.confirmedAt - b.confirmedAt :
+          a.name.localeCompare(b.name, "pt-BR"),
+      );
 
-      rawGoalkeepers.forEach((item) => {
-        const playerId =
-          String(item?.playerId || "")
-              .trim()
-              .slice(0, 128);
+      return {count: players.length, players: players.slice(0, 100)};
+    },
+);
 
-        if (!playerId) return;
+exports.obterEstatisticasRacha = onCall(
+    {region: "southamerica-east1", timeoutSeconds: 20},
+    async (request) => {
+      liveStatsAuthOrThrow(request);
 
-        goalkeeperMap.set(playerId, {
-          playerId,
-          name:
-            safeRankingName(item?.name),
-          goalsConceded:
-            Math.max(
-                0,
-                Math.min(
-                    99,
-                    Math.floor(
-                        Number(
-                            item?.goalsConceded,
-                        ) || 0,
-                    ),
-                ),
-            ),
-        });
-      });
+      const matchKey = safeMatchKey(request.data?.matchKey);
 
-      const scorers =
-        Array.from(scorerMap.values());
-
-      const goalkeepers =
-        Array.from(
-            goalkeeperMap.values(),
-        );
-
-      if (
-        scorers.length === 0 &&
-        goalkeepers.length === 0
-      ) {
-        throw new HttpsError(
-            "invalid-argument",
-            "Informe pelo menos um jogador.",
-        );
+      if (!matchKey) {
+        throw new HttpsError("invalid-argument", "Racha inválido.");
       }
 
       const db = getFirestore();
 
-      const playerIds =
-        [
-          ...new Set(
-              [
-                ...scorers.map(
-                    (item) => item.playerId,
-                ),
-                ...goalkeepers.map(
-                    (item) => item.playerId,
-                ),
-              ],
-          ),
-        ];
+      const [playersSnapshot, statsSnapshot] = await Promise.all([
+        db.collection("players").where("status", "==", "confirmed").get(),
+        db.collection("match_stats").where("matchKey", "==", matchKey).get(),
+      ]);
 
-      const validNames = new Map();
+      const statsMap = new Map();
 
-      for (const playerId of playerIds) {
-        const playerSnapshot =
-          await db
-              .collection("players")
-              .doc(playerId)
-              .get();
+      statsSnapshot.docs.forEach((docSnap) => {
+        const data = docSnap.data() || {};
+        statsMap.set(String(data.playerId || ""), data);
+      });
 
-        if (!playerSnapshot.exists) {
-          throw new HttpsError(
-              "invalid-argument",
-              "Um dos jogadores não existe.",
-          );
-        }
+      const players = playersSnapshot.docs.map((docSnap) => {
+        const data = docSnap.data() || {};
+        const stat = statsMap.get(docSnap.id) || {};
 
-        validNames.set(
-            playerId,
-            safeRankingName(
-                playerSnapshot.data()?.name,
-            ),
-        );
+        return {
+          playerId: docSnap.id,
+          name: safeLiveName(data.name),
+          photoURL: String(data.photoURL || "").slice(0, 2000),
+          goals: Math.max(0, Math.floor(Number(stat.goals) || 0)),
+          goalsConceded: Math.max(0, Math.floor(Number(stat.goalsConceded) || 0)),
+          isGoalkeeper: stat.isGoalkeeper === true,
+        };
+      });
+
+      players.sort((a, b) => a.name.localeCompare(b.name, "pt-BR"));
+
+      return {matchKey, players};
+    },
+);
+
+exports.alterarEstatisticaJogador = onCall(
+    {region: "southamerica-east1", timeoutSeconds: 30},
+    async (request) => {
+      liveStatsAdminOrThrow(request);
+
+      const matchKey = safeMatchKey(request.data?.matchKey);
+      const playerId = String(request.data?.playerId || "").trim().slice(0, 128);
+      const field = String(request.data?.field || "");
+      const delta = Number(request.data?.delta);
+      const date = String(request.data?.date || "").trim().slice(0, 20);
+      const time = String(request.data?.time || "").trim().slice(0, 10);
+
+      if (
+        !matchKey ||
+        !playerId ||
+        !["goals", "goalsConceded"].includes(field) ||
+        ![-1, 1].includes(delta)
+      ) {
+        throw new HttpsError("invalid-argument", "Alteração inválida.");
       }
 
-      const finalScorers =
-        scorers.map((item) => ({
-          playerId: item.playerId,
-          name:
-            validNames.get(item.playerId),
-          goals: item.goals,
-        }));
+      const db = getFirestore();
+      const player = await getConfirmedPlayerOrThrow(db, playerId);
+      const playerData = player.data || {};
 
-      const finalGoalkeepers =
-        goalkeepers.map((item) => ({
-          playerId: item.playerId,
-          name:
-            validNames.get(item.playerId),
-          goalsConceded:
-            item.goalsConceded,
-        }));
+      const statRef = db.collection("match_stats").doc(
+          liveStatDocId(matchKey, playerId),
+      );
 
-      await db
-          .collection("ranking_rounds")
-          .doc(matchKey)
-          .set(
-              {
-                matchKey,
-                date,
-                time,
-                scorers: finalScorers,
-                goalkeepers:
-                  finalGoalkeepers,
-                updatedBy:
-                  request.auth.uid,
-                updatedAt:
-                  FieldValue.serverTimestamp(),
-              },
-              {merge: false},
-          );
+      const result = await db.runTransaction(async (transaction) => {
+        const snapshot = await transaction.get(statRef);
+        const current = snapshot.exists ? snapshot.data() || {} : {};
 
-      const ranking =
-        await recomputeRankingGreenPark(
-            db,
+        let goals = Math.max(0, Math.floor(Number(current.goals) || 0));
+        let goalsConceded = Math.max(
+            0,
+            Math.floor(Number(current.goalsConceded) || 0),
         );
+        let isGoalkeeper = current.isGoalkeeper === true;
+
+        if (field === "goals") {
+          goals = Math.max(0, goals + delta);
+        }
+
+        if (field === "goalsConceded") {
+          if (!isGoalkeeper && delta > 0) {
+            isGoalkeeper = true;
+          }
+
+          if (!isGoalkeeper) {
+            throw new HttpsError(
+                "failed-precondition",
+                "Marque o jogador como goleiro primeiro.",
+            );
+          }
+
+          goalsConceded = Math.max(0, goalsConceded + delta);
+        }
+
+        const value = {
+          matchKey,
+          date,
+          time,
+          playerId,
+          name: safeLiveName(playerData.name),
+          photoURL: String(playerData.photoURL || "").slice(0, 2000),
+          goals,
+          goalsConceded,
+          isGoalkeeper,
+          updatedBy: request.auth.uid,
+          updatedAt: FieldValue.serverTimestamp(),
+        };
+
+        transaction.set(statRef, value, {merge: true});
+        return value;
+      });
+
+      await recomputeLiveRanking(db);
 
       return {
         ok: true,
-        scorers: ranking.scorers,
-        goalkeepers:
-          ranking.goalkeepers,
+        player: {
+          playerId,
+          goals: result.goals,
+          goalsConceded: result.goalsConceded,
+          isGoalkeeper: result.isGoalkeeper,
+        },
       };
     },
 );
 
-
-exports.obterRanking = onCall(
-    {
-      region: "southamerica-east1",
-      timeoutSeconds: 15,
-    },
+exports.marcarGoleiroRacha = onCall(
+    {region: "southamerica-east1", timeoutSeconds: 30},
     async (request) => {
-      if (!request.auth) {
-        throw new HttpsError(
-            "unauthenticated",
-            "É necessário estar autenticado.",
-        );
+      liveStatsAdminOrThrow(request);
+
+      const matchKey = safeMatchKey(request.data?.matchKey);
+      const playerId = String(request.data?.playerId || "").trim().slice(0, 128);
+      const isGoalkeeper = request.data?.isGoalkeeper === true;
+      const date = String(request.data?.date || "").trim().slice(0, 20);
+      const time = String(request.data?.time || "").trim().slice(0, 10);
+
+      if (!matchKey || !playerId) {
+        throw new HttpsError("invalid-argument", "Jogador ou racha inválido.");
       }
 
       const db = getFirestore();
+      const player = await getConfirmedPlayerOrThrow(db, playerId);
+      const playerData = player.data || {};
 
-      const snapshot =
-        await db
-            .collection("ranking")
-            .doc("current")
-            .get();
+      const statRef = db.collection("match_stats").doc(
+          liveStatDocId(matchKey, playerId),
+      );
+
+      const result = await db.runTransaction(async (transaction) => {
+        const snapshot = await transaction.get(statRef);
+        const current = snapshot.exists ? snapshot.data() || {} : {};
+
+        const goals = Math.max(0, Math.floor(Number(current.goals) || 0));
+        const goalsConceded = isGoalkeeper ?
+          Math.max(0, Math.floor(Number(current.goalsConceded) || 0)) :
+          0;
+
+        const value = {
+          matchKey,
+          date,
+          time,
+          playerId,
+          name: safeLiveName(playerData.name),
+          photoURL: String(playerData.photoURL || "").slice(0, 2000),
+          goals,
+          goalsConceded,
+          isGoalkeeper,
+          updatedBy: request.auth.uid,
+          updatedAt: FieldValue.serverTimestamp(),
+        };
+
+        transaction.set(statRef, value, {merge: true});
+        return value;
+      });
+
+      await recomputeLiveRanking(db);
+
+      return {
+        ok: true,
+        player: {
+          playerId,
+          goals: result.goals,
+          goalsConceded: result.goalsConceded,
+          isGoalkeeper: result.isGoalkeeper,
+        },
+      };
+    },
+);
+
+exports.obterRanking = onCall(
+    {region: "southamerica-east1", timeoutSeconds: 15},
+    async (request) => {
+      liveStatsAuthOrThrow(request);
+
+      const db = getFirestore();
+      const snapshot = await db.collection("ranking").doc("current").get();
 
       if (!snapshot.exists) {
-        return {
-          scorers: [],
-          goalkeepers: [],
-        };
+        return {scorers: [], goalkeepers: []};
       }
 
       const data = snapshot.data() || {};
 
       return {
-        scorers:
-          Array.isArray(data.scorers) ?
-            data.scorers :
-            [],
-        goalkeepers:
-          Array.isArray(data.goalkeepers) ?
-            data.goalkeepers :
-            [],
+        scorers: Array.isArray(data.scorers) ? data.scorers : [],
+        goalkeepers: Array.isArray(data.goalkeepers) ? data.goalkeepers : [],
       };
+    },
+);
+
+// Compatibilidade: formulário antigo fica desativado no novo index.
+exports.carregarRankingRacha = onCall(
+    {region: "southamerica-east1", timeoutSeconds: 15},
+    async (request) => {
+      liveStatsAdminOrThrow(request);
+      return {exists: false, scorers: [], goalkeepers: []};
+    },
+);
+
+exports.salvarRankingRacha = onCall(
+    {region: "southamerica-east1", timeoutSeconds: 15},
+    async (request) => {
+      liveStatsAdminOrThrow(request);
+      throw new HttpsError(
+          "failed-precondition",
+          "Use a página Estatísticas para lançar os gols durante o racha.",
+      );
     },
 );
