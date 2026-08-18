@@ -40,6 +40,20 @@ service firebase.storage {
       allow delete: if isAdmin();
     }
 
+    // Fotos e vídeos anexados aos comunicados.
+    match /notices/{fileName} {
+      allow read: if signedIn();
+
+      allow create, update: if isAdmin()
+        && request.resource.size < 250 * 1024 * 1024
+        && (
+          request.resource.contentType.matches('image/.*')
+          || request.resource.contentType.matches('video/.*')
+        );
+
+      allow delete: if isAdmin();
+    }
+
     // Logos: há uma subpasta por posição.
     match /sponsors/{allPaths=**} {
       allow read: if signedIn();

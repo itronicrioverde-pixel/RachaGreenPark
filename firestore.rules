@@ -1,0 +1,262 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function loggedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return loggedIn()
+        && request.auth.uid == "d3nVt6SbQlO6lYnOcCUDbLBhoU02";
+    }
+
+    function isOwner(userId) {
+      return loggedIn() && request.auth.uid == userId;
+    }
+
+
+    // =====================================================
+    // JOGADORES
+    // =====================================================
+    match /players/{userId} {
+
+      // Admin vê todos.
+      // Jogador vê apenas o próprio documento.
+      allow read: if isAdmin() || isOwner(userId);
+
+
+      // Jogador cria somente o próprio cadastro
+      // e nunca pode nascer como "confirmed".
+      allow create: if isOwner(userId)
+
+        && request.resource.data.uid == userId
+
+        && request.resource.data.keys().hasAll([
+          'uid',
+          'status'
+        ])
+
+        && request.resource.data.keys().hasOnly([
+          'uid',
+          'name',
+          'phone',
+          'email',
+          'photoURL',
+          'photoStoragePath',
+          'status',
+          'paymentReported',
+          'paymentType',
+          'pixOrderId',
+          'pixStatus',
+          'pixProvider',
+          'fcmToken',
+          'notificationsEnabled',
+          'notificationUpdatedAt',
+          'createdAt',
+          'updatedAt',
+          "position"
+        ])
+
+        && request.resource.data.status != "confirmed"
+
+        && (
+          !('paymentReported' in request.resource.data)
+          || request.resource.data.paymentReported == false
+        )
+
+        && (
+          !('paymentType' in request.resource.data)
+          || request.resource.data.paymentType in ["", "daily", "monthly"]
+        )
+
+        && (
+          !('pixOrderId' in request.resource.data)
+          || request.resource.data.pixOrderId == ""
+        )
+
+        && (
+          !('pixStatus' in request.resource.data)
+          || request.resource.data.pixStatus == ""
+        )
+
+        && (
+          !('pixProvider' in request.resource.data)
+          || request.resource.data.pixProvider == ""
+        );
+
+
+      // Admin pode atualizar qualquer campo do jogador.
+      //
+      // Jogador pode alterar somente campos necessários
+      // para perfil, presença e preparação do pagamento.
+      allow update: if isAdmin()
+
+        || (
+          isOwner(userId)
+
+          && request.resource.data.uid == resource.data.uid
+
+          && request.resource.data
+            .diff(resource.data)
+            .affectedKeys()
+            .hasOnly([
+              'name',
+              'phone',
+              'email',
+              'photoURL',
+              'photoStoragePath',
+              'status',
+              'paymentReported',
+              'paymentType',
+              'pixOrderId',
+              'pixStatus',
+              'pixProvider',
+              'fcmToken',
+              'notificationsEnabled',
+              'notificationUpdatedAt',
+              'updatedAt',
+              "position"
+            ])
+
+          // Jogador nunca consegue virar confirmed.
+          // Se já estiver confirmed pelo servidor/admin,
+          // também não consegue retirar essa confirmação sozinho.
+          && (
+            !request.resource.data
+              .diff(resource.data)
+              .affectedKeys()
+              .hasAny(['status'])
+
+            || (
+              resource.data.status != "confirmed"
+              && request.resource.data.status != "confirmed"
+            )
+          )
+
+          // Jogador só pode deixar paymentReported falso.
+          && (
+            !request.resource.data
+              .diff(resource.data)
+              .affectedKeys()
+              .hasAny(['paymentReported'])
+
+            || request.resource.data.paymentReported == false
+          )
+
+          // Tipos legítimos de pagamento.
+          && (
+            !request.resource.data
+              .diff(resource.data)
+              .affectedKeys()
+              .hasAny(['paymentType'])
+
+            || request.resource.data.paymentType in [
+              "",
+              "daily",
+              "monthly"
+            ]
+          )
+
+          // O navegador pode limpar um Pix antigo,
+          // mas nunca fabricar um novo Order ID.
+          && (
+            !request.resource.data
+              .diff(resource.data)
+              .affectedKeys()
+              .hasAny(['pixOrderId'])
+
+            || request.resource.data.pixOrderId == ""
+          )
+
+          // O navegador nunca pode escrever paid,
+          // accredited, processed etc.
+          && (
+            !request.resource.data
+              .diff(resource.data)
+              .affectedKeys()
+              .hasAny(['pixStatus'])
+
+            || request.resource.data.pixStatus == ""
+          )
+
+          // Provider real é gravado pelo servidor.
+          && (
+            !request.resource.data
+              .diff(resource.data)
+              .affectedKeys()
+              .hasAny(['pixProvider'])
+
+            || request.resource.data.pixProvider == ""
+          )
+        );
+
+      allow delete: if isAdmin();
+    }
+
+
+    // =====================================================
+    // PAGAMENTOS
+    // =====================================================
+    match /payments/{paymentId} {
+
+      allow read: if isAdmin()
+        || (
+          loggedIn()
+          && resource.data.userId == request.auth.uid
+        );
+
+      // Jogador só cria pagamento pendente para ele mesmo.
+      // Valores oficiais:
+      // diária = 13
+      // mensal = 70
+      allow create: if loggedIn()
+
+        && request.resource.data.userId == request.auth.uid
+
+        && request.resource.data.status == "pending"
+
+        && (
+          (
+            request.resource.data.type == "daily"
+            && request.resource.data.amount == 13
+          )
+          ||
+          (
+            request.resource.data.type == "monthly"
+            && request.resource.data.amount == 70
+          )
+        );
+
+      // Jogador nunca aprova nem altera pagamento.
+      allow update, delete: if isAdmin();
+    }
+
+
+    // =====================================================
+    // CONFIGURAÇÃO DO RACHA
+    // =====================================================
+    match /racha/{documentId} {
+
+      allow read: if loggedIn();
+
+      // Contador, data, horário, vagas e demais
+      // configurações só podem ser alterados pelo admin.
+      allow create, update, delete: if isAdmin();
+    }
+
+
+    // =====================================================
+    // PIX ORDERS E TODO O RESTANTE
+    // =====================================================
+    //
+    // pix_orders não possui regra própria.
+    // Portanto navegador/jogador não acessa diretamente.
+    // Cloud Functions/Admin SDK continuam com acesso.
+    //
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
