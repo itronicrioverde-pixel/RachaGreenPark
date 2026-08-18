@@ -6842,7 +6842,7 @@ button {
           <section class="admin-options">
             <button class="admin-option" id="adminPlayersButton" type="button">
               <span>Jogadores</span>
-              <small>Cadastros, confirmados e lista de espera</small>
+              <small>Cadastros e confirmados</small>
             </button>
 
             <button class="admin-option" id="adminPaymentsButton" type="button">
@@ -10871,6 +10871,21 @@ async function removeSponsorLogo(slot){
     yesButton.textContent = 'VERIFICANDO...';
 
     try{
+      const limiteJogadores = Math.max(
+        1,
+        Number(state.config.maxPlayers) || 40
+      );
+      const confirmadosAgora = confirmedTotal();
+
+      if(
+        confirmadosAgora >= limiteJogadores &&
+        state.currentUser.status !== 'confirmed'
+      ){
+        throw new Error(
+          'Racha lotado. No momento não há vagas disponíveis.'
+        );
+      }
+
       const user = await ensureFirebasePlayer();
       if(user.uid === ADMIN_UID){
         throw new Error('Saia do modo administrador para confirmar presença como jogador.');

@@ -451,6 +451,45 @@ exports.criarPagamentoPix = onCall(
 
       const uid = request.auth.uid;
 
+      // PACOTE 18B:
+      // Sem lista de espera: lotado nao cria nova cobranca.
+      const capacityDb = getFirestore();
+
+      const [
+        currentRachaSnapshot,
+        confirmedPlayersSnapshot,
+      ] = await Promise.all([
+        capacityDb
+            .collection("racha")
+            .doc("current")
+            .get(),
+        capacityDb
+            .collection("players")
+            .where("status", "==", "confirmed")
+            .get(),
+      ]);
+
+      const currentRachaData =
+        currentRachaSnapshot.exists ?
+          currentRachaSnapshot.data() || {} :
+          {};
+
+      const maxPlayers =
+        Math.max(
+            1,
+            Number(currentRachaData.maxPlayers) || 40,
+        );
+
+      if (
+        confirmedPlayersSnapshot.size >=
+        maxPlayers
+      ) {
+        throw new HttpsError(
+            "resource-exhausted",
+            "Racha lotado. No momento não há vagas disponíveis.",
+        );
+      }
+
       const externalReference =
         "greenpark_" + uid.substring(0, 20) + "_" + Date.now();
 
@@ -7057,6 +7096,51 @@ exports.confirmarPresencaMensalista = onCall(
 
       const db =
         getFirestore();
+
+
+      // PACOTE 18B MENSALISTA:
+      // Mensalista tambem nao entra acima da lotacao.
+      const [
+        rachaSnapshotP18,
+        confirmedSnapshotP18,
+      ] = await Promise.all([
+        db
+            .collection("racha")
+            .doc("current")
+            .get(),
+        db
+            .collection("players")
+            .where("status", "==", "confirmed")
+            .get(),
+      ]);
+
+      const rachaDataP18 =
+        rachaSnapshotP18.exists ?
+          rachaSnapshotP18.data() || {} :
+          {};
+
+      const maxPlayersP18 =
+        Math.max(
+            1,
+            Number(rachaDataP18.maxPlayers) || 40,
+        );
+
+      const alreadyConfirmedP18 =
+        confirmedSnapshotP18.docs.some(
+            (docSnap) =>
+              docSnap.id === request.auth.uid,
+        );
+
+      if (
+        !alreadyConfirmedP18 &&
+        confirmedSnapshotP18.size >=
+        maxPlayersP18
+      ) {
+        throw new HttpsError(
+            "resource-exhausted",
+            "Racha lotado. No momento não há vagas disponíveis.",
+        );
+      }
 
       const ref =
         db
