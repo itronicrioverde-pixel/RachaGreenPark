@@ -1216,7 +1216,7 @@ async function atualizarContagemRacha(db) {
 const {onRequest} = require("firebase-functions/v2/https");
 
 
-exports.mercadoPagoWebhook = onRequest(
+const mercadoPagoWebhookLegacyP16_1 = onRequest(
     {
       region: "southamerica-east1",
       secrets: [MERCADO_PAGO_ACCESS_TOKEN],
@@ -1433,7 +1433,7 @@ exports.mercadoPagoWebhook = onRequest(
 );
 
 
-exports.mercadoPagoWebhook = onRequest(
+const mercadoPagoWebhookLegacyP16_2 = onRequest(
     {
       region: "southamerica-east1",
       secrets: [MERCADO_PAGO_ACCESS_TOKEN],
@@ -1736,7 +1736,7 @@ function validarAssinaturaMercadoPagoV2(req) {
 }
 
 
-exports.mercadoPagoWebhook = onRequest(
+const mercadoPagoWebhookLegacyP16_3 = onRequest(
     {
       region: "southamerica-east1",
       secrets: [
@@ -2216,7 +2216,7 @@ function validarAssinaturaMercadoPagoV3(req) {
 }
 
 
-exports.mercadoPagoWebhook = onRequest(
+const mercadoPagoWebhookLegacyP16_4 = onRequest(
     {
       region: "southamerica-east1",
       secrets: [
@@ -2765,7 +2765,7 @@ function validarAssinaturaMercadoPagoV4(req) {
 }
 
 
-exports.mercadoPagoWebhook = onRequest(
+const mercadoPagoWebhookLegacyP16_5 = onRequest(
     {
       region: "southamerica-east1",
       secrets: [
@@ -3095,7 +3095,7 @@ exports.mercadoPagoWebhook = onRequest(
       }
     },
 );
-exports.mercadoPagoWebhook = onRequest(
+const mercadoPagoWebhookLegacyP16_6 = onRequest(
     {
       region: "southamerica-east1",
       secrets: [
@@ -7784,5 +7784,430 @@ exports.obterDashboardFinanceiro = onCall(
               30,
           ),
       };
+    },
+);
+
+
+// ============================================================================
+// GREEN PARK FC - PACOTE 16
+// WEBHOOK MERCADO PAGO FINAL E UNICO EXPORTADO
+// ============================================================================
+
+const MERCADO_PAGO_WEBHOOK_SECRET_P16 =
+  defineSecret("MERCADO_PAGO_WEBHOOK_SECRET");
+
+function mercadoPagoWebhookSignatureP16(req) {
+  const xSignature =
+    String(req.headers["x-signature"] || "").trim();
+
+  const xRequestId =
+    String(req.headers["x-request-id"] || "").trim();
+
+  if (!xSignature) {
+    return false;
+  }
+
+  let ts = "";
+  let v1 = "";
+
+  for (const part of xSignature.split(",")) {
+    const pos = part.indexOf("=");
+
+    if (pos === -1) {
+      continue;
+    }
+
+    const key = part.substring(0, pos).trim();
+    const value = part.substring(pos + 1).trim();
+
+    if (key === "ts") {
+      ts = value;
+    } else if (key === "v1") {
+      v1 = value;
+    }
+  }
+
+  if (!ts || !/^[a-f0-9]{64}$/i.test(v1)) {
+    return false;
+  }
+
+  const candidates = [];
+
+  function addCandidate(value) {
+    let id = String(value || "").trim();
+
+    if (!id) {
+      return;
+    }
+
+    if (/[a-zA-Z]/.test(id)) {
+      id = id.toLowerCase();
+    }
+
+    if (!candidates.includes(id)) {
+      candidates.push(id);
+    }
+  }
+
+  addCandidate(req.query && req.query["data.id"]);
+  addCandidate(req.query && req.query.data_id);
+  addCandidate(req.body && req.body.data && req.body.data.id);
+
+  try {
+    const originalUrl = String(req.originalUrl || "");
+    const qpos = originalUrl.indexOf("?");
+
+    if (qpos !== -1) {
+      const params =
+        new URLSearchParams(originalUrl.substring(qpos + 1));
+
+      addCandidate(params.get("data.id"));
+      addCandidate(params.get("data_id"));
+    }
+  } catch (error) {
+    console.warn(
+        "P16 webhook: nao foi possivel ler query original.",
+        error.message,
+    );
+  }
+
+  if (!candidates.length) {
+    candidates.push("");
+  }
+
+  const secret =
+    MERCADO_PAGO_WEBHOOK_SECRET_P16.value();
+
+  for (const id of candidates) {
+    let manifest = "";
+
+    if (id) {
+      manifest += `id:${id};`;
+    }
+
+    if (xRequestId) {
+      manifest += `request-id:${xRequestId};`;
+    }
+
+    manifest += `ts:${ts};`;
+
+    const calculated =
+      crypto
+          .createHmac("sha256", secret)
+          .update(manifest)
+          .digest("hex");
+
+    if (calculated.length !== v1.length) {
+      continue;
+    }
+
+    const valid =
+      crypto.timingSafeEqual(
+          Buffer.from(calculated, "hex"),
+          Buffer.from(v1, "hex"),
+      );
+
+    if (valid) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+exports.mercadoPagoWebhook = onRequest(
+    {
+      region: "southamerica-east1",
+      secrets: [
+        MERCADO_PAGO_ACCESS_TOKEN,
+        MERCADO_PAGO_WEBHOOK_SECRET_P16,
+      ],
+      timeoutSeconds: 30,
+    },
+    async (req, res) => {
+      if (req.method !== "POST") {
+        return res.status(200).send("ok");
+      }
+
+      if (!mercadoPagoWebhookSignatureP16(req)) {
+        console.warn(
+            "P16 webhook rejeitado: assinatura invalida.",
+        );
+
+        return res
+            .status(401)
+            .send("assinatura invalida");
+      }
+
+      const body = req.body || {};
+
+      let orderId =
+        String(
+            body?.data?.id ||
+            req.query?.["data.id"] ||
+            req.query?.data_id ||
+            "",
+        ).trim();
+
+      if (!orderId) {
+        try {
+          const originalUrl =
+            String(req.originalUrl || "");
+
+          const pos =
+            originalUrl.indexOf("?");
+
+          if (pos !== -1) {
+            const params =
+              new URLSearchParams(
+                  originalUrl.substring(pos + 1),
+              );
+
+            orderId =
+              String(
+                  params.get("data.id") ||
+                  params.get("data_id") ||
+                  "",
+              ).trim();
+          }
+        } catch (error) {
+          console.warn(
+              "P16 webhook: falha lendo orderId.",
+              error.message,
+          );
+        }
+      }
+
+      if (!orderId) {
+        return res.status(200).send("ok");
+      }
+
+      try {
+        const db = getFirestore();
+
+        const savedOrderRef =
+          db.collection("pix_orders").doc(orderId);
+
+        const savedOrder =
+          await savedOrderRef.get();
+
+        if (!savedOrder.exists) {
+          console.log(
+              "P16 webhook: order externa/nao cadastrada ignorada:",
+              orderId,
+          );
+
+          return res.status(200).send("ok");
+        }
+
+        const savedData =
+          savedOrder.data() || {};
+
+        const userId =
+          String(savedData.userId || "").trim();
+
+        if (!userId) {
+          console.error(
+              "P16 webhook: order sem userId:",
+              orderId,
+          );
+
+          return res.status(200).send("ok");
+        }
+
+        if (savedData.webhookConfirmed === true) {
+          console.log(
+              "P16 webhook: order ja confirmada:",
+              orderId,
+          );
+
+          return res.status(200).send("ok");
+        }
+
+        const response =
+          await fetch(
+              "https://api.mercadopago.com/v1/orders/" +
+              encodeURIComponent(orderId),
+              {
+                method: "GET",
+                headers: {
+                  "Authorization":
+                    "Bearer " +
+                    MERCADO_PAGO_ACCESS_TOKEN.value(),
+                  "Accept": "application/json",
+                },
+              },
+          );
+
+        const order =
+          await response.json();
+
+        if (!response.ok) {
+          console.error(
+              "P16 webhook: erro consultando Mercado Pago:",
+              response.status,
+              orderId,
+          );
+
+          if (response.status >= 500) {
+            return res.status(500).send("retry");
+          }
+
+          return res.status(200).send("ok");
+        }
+
+        const payments =
+          Array.isArray(order.transactions?.payments) ?
+            order.transactions.payments :
+            [];
+
+        const payment =
+          payments[0] || {};
+
+        const paid =
+          (
+            order.status === "processed" &&
+            order.status_detail === "accredited"
+          ) ||
+          (
+            payment.status === "processed" &&
+            payment.status_detail === "accredited"
+          );
+
+        if (!paid) {
+          return res.status(200).send("ok");
+        }
+
+        const savedExternal =
+          String(savedData.externalReference || "").trim();
+
+        const apiExternal =
+          String(order.external_reference || "").trim();
+
+        if (
+          savedExternal &&
+          apiExternal &&
+          savedExternal !== apiExternal
+        ) {
+          console.error(
+              "P16 webhook: external_reference divergente:",
+              orderId,
+          );
+
+          return res.status(200).send("ok");
+        }
+
+        const expectedAmount =
+          Number(savedData.amount || 0);
+
+        const apiAmount =
+          Number(
+              payment.amount ||
+              order.total_amount ||
+              0,
+          );
+
+        if (
+          expectedAmount > 0 &&
+          apiAmount > 0 &&
+          Math.abs(expectedAmount - apiAmount) > 0.001
+        ) {
+          console.error(
+              "P16 webhook: valor divergente:",
+              orderId,
+              expectedAmount,
+              apiAmount,
+          );
+
+          return res.status(200).send("ok");
+        }
+
+        const playerRef =
+          db.collection("players").doc(userId);
+
+        const playerSnapshot =
+          await playerRef.get();
+
+        const playerData =
+          playerSnapshot.exists ?
+            playerSnapshot.data() || {} :
+            {};
+
+        const paidType =
+          savedData.type === "monthly" ?
+            "monthly" :
+            "daily";
+
+        const playerPatch = {
+          status: "confirmed",
+          paymentStatus: "approved",
+          paymentProvider: "mercadopago",
+          paymentOrderId: orderId,
+          paymentType: paidType,
+          attendanceType: paidType,
+          confirmedAt:
+            playerData.confirmedAt ||
+            FieldValue.serverTimestamp(),
+          updatedAt:
+            FieldValue.serverTimestamp(),
+        };
+
+        if (paidType === "monthly") {
+          playerPatch.billingType =
+            "monthly";
+
+          playerPatch.monthlyPaidThrough =
+            financeSaoPauloParts().monthKey;
+        }
+
+        await playerRef.set(
+            playerPatch,
+            {merge: true},
+        );
+
+        await savedOrderRef.set(
+            {
+              status: "processed",
+              statusDetail: "accredited",
+              confirmed: true,
+              webhookConfirmed: true,
+              webhookConfirmedAt:
+                FieldValue.serverTimestamp(),
+            },
+            {merge: true},
+        );
+
+        await atualizarContagemRacha(db);
+
+        try {
+          await sendPixConfirmedPushes(db, {
+            orderId,
+            userId,
+            playerData,
+            includeAdmin: true,
+            includePlayer: true,
+          });
+        } catch (pushError) {
+          console.warn(
+              "P16 webhook: pagamento aprovado, push falhou:",
+              pushError.message,
+          );
+        }
+
+        console.log(
+            "P16 PAGAMENTO CONFIRMADO:",
+            orderId,
+            userId,
+        );
+
+        return res.status(200).send("ok");
+      } catch (error) {
+        console.error(
+            "P16 webhook erro:",
+            error,
+        );
+
+        return res.status(500).send("erro");
+      }
     },
 );
