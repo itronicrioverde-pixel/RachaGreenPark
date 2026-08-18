@@ -8211,3 +8211,308 @@ exports.mercadoPagoWebhook = onRequest(
       }
     },
 );
+
+// ============================================================================
+// GREEN PARK FC - PACOTE 17
+// SEGUNDA CAMADA DE CONFIRMACAO PIX
+// Webhook continua sendo o caminho principal.
+// Esta rotina cobre notificacoes perdidas ou atraso de entrega.
+// ============================================================================
+
+const {
+  onSchedule: onScheduleP17,
+} = require("firebase-functions/v2/scheduler");
+
+
+async function p17ReconcileOnePix(db, docSnap) {
+  const savedData = docSnap.data() || {};
+  const orderId = docSnap.id;
+
+  if (
+    savedData.confirmed === true ||
+    savedData.webhookConfirmed === true
+  ) {
+    return false;
+  }
+
+  const userId =
+    String(savedData.userId || "").trim();
+
+  if (!userId) {
+    return false;
+  }
+
+  const response =
+    await fetch(
+        "https://api.mercadopago.com/v1/orders/" +
+        encodeURIComponent(orderId),
+        {
+          method: "GET",
+          headers: {
+            "Authorization":
+              "Bearer " +
+              MERCADO_PAGO_ACCESS_TOKEN.value(),
+            "Accept": "application/json",
+          },
+        },
+    );
+
+  if (!response.ok) {
+    console.warn(
+        "P17 reconcile API:",
+        orderId,
+        response.status,
+    );
+    return false;
+  }
+
+  const order =
+    await response.json();
+
+  const payments =
+    Array.isArray(
+        order.transactions?.payments,
+    ) ?
+      order.transactions.payments :
+      [];
+
+  const payment =
+    payments[0] || {};
+
+  const paid =
+    (
+      order.status === "processed" &&
+      order.status_detail === "accredited"
+    ) ||
+    (
+      payment.status === "processed" &&
+      payment.status_detail === "accredited"
+    );
+
+  if (!paid) {
+    return false;
+  }
+
+  const expectedAmount =
+    Number(savedData.amount || 0);
+
+  const actualAmount =
+    Number(
+        payment.amount ||
+        order.total_amount ||
+        0,
+    );
+
+  if (
+    expectedAmount > 0 &&
+    actualAmount > 0 &&
+    Math.abs(
+        expectedAmount - actualAmount,
+    ) > 0.001
+  ) {
+    console.error(
+        "P17 valor divergente:",
+        orderId,
+        expectedAmount,
+        actualAmount,
+    );
+    return false;
+  }
+
+  const savedExternal =
+    String(
+        savedData.externalReference || "",
+    ).trim();
+
+  const apiExternal =
+    String(
+        order.external_reference || "",
+    ).trim();
+
+  if (
+    savedExternal &&
+    apiExternal &&
+    savedExternal !== apiExternal
+  ) {
+    console.error(
+        "P17 external_reference divergente:",
+        orderId,
+    );
+    return false;
+  }
+
+  const playerRef =
+    db.collection("players").doc(userId);
+
+  const playerSnapshot =
+    await playerRef.get();
+
+  if (!playerSnapshot.exists) {
+    return false;
+  }
+
+  const playerData =
+    playerSnapshot.data() || {};
+
+  const paidType =
+    savedData.type === "monthly" ?
+      "monthly" :
+      "daily";
+
+  const patch = {
+    status: "confirmed",
+    paymentStatus: "approved",
+    paymentProvider: "mercadopago",
+    paymentOrderId: orderId,
+    paymentType: paidType,
+    attendanceType: paidType,
+    confirmedAt:
+      playerData.confirmedAt ||
+      FieldValue.serverTimestamp(),
+    updatedAt:
+      FieldValue.serverTimestamp(),
+  };
+
+  if (paidType === "monthly") {
+    patch.billingType = "monthly";
+    patch.monthlyPaidThrough =
+      financeSaoPauloParts().monthKey;
+  }
+
+  await playerRef.set(
+      patch,
+      {merge: true},
+  );
+
+  await docSnap.ref.set(
+      {
+        status: "processed",
+        statusDetail: "accredited",
+        paid: true,
+        confirmed: true,
+        webhookConfirmed: true,
+        reconciliationSource:
+          "p17_scheduled_mp_verification",
+        reconciledAt:
+          FieldValue.serverTimestamp(),
+        updatedAt:
+          FieldValue.serverTimestamp(),
+      },
+      {merge: true},
+  );
+
+  await atualizarContagemRacha(db);
+
+  try {
+    await sendPixConfirmedPushes(db, {
+      orderId,
+      userId,
+      playerData,
+      includeAdmin: true,
+      includePlayer: true,
+    });
+  } catch (error) {
+    console.warn(
+        "P17 reconcile push:",
+        orderId,
+        error.message,
+    );
+  }
+
+  console.log(
+      "P17 PIX RECONCILIADO:",
+      orderId,
+      userId,
+  );
+
+  return true;
+}
+
+
+exports.reconciliarPixPendentes =
+  onScheduleP17(
+      {
+        schedule: "every 1 minutes",
+        region: "southamerica-east1",
+        secrets: [
+          MERCADO_PAGO_ACCESS_TOKEN,
+        ],
+        timeoutSeconds: 60,
+        maxInstances: 1,
+      },
+      async () => {
+        const db = getFirestore();
+        const snapshot =
+          await db
+              .collection("pix_orders")
+              .get();
+
+        const now = Date.now();
+        const maxAge =
+          2 * 60 * 60 * 1000;
+
+        const candidates =
+          snapshot.docs
+              .filter((docSnap) => {
+                const d =
+                  docSnap.data() || {};
+
+                if (
+                  d.confirmed === true ||
+                  d.webhookConfirmed === true
+                ) {
+                  return false;
+                }
+
+                const ts =
+                  d.updatedAt ||
+                  d.createdAt;
+
+                if (
+                  ts &&
+                  typeof ts.toMillis ===
+                    "function"
+                ) {
+                  return (
+                    now - ts.toMillis() <=
+                    maxAge
+                  );
+                }
+
+                return true;
+              })
+              .slice(0, 50);
+
+        let repaired = 0;
+
+        for (
+          const docSnap of candidates
+        ) {
+          try {
+            const ok =
+              await p17ReconcileOnePix(
+                  db,
+                  docSnap,
+              );
+
+            if (ok) {
+              repaired++;
+            }
+          } catch (error) {
+            console.warn(
+                "P17 reconcile erro:",
+                docSnap.id,
+                error.message,
+            );
+          }
+        }
+
+        console.log(
+            "P17 reconciliacao:",
+            "candidatos=" +
+              candidates.length,
+            "confirmados=" +
+              repaired,
+        );
+      },
+  );
