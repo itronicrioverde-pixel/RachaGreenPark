@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <!-- GREEN PARK BUILD: 2026-08-24-v13-admin-v4-producao -->
+  <!-- GREEN PARK BUILD: 2026-08-24-v14-sorteio-livre-reservas -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#071018">
@@ -6139,6 +6139,32 @@ body:not(.admin-authenticated) #adminV4Dashboard{
 }
 
 
+/* GREENPARK_FREE_DRAW_V1 */
+#teamsAdminActions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+#teamsAdminActions .teams-draw-btn{margin:0;min-width:0;padding:0 8px;font-size:10px}
+#teamsFreeDrawButton{border:1px solid #3d5846;background:#14231a;color:var(--green2)}
+.gpfree-shell{display:flex;flex-direction:column;gap:12px}
+.gpfree-info,.gpfree-section{padding:12px;border:1px solid #293a42;border-radius:14px;background:#101920}
+.gpfree-info strong{display:block;color:#fff;font-size:13px}
+.gpfree-info span{display:block;margin-top:5px;color:#8aa096;font-size:10px;line-height:1.45}
+.gpfree-safe{display:inline-flex!important;align-items:center;min-height:25px;margin-top:8px;padding:0 9px;border:1px solid rgba(86,213,46,.32);border-radius:999px;color:var(--green2)!important;font-size:8px!important;font-weight:950}
+.gpfree-search-wrap{position:relative}.gpfree-search-wrap span{position:absolute;left:12px;top:12px;color:#819087}
+.gpfree-search{width:100%;height:46px;padding:0 12px 0 36px;border:1px solid #35464d;border-radius:12px;background:#101a20;color:#fff;outline:none}
+.gpfree-count{display:flex;justify-content:space-between;gap:8px;padding:10px 12px;border:1px solid #293a42;border-radius:12px;background:#0e181e;color:#8f9e97;font-size:9px}.gpfree-count strong{color:#fff}
+.gpfree-list{display:flex;flex-direction:column;gap:7px;max-height:350px;overflow:auto}
+.gpfree-player{display:grid;grid-template-columns:38px minmax(0,1fr) 34px;align-items:center;gap:8px;min-height:54px;padding:7px 8px;border:1px solid #293a42;border-radius:12px;background:#0d171d}
+.gpfree-player.selected{border-color:#356743;background:#0d2014}
+.gpfree-avatar{width:38px;height:38px;display:grid;place-items:center;overflow:hidden;border:1px solid #365c43;border-radius:50%;background:#17242a;color:var(--green2);font-size:10px;font-weight:950}.gpfree-avatar img{width:100%;height:100%;object-fit:cover}
+.gpfree-main{min-width:0}.gpfree-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#fff;font-size:11px;font-weight:950;text-transform:uppercase}.gpfree-meta{margin-top:3px;color:#819088;font-size:8px;font-weight:800}
+.gpfree-toggle,.gpfree-remove{width:34px;height:34px;display:grid;place-items:center;padding:0;border-radius:9px;font-size:18px;font-weight:950}.gpfree-toggle{border:1px solid #355c3f;background:#112219;color:var(--green2)}.gpfree-player.selected .gpfree-toggle{background:var(--green);color:#0b180d}.gpfree-remove{border:1px solid #64383d;background:#281619;color:#ff9d9d}
+.gpfree-selected{display:grid;grid-template-columns:26px 38px minmax(0,1fr) 34px;align-items:center;gap:8px;min-height:52px;padding:6px;border-bottom:1px solid #24343b}.gpfree-selected:last-child{border-bottom:0}.gpfree-order{color:var(--green2);font-size:9px;font-weight:950;text-align:center}
+.gpfree-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:9px}.gpfree-head strong{color:#fff;font-size:10px;text-transform:uppercase}.gpfree-mini{min-height:30px;padding:0 10px;border:1px solid #3b4d55;border-radius:8px;background:#152128;color:#fff;font-size:8px;font-weight:950}
+.gpfree-empty{padding:16px 10px;border:1px dashed #33454d;border-radius:11px;color:#7f8e87;font-size:10px;text-align:center}
+.gpfree-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}.gpfree-primary,.gpfree-secondary{min-height:50px;border-radius:13px;font-size:10px;font-weight:950}.gpfree-primary{border:0;background:var(--green);color:#102011}.gpfree-primary:disabled,.gpfree-secondary:disabled{opacity:.38}.gpfree-secondary{border:1px solid #3b4d55;background:#152128;color:#fff}
+.gpfree-result{display:none}.gpfree-result.show{display:block}.gpfree-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.gpfree-team{overflow:hidden;border:1px solid #2c3d44;border-radius:13px;background:#0c161c}.gpfree-team.green{border-color:#315b3e}.gpfree-team-head{display:flex;justify-content:space-between;gap:5px;padding:11px 9px;color:#fff;font-size:9px;font-weight:950}.gpfree-team.green .gpfree-team-head{color:var(--green2);background:rgba(86,213,46,.08)}.gpfree-team.black .gpfree-team-head{background:#06090b}.gpfree-team-list{padding:4px 8px 8px}.gpfree-team-player{padding:7px 2px;border-bottom:1px solid rgba(255,255,255,.06)}.gpfree-team-player:last-child{border-bottom:0}.gpfree-team-player strong{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#fff;font-size:9px}.gpfree-team-player small{color:#809087;font-size:7px}
+.gpfree-status{display:none;padding:9px 10px;border-radius:10px;font-size:9px;line-height:1.4}.gpfree-status.show{display:block;border:1px solid #2f4d3b;background:#0c1e13;color:#a9ddb0}.gpfree-status.error{border-color:#63363b;background:#2a1518;color:#ffaaaa}
+@media(max-width:360px){#teamsAdminActions,.gpfree-actions{grid-template-columns:1fr}}
+
 </style>
 
 <style id="greenpark-mobile-touch-hardening">
@@ -6421,7 +6447,8 @@ button {
         <strong>TIME VERDE × TIME PRETO</strong>
         <span id="teamsMatchInfo">Carregando racha...</span>
         <div class="teams-actions content-admin-only" id="teamsAdminActions">
-          <button class="teams-draw-btn" id="teamsDrawButton" type="button">SORTEAR TIMES</button>
+          <button class="teams-draw-btn" id="teamsDrawButton" type="button">SORTEIO OFICIAL</button>
+          <button class="teams-draw-btn" id="teamsFreeDrawButton" type="button">SORTEIO LIVRE / RESERVAS</button>
         </div>
         <div class="teams-position-note">
       <strong>GOLEIROS DO SORTEIO:</strong>
@@ -6526,6 +6553,63 @@ button {
       </button>
 
       <div class="gp-draw-status" id="teamDrawStatus"></div>
+    </section>
+  </main>
+
+  <!-- SORTEIO LIVRE / RESERVAS -->
+  <main class="content view" id="freeDrawView">
+    <div class="page-head">
+      <button class="back-btn" id="freeDrawBack" type="button">←</button>
+      <div class="page-head-title">SORTEIO LIVRE</div><div></div>
+    </div>
+
+    <section class="gpfree-shell">
+      <div class="gpfree-info">
+        <strong>Sorteio livre / reservas</strong>
+        <span>Escolha qualquer jogador cadastrado. Use para reservas, quem chegou depois ou para reorganizar o jogo no meio do racha.</span>
+        <span class="gpfree-safe">NÃO ALTERA O SORTEIO OFICIAL</span>
+      </div>
+
+      <div class="gpfree-search-wrap">
+        <span>⌕</span>
+        <input class="gpfree-search" id="freeDrawSearch" type="search" placeholder="Buscar jogador pelo nome..." autocomplete="off">
+      </div>
+
+      <div class="gpfree-count">
+        <strong id="freeDrawSelectedCount">0 selecionados</strong>
+        <span id="freeDrawKeeperCount">0 goleiros</span>
+      </div>
+
+      <section class="gpfree-section">
+        <div class="gpfree-head"><strong>Jogadores cadastrados</strong><span style="color:#74847c;font-size:8px">TOQUE NO +</span></div>
+        <div class="gpfree-list" id="freeDrawPlayersList"><div class="gpfree-empty">Carregando jogadores...</div></div>
+      </section>
+
+      <section class="gpfree-section">
+        <div class="gpfree-head"><strong>Selecionados</strong><button class="gpfree-mini" id="freeDrawClear" type="button">LIMPAR</button></div>
+        <div class="gpfree-list" id="freeDrawSelectedList"><div class="gpfree-empty">Nenhum jogador selecionado.</div></div>
+      </section>
+
+      <div class="gpfree-actions">
+        <button class="gpfree-primary" id="freeDrawRun" type="button" disabled>SORTEAR 2 TIMES</button>
+        <button class="gpfree-secondary" id="freeDrawRedo" type="button" disabled>SORTEAR NOVAMENTE</button>
+      </div>
+
+      <div class="gpfree-status" id="freeDrawStatus"></div>
+
+      <section class="gpfree-result" id="freeDrawResult">
+        <div class="gpfree-head"><strong>Resultado livre</strong><span style="color:#728279;font-size:8px">LOCAL / NÃO OFICIAL</span></div>
+        <div class="gpfree-grid">
+          <article class="gpfree-team green">
+            <div class="gpfree-team-head"><span>TIME VERDE</span><span id="freeDrawGreenCount">0</span></div>
+            <div class="gpfree-team-list" id="freeDrawGreenList"></div>
+          </article>
+          <article class="gpfree-team black">
+            <div class="gpfree-team-head"><span>TIME PRETO</span><span id="freeDrawBlackCount">0</span></div>
+            <div class="gpfree-team-list" id="freeDrawBlackList"></div>
+          </article>
+        </div>
+      </section>
     </section>
   </main>
 
@@ -7578,6 +7662,12 @@ let messagingInstance = null;
       mode: '',
       selected: []
     },
+    teamFreeDraw: {
+      matchKey: '',
+      selected: [],
+      green: [],
+      black: []
+    },
     stats: []
   });
 
@@ -7598,6 +7688,11 @@ let messagingInstance = null;
   state.teamDraw.selected = Array.isArray(state.teamDraw.selected)
     ? state.teamDraw.selected
     : [];
+
+  state.teamFreeDraw = {...freshState().teamFreeDraw, ...(state.teamFreeDraw || {})};
+  state.teamFreeDraw.selected = Array.isArray(state.teamFreeDraw.selected) ? state.teamFreeDraw.selected : [];
+  state.teamFreeDraw.green = Array.isArray(state.teamFreeDraw.green) ? state.teamFreeDraw.green : [];
+  state.teamFreeDraw.black = Array.isArray(state.teamFreeDraw.black) ? state.teamFreeDraw.black : [];
 
   const app = document.getElementById('app');
   const views = document.querySelectorAll('.view');
@@ -7622,6 +7717,20 @@ let messagingInstance = null;
   const teamDrawModeLabel = document.getElementById('teamDrawModeLabel');
   const teamDrawRunButton = document.getElementById('teamDrawRunButton');
   const teamDrawStatus = document.getElementById('teamDrawStatus');
+
+  const freeDrawSearch = document.getElementById('freeDrawSearch');
+  const freeDrawPlayersList = document.getElementById('freeDrawPlayersList');
+  const freeDrawSelectedList = document.getElementById('freeDrawSelectedList');
+  const freeDrawSelectedCount = document.getElementById('freeDrawSelectedCount');
+  const freeDrawKeeperCount = document.getElementById('freeDrawKeeperCount');
+  const freeDrawRun = document.getElementById('freeDrawRun');
+  const freeDrawRedo = document.getElementById('freeDrawRedo');
+  const freeDrawResult = document.getElementById('freeDrawResult');
+  const freeDrawGreenList = document.getElementById('freeDrawGreenList');
+  const freeDrawBlackList = document.getElementById('freeDrawBlackList');
+  const freeDrawGreenCount = document.getElementById('freeDrawGreenCount');
+  const freeDrawBlackCount = document.getElementById('freeDrawBlackCount');
+  const freeDrawStatus = document.getElementById('freeDrawStatus');
 
   const rankingScorersList = document.getElementById('rankingScorersList');
   const rankingKeepersList = document.getElementById('rankingKeepersList');
@@ -9225,6 +9334,267 @@ let messagingInstance = null;
       renderTeamDrawSelected();
     }
   }
+
+  // SORTEIO LIVRE / RESERVAS
+  let freeDrawPlayersCache = [];
+  let freeDrawLoading = false;
+
+  function freeDrawPlayer(p){
+    return {
+      id:String(p?.id || p?.uid || ''),
+      name:String(p?.name || 'Jogador'),
+      photoURL:String(p?.photoURL || ''),
+      position:p?.position === 'goalkeeper' ? 'goalkeeper' : 'field'
+    };
+  }
+
+  function ensureFreeDrawMatch(){
+    const key = currentTeamsMatchKey() || 'sem-data';
+    if(String(state.teamFreeDraw.matchKey || '') !== key){
+      state.teamFreeDraw = {matchKey:key,selected:[],green:[],black:[]};
+      saveState();
+    }
+  }
+
+  function setFreeDrawStatus(message='',type=''){
+    if(!freeDrawStatus) return;
+    freeDrawStatus.textContent = message;
+    freeDrawStatus.className = 'gpfree-status' + (message ? ' show' : '') + (type ? ' ' + type : '');
+  }
+
+  function freeAvatar(player){
+    const el = document.createElement('div');
+    el.className = 'gpfree-avatar';
+    mountPlayerPhoto(el,player,playerInitials(player.name));
+    return el;
+  }
+
+  function freeSelectedIndex(id){
+    return state.teamFreeDraw.selected.findIndex(p => String(p.id) === String(id));
+  }
+
+  function clearFreeResult(){
+    state.teamFreeDraw.green = [];
+    state.teamFreeDraw.black = [];
+  }
+
+  function toggleFreePlayer(player){
+    const i = freeSelectedIndex(player.id);
+    if(i >= 0) state.teamFreeDraw.selected.splice(i,1);
+    else state.teamFreeDraw.selected.push(freeDrawPlayer(player));
+    clearFreeResult();
+    saveState();
+    renderFreeDraw();
+  }
+
+  function renderFreePlayers(){
+    const q = String(freeDrawSearch?.value || '').trim().toLocaleLowerCase('pt-BR');
+    const rows = freeDrawPlayersCache.filter(p => !q || p.name.toLocaleLowerCase('pt-BR').includes(q));
+    freeDrawPlayersList.innerHTML = '';
+
+    if(freeDrawLoading){
+      freeDrawPlayersList.innerHTML = '<div class="gpfree-empty">Carregando jogadores...</div>';
+      return;
+    }
+
+    if(!rows.length){
+      freeDrawPlayersList.innerHTML = '<div class="gpfree-empty">Nenhum jogador encontrado.</div>';
+      return;
+    }
+
+    rows.forEach(player => {
+      const selected = freeSelectedIndex(player.id) >= 0;
+      const row = document.createElement('div');
+      row.className = 'gpfree-player' + (selected ? ' selected' : '');
+      row.appendChild(freeAvatar(player));
+
+      const main = document.createElement('div');
+      main.className = 'gpfree-main';
+      const name = document.createElement('div');
+      name.className = 'gpfree-name';
+      name.textContent = player.name;
+      const meta = document.createElement('div');
+      meta.className = 'gpfree-meta';
+      meta.textContent = player.position === 'goalkeeper' ? '🧤 GOLEIRO' : 'JOGADOR DE LINHA';
+      main.append(name,meta);
+
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'gpfree-toggle';
+      btn.textContent = selected ? '✓' : '+';
+      btn.addEventListener('click',() => toggleFreePlayer(player));
+      row.append(main,btn);
+      freeDrawPlayersList.appendChild(row);
+    });
+  }
+
+  function renderFreeSelected(){
+    const selected = state.teamFreeDraw.selected;
+    const keepers = selected.filter(p => p.position === 'goalkeeper').length;
+    freeDrawSelectedCount.textContent = `${selected.length} ${selected.length === 1 ? 'selecionado' : 'selecionados'}`;
+    freeDrawKeeperCount.textContent = `${keepers} ${keepers === 1 ? 'goleiro' : 'goleiros'}`;
+    freeDrawRun.disabled = selected.length < 2;
+    freeDrawRedo.disabled = selected.length < 2;
+    freeDrawSelectedList.innerHTML = '';
+
+    if(!selected.length){
+      freeDrawSelectedList.innerHTML = '<div class="gpfree-empty">Nenhum jogador selecionado.</div>';
+      return;
+    }
+
+    selected.forEach((player,index) => {
+      const row = document.createElement('div');
+      row.className = 'gpfree-selected';
+
+      const order = document.createElement('div');
+      order.className = 'gpfree-order';
+      order.textContent = String(index+1).padStart(2,'0');
+
+      const main = document.createElement('div');
+      main.className = 'gpfree-main';
+      const name = document.createElement('div');
+      name.className = 'gpfree-name';
+      name.textContent = player.name;
+      const meta = document.createElement('div');
+      meta.className = 'gpfree-meta';
+      meta.textContent = player.position === 'goalkeeper' ? '🧤 GOLEIRO' : 'LINHA';
+      main.append(name,meta);
+
+      const remove = document.createElement('button');
+      remove.type = 'button';
+      remove.className = 'gpfree-remove';
+      remove.textContent = '×';
+      remove.addEventListener('click',() => {
+        state.teamFreeDraw.selected.splice(index,1);
+        clearFreeResult();
+        saveState();
+        renderFreeDraw();
+      });
+
+      row.append(order,freeAvatar(player),main,remove);
+      freeDrawSelectedList.appendChild(row);
+    });
+  }
+
+  function renderFreeTeam(box,players){
+    box.innerHTML = '';
+    if(!players.length){
+      box.innerHTML = '<div class="gpfree-empty" style="border:0">Aguardando sorteio.</div>';
+      return;
+    }
+    players.forEach(player => {
+      const row = document.createElement('div');
+      row.className = 'gpfree-team-player';
+      const name = document.createElement('strong');
+      name.textContent = player.name;
+      const role = document.createElement('small');
+      role.textContent = player.position === 'goalkeeper' ? '🧤 GOLEIRO' : 'LINHA';
+      row.append(name,role);
+      box.appendChild(row);
+    });
+  }
+
+  function renderFreeResult(){
+    const g = state.teamFreeDraw.green;
+    const b = state.teamFreeDraw.black;
+    freeDrawResult.classList.toggle('show',g.length + b.length > 0);
+    freeDrawGreenCount.textContent = g.length;
+    freeDrawBlackCount.textContent = b.length;
+    renderFreeTeam(freeDrawGreenList,g);
+    renderFreeTeam(freeDrawBlackList,b);
+  }
+
+  function renderFreeDraw(){
+    renderFreePlayers();
+    renderFreeSelected();
+    renderFreeResult();
+  }
+
+  async function loadFreeDrawPlayers(){
+    if(freeDrawLoading || !isAdminUser()) return;
+    freeDrawLoading = true;
+    renderFreePlayers();
+    try{
+      const r = await listarJogadoresAdminCall({});
+      freeDrawPlayersCache = (Array.isArray(r.data?.players) ? r.data.players : [])
+        .map(freeDrawPlayer).filter(p => p.id);
+
+      state.teamFreeDraw.selected = state.teamFreeDraw.selected
+        .map(old => freeDrawPlayersCache.find(p => String(p.id) === String(old.id)) || old)
+        .filter(old => freeDrawPlayersCache.some(p => String(p.id) === String(old.id)));
+
+      saveState();
+    }catch(error){
+      console.error('Sorteio livre:',error);
+      setFreeDrawStatus('Não foi possível carregar os jogadores: ' + (error?.message || 'erro'),'error');
+    }finally{
+      freeDrawLoading = false;
+      renderFreeDraw();
+    }
+  }
+
+  function freeShuffle(list){
+    const a = list.slice();
+    for(let i=a.length-1;i>0;i--){
+      const j = Math.floor(Math.random()*(i+1));
+      [a[i],a[j]] = [a[j],a[i]];
+    }
+    return a;
+  }
+
+  function freePush(player,g,b){
+    if(g.length < b.length) g.push(player);
+    else if(b.length < g.length) b.push(player);
+    else (Math.random() < .5 ? g : b).push(player);
+  }
+
+  function runFreeDraw(){
+    const selected = state.teamFreeDraw.selected;
+    if(selected.length < 2){
+      setFreeDrawStatus('Selecione pelo menos 2 jogadores.','error');
+      return;
+    }
+
+    const keepers = freeShuffle(selected.filter(p => p.position === 'goalkeeper'));
+    const field = freeShuffle(selected.filter(p => p.position !== 'goalkeeper'));
+    const green = [], black = [];
+
+    if(keepers.length >= 2){
+      green.push(keepers.shift());
+      black.push(keepers.shift());
+    }else if(keepers.length === 1){
+      freePush(keepers.shift(),green,black);
+    }
+
+    [...keepers,...field].forEach(p => freePush(p,green,black));
+
+    state.teamFreeDraw.green = green;
+    state.teamFreeDraw.black = black;
+    saveState();
+    renderFreeDraw();
+
+    const kg = selected.filter(p => p.position === 'goalkeeper').length;
+    setFreeDrawStatus(
+      'Sorteio livre concluído' +
+      (kg >= 2 ? ' • 1 goleiro em cada time' : '') +
+      '. O sorteio oficial não foi alterado.'
+    );
+
+    setTimeout(() => freeDrawResult.scrollIntoView({behavior:'smooth',block:'start'}),80);
+  }
+
+  async function openFreeDraw(){
+    if(!isAdminUser()){
+      alert('Entre como administrador para usar o sorteio livre.');
+      return;
+    }
+    ensureFreeDrawMatch();
+    setFreeDrawStatus('');
+    showView('freeDrawView');
+    renderFreeDraw();
+    await loadFreeDrawPlayers();
+  }
+
 
 
   let rankingPlayersCache = [];
@@ -12379,6 +12749,21 @@ document.querySelector('[data-nav="home"]').addEventListener('click', () => show
   });
 
   document.getElementById('teamsDrawButton')?.addEventListener('click', openTeamDraw);
+  document.getElementById('teamsFreeDrawButton')?.addEventListener('click', openFreeDraw);
+
+  document.getElementById('freeDrawBack')?.addEventListener('click', () => openFeatureView('teamsView'));
+  freeDrawSearch?.addEventListener('input', renderFreePlayers);
+  document.getElementById('freeDrawClear')?.addEventListener('click', () => {
+    if(!state.teamFreeDraw.selected.length) return;
+    if(!confirm('Limpar a seleção do sorteio livre?')) return;
+    state.teamFreeDraw.selected = [];
+    clearFreeResult();
+    saveState();
+    setFreeDrawStatus('');
+    renderFreeDraw();
+  });
+  freeDrawRun?.addEventListener('click', runFreeDraw);
+  freeDrawRedo?.addEventListener('click', runFreeDraw);
 
   document.getElementById('openGalleryQuick').addEventListener('click', () => {
     openFeatureView('galleryView');
