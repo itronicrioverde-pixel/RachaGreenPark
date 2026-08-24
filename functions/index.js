@@ -451,6 +451,31 @@ exports.criarPagamentoPix = onCall(
 
       const uid = request.auth.uid;
 
+
+      // ERRO 1: goleiro nunca cria cobrança Pix.
+      const goalkeeperGuardDb = getFirestore();
+      const goalkeeperPlayerSnapshot = await goalkeeperGuardDb
+          .collection("players")
+          .doc(uid)
+          .get();
+      const goalkeeperPlayerData = goalkeeperPlayerSnapshot.exists ?
+        goalkeeperPlayerSnapshot.data() || {} : {};
+
+      if (goalkeeperPlayerData.position === "goalkeeper") {
+        const goalkeeperResult = await greenParkApplyPlayerPosition({
+          db: goalkeeperGuardDb,
+          playerId: uid,
+          position: "goalkeeper",
+        });
+
+        if (goalkeeperResult.goalkeeperConfirmed === true) {
+          throw new HttpsError(
+              "failed-precondition",
+              "Goleiro não precisa pagar. Sua vaga já foi confirmada sem cobrança.",
+          );
+        }
+      }
+
       // PACOTE 18B:
       // Sem lista de espera: lotado nao cria nova cobranca.
       const capacityDb = getFirestore();
@@ -4039,6 +4064,155 @@ exports.salvarMeuPushToken = onCall(
 );
 
 
+const GREEN_PARK_GOALKEEPER_LIMIT = 2;
+
+async function greenParkApplyPlayerPosition({
+  db,
+  playerId,
+  position,
+  updatedBy = "",
+}) {
+  const playerRef = db.collection("players").doc(playerId);
+  const rachaRef = db.collection("racha").doc("current");
+
+  return db.runTransaction(async (transaction) => {
+    const playerSnapshot = await transaction.get(playerRef);
+
+    if (!playerSnapshot.exists) {
+      throw new HttpsError(
+          "failed-precondition",
+          "Salve o cadastro antes de definir a posição.",
+      );
+    }
+
+    const playerData = playerSnapshot.data() || {};
+    const rachaSnapshot = await transaction.get(rachaRef);
+    const currentRachaData = rachaSnapshot.exists ?
+      rachaSnapshot.data() || {} : {};
+
+    const confirmedQuery = db.collection("players")
+        .where("status", "==", "confirmed");
+    const confirmedSnapshot = await transaction.get(confirmedQuery);
+
+    const wasConfirmed = playerData.status === "confirmed";
+    const maxPlayers = Math.max(
+        1,
+        Number(currentRachaData.maxPlayers) || 40,
+    );
+
+    const commonPatch = {
+      position,
+      positionUpdatedAt: FieldValue.serverTimestamp(),
+      updatedAt: FieldValue.serverTimestamp(),
+      ...(updatedBy ? {positionUpdatedBy: updatedBy} : {}),
+    };
+
+    if (position !== "goalkeeper") {
+      const wasFreeGoalkeeper =
+        wasConfirmed &&
+        playerData.confirmationSource === "goalkeeper" &&
+        playerData.goalkeeperFree === true;
+
+      if (wasFreeGoalkeeper) {
+        transaction.set(
+            playerRef,
+            {
+              ...commonPatch,
+              status: "registered",
+              paymentExempt: false,
+              goalkeeperFree: false,
+              confirmationSource: FieldValue.delete(),
+              confirmedAt: FieldValue.delete(),
+              goalkeeperConfirmedAt: FieldValue.delete(),
+            },
+            {merge: true},
+        );
+
+        transaction.set(
+            rachaRef,
+            {
+              confirmedCount: Math.max(0, confirmedSnapshot.size - 1),
+              updatedAt: FieldValue.serverTimestamp(),
+            },
+            {merge: true},
+        );
+
+        return {
+          confirmed: false,
+          goalkeeperConfirmed: false,
+          confirmationRevoked: true,
+        };
+      }
+
+      transaction.set(
+          playerRef,
+          {...commonPatch, goalkeeperFree: false},
+          {merge: true},
+      );
+
+      return {
+        confirmed: wasConfirmed,
+        goalkeeperConfirmed: false,
+        confirmationRevoked: false,
+      };
+    }
+
+    const otherGoalkeepers = confirmedSnapshot.docs.filter((docSnap) =>
+      docSnap.id !== playerId &&
+      docSnap.data()?.position === "goalkeeper"
+    ).length;
+
+    if (otherGoalkeepers >= GREEN_PARK_GOALKEEPER_LIMIT) {
+      throw new HttpsError(
+          "resource-exhausted",
+          "Vagas de goleiro preenchidas. Já temos 2 goleiros confirmados para este racha.",
+      );
+    }
+
+    if (!wasConfirmed && confirmedSnapshot.size >= maxPlayers) {
+      throw new HttpsError(
+          "resource-exhausted",
+          "Racha lotado. No momento não há vagas disponíveis.",
+      );
+    }
+
+    const patch = {
+      ...commonPatch,
+      status: "confirmed",
+    };
+
+    if (!wasConfirmed) {
+      patch.paymentExempt = true;
+      patch.goalkeeperFree = true;
+      patch.confirmationSource = "goalkeeper";
+      patch.confirmedAt = FieldValue.serverTimestamp();
+      patch.goalkeeperConfirmedAt = FieldValue.serverTimestamp();
+    }
+
+    transaction.set(playerRef, patch, {merge: true});
+
+    const nextConfirmedCount =
+      confirmedSnapshot.size + (wasConfirmed ? 0 : 1);
+
+    transaction.set(
+        rachaRef,
+        {
+          confirmedCount: nextConfirmedCount,
+          updatedAt: FieldValue.serverTimestamp(),
+        },
+        {merge: true},
+    );
+
+    return {
+      confirmed: true,
+      goalkeeperConfirmed: true,
+      goalkeeperCount: otherGoalkeepers + 1,
+      confirmedCount: nextConfirmedCount,
+      confirmationRevoked: false,
+    };
+  });
+}
+
 exports.salvarMinhaPosicao = onCall(
     {
       invoker: "public",
@@ -4053,27 +4227,18 @@ exports.salvarMinhaPosicao = onCall(
         );
       }
 
-      const uid =
-        String(request.auth.uid || "").trim();
+      const uid = String(request.auth.uid || "").trim();
 
-      if (
-        !uid ||
-        uid === GREEN_PARK_ADMIN_UID_FINANCE
-      ) {
+      if (!uid || uid === GREEN_PARK_ADMIN_UID_FINANCE) {
         throw new HttpsError(
             "failed-precondition",
             "Administrador não pode usar o cadastro de jogador.",
         );
       }
 
-      const position =
-        String(
-            request.data?.position || "",
-        ).trim();
+      const position = String(request.data?.position || "").trim();
 
-      if (
-        !["field", "goalkeeper"].includes(position)
-      ) {
+      if (!["field", "goalkeeper"].includes(position)) {
         throw new HttpsError(
             "invalid-argument",
             "Posição inválida.",
@@ -4081,37 +4246,15 @@ exports.salvarMinhaPosicao = onCall(
       }
 
       const db = getFirestore();
-      const playerRef =
-        db.collection("players")
-            .doc(uid);
-
-      const playerSnapshot =
-        await playerRef.get();
-
-      if (!playerSnapshot.exists) {
-        throw new HttpsError(
-            "failed-precondition",
-            "Salve o cadastro antes de definir a posição.",
-        );
-      }
-
-      await playerRef.set(
-          {
-            position,
-            positionUpdatedAt:
-              FieldValue.serverTimestamp(),
-          },
-          {merge: true},
-      );
-
-      return {
-        ok: true,
+      const result = await greenParkApplyPlayerPosition({
+        db,
         playerId: uid,
         position,
-      };
+      });
+
+      return {ok: true, playerId: uid, position, ...result};
     },
 );
-
 
 exports.definirPosicaoJogador = onCall(
     {
@@ -4122,71 +4265,34 @@ exports.definirPosicaoJogador = onCall(
     async (request) => {
       unifiedAdminOrThrow(request);
 
-      const playerId =
-        String(
-            request.data?.playerId || "",
-        )
-            .trim()
-            .slice(0, 128);
+      const playerId = String(request.data?.playerId || "")
+          .trim()
+          .slice(0, 128);
+      const position = String(request.data?.position || "").trim();
 
-      const position =
-        String(
-            request.data?.position || "",
-        ).trim();
-
-      if (
-        !playerId ||
-        !["field", "goalkeeper"].includes(position)
-      ) {
+      if (!playerId || !["field", "goalkeeper"].includes(position)) {
         throw new HttpsError(
             "invalid-argument",
             "Posição de jogador inválida.",
         );
       }
 
-      if (
-        playerId ===
-        GREEN_PARK_ADMIN_UID_FINANCE
-      ) {
+      if (playerId === GREEN_PARK_ADMIN_UID_FINANCE) {
         throw new HttpsError(
             "failed-precondition",
             "O administrador não é um jogador.",
         );
       }
 
-      const db =
-        getFirestore();
-
-      const playerRef =
-        db.collection("players")
-            .doc(playerId);
-
-      const snapshot =
-        await playerRef.get();
-
-      if (!snapshot.exists) {
-        throw new HttpsError(
-            "not-found",
-            "Jogador não encontrado.",
-        );
-      }
-
-      await playerRef.set(
-          {
-            position,
-            positionUpdatedAt:
-              FieldValue.serverTimestamp(),
-            positionUpdatedBy:
-              request.auth.uid,
-          },
-          {merge: true},
-      );
-
-      return {
-        ok: true,
+      const db = getFirestore();
+      const result = await greenParkApplyPlayerPosition({
+        db,
         playerId,
         position,
-      };
+        updatedBy: request.auth.uid,
+      });
+
+      return {ok: true, playerId, position, ...result};
     },
 );
 

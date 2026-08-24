@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <!-- GREEN PARK BUILD: 2026-08-17-v9-4-novo-racha-zera-confirmados -->
+  <!-- GREEN PARK BUILD: 2026-08-23-v10-erro1-goleiros-2-vagas-sem-cobranca -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#071018">
@@ -6567,7 +6567,7 @@ button {
         </button>
       </div>
       <div class="register-position-note">
-        Se precisar, o administrador pode corrigir depois.
+        Goleiro: máximo de 2 vagas por racha. A confirmação é automática e sem cobrança.
       </div>
     </div>
 
@@ -7834,12 +7834,36 @@ let messagingInstance = null;
 
     // A posição é gravada no backend autenticado para não depender
     // da allowlist do Firestore usada pelo cadastro normal.
-    await salvarMinhaPosicaoCall({
+    const positionResult = await salvarMinhaPosicaoCall({
       position:
         state.currentUser.position === 'goalkeeper'
           ? 'goalkeeper'
           : 'field'
     });
+
+    const positionData = positionResult.data || {};
+
+    if(positionData.goalkeeperConfirmed === true){
+      state.currentUser.status = 'confirmed';
+      state.currentUser.paymentReported = false;
+      state.currentUser.paymentType = '';
+      state.currentUser.pixOrderId = '';
+      state.currentUser.pixQrCode = '';
+      state.currentUser.pixQrCodeBase64 = '';
+      state.currentUser.pixStatus = 'waived';
+      state.currentUser.pixProvider = '';
+      currentPixOrderId = '';
+      stopPixPolling();
+    }else if(positionData.confirmationRevoked === true){
+      state.currentUser.status = 'registered';
+      state.currentUser.paymentReported = false;
+      state.currentUser.paymentType = '';
+      state.currentUser.pixStatus = '';
+    }
+
+    if(remoteRacha && positionData.confirmedCount !== undefined){
+      remoteRacha.confirmedCount = Number(positionData.confirmedCount) || 0;
+    }
 
     saveState();
     return user;
@@ -10898,6 +10922,10 @@ async function removeSponsorLogo(slot){
         if(p.name) state.currentUser.name = p.name;
         if(p.phone) state.currentUser.phone = p.phone;
         if(p.email) state.currentUser.email = p.email;
+        state.currentUser.position =
+          p.position === 'goalkeeper'
+            ? 'goalkeeper'
+            : 'field';
         if(p.photoURL){ state.currentUser.photoURL = p.photoURL; state.currentUser.photo = p.photoURL; }
       }
 
@@ -11126,6 +11154,17 @@ async function removeSponsorLogo(slot){
   generatePixButton.addEventListener('click', async () => {
     if(currentPixOrderId) return;
 
+    if(
+      state.currentUser.position === 'goalkeeper' &&
+      state.currentUser.status === 'confirmed'
+    ){
+      alert('Goleiro confirmado não precisa pagar. Sua vaga já está garantida.');
+      paymentFlow.classList.remove('show');
+      confirmationView.classList.remove('payment-mode');
+      showView('homeView');
+      return;
+    }
+
     const email = String(state.currentUser.email || '').trim().toLowerCase();
     if(!email || !/^\S+@\S+\.\S+$/.test(email)){
       alert('Seu cadastro está sem e-mail. Volte ao cadastro e informe uma vez para continuar.');
@@ -11238,8 +11277,36 @@ async function removeSponsorLogo(slot){
     setRegistrationPosition('field');
   });
 
-  positionGoalkeeperButton?.addEventListener('click', () => {
-    setRegistrationPosition('goalkeeper');
+  positionGoalkeeperButton?.addEventListener('click', async () => {
+    positionGoalkeeperButton.disabled = true;
+
+    try{
+      await ensureFirebasePlayer();
+      const result = await listarConfirmadosCall();
+      const players = Array.isArray(result.data?.players)
+        ? result.data.players
+        : [];
+      const myId = auth.currentUser?.uid || state.currentUser.id || '';
+      const otherGoalkeepers = players.filter(player =>
+        player.position === 'goalkeeper' &&
+        String(player.id || '') !== String(myId)
+      ).length;
+
+      if(otherGoalkeepers >= 2){
+        alert(
+          'VAGAS DE GOLEIRO PREENCHIDAS\n\n' +
+          'Já temos 2 goleiros confirmados para este racha.'
+        );
+        return;
+      }
+
+      setRegistrationPosition('goalkeeper');
+    }catch(error){
+      console.warn('Pré-checagem das vagas de goleiro:', error);
+      setRegistrationPosition('goalkeeper');
+    }finally{
+      positionGoalkeeperButton.disabled = false;
+    }
   });
 
   renderRegistrationPosition();
@@ -11351,8 +11418,22 @@ async function removeSponsorLogo(slot){
       else state.players.push(playerRecord);
 
       saveState();
+
+      if(
+        state.currentUser.position === 'goalkeeper' &&
+        state.currentUser.status === 'confirmed'
+      ){
+        paymentFlow.classList.remove('show');
+        confirmationView.classList.remove('payment-mode');
+        syncLocalUserConfirmation();
+        renderHome();
+        showView('homeView');
+        alert('GOLEIRO CONFIRMADO ✓\n\nSua vaga foi garantida sem cobrança.');
+        return;
+      }
+
       selectedPaymentType = state.currentUser.paymentType || 'daily';
-        paymentFlow.classList.add('show');
+      paymentFlow.classList.add('show');
       confirmationView.classList.add('payment-mode');
       renderPixFromState();
       showView('confirmationView');
