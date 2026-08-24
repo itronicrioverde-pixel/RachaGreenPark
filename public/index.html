@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <!-- GREEN PARK BUILD: 2026-08-23-v11-erro2-notificacoes-ios-android -->
+  <!-- GREEN PARK BUILD: 2026-08-23-v12-erro3-status-confirmado-firebase -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#071018">
@@ -7726,6 +7726,140 @@ let messagingInstance = null;
     });
   }
 
+  let playerStatusSyncBusy = false;
+
+  function normalizeRemotePlayerStatus(value){
+    const status = String(value || 'registered')
+      .trim()
+      .toLowerCase();
+
+    if(status === 'approved' || status === 'paid'){
+      return 'confirmed';
+    }
+
+    const allowed = [
+      'registered',
+      'requested',
+      'confirmed',
+      'rejected',
+      'no',
+      'maybe'
+    ];
+
+    return allowed.includes(status)
+      ? status
+      : 'registered';
+  }
+
+  function applyRemotePlayerState(data={}){
+    if(!firebaseUser || isAdminUser()) return;
+
+    if(data.name) state.currentUser.name = data.name;
+    if(data.phone) state.currentUser.phone = data.phone;
+    if(data.email) state.currentUser.email = data.email;
+
+    state.currentUser.position =
+      data.position === 'goalkeeper'
+        ? 'goalkeeper'
+        : 'field';
+
+    if(data.photoURL){
+      state.currentUser.photoURL = data.photoURL;
+      state.currentUser.photo = data.photoURL;
+    }
+
+    const remoteStatus =
+      normalizeRemotePlayerStatus(data.status);
+
+    state.currentUser.status = remoteStatus;
+    state.currentUser.paymentType =
+      String(data.paymentType || '');
+
+    state.currentUser.paymentReported =
+      remoteStatus === 'confirmed' ||
+      remoteStatus === 'requested' ||
+      data.paymentReported === true;
+
+    if(remoteStatus === 'confirmed'){
+      state.currentUser.pixStatus = 'paid';
+      stopPixPolling();
+
+      state.currentUser.pixOrderId = '';
+      state.currentUser.pixQrCode = '';
+      state.currentUser.pixQrCodeBase64 = '';
+      state.currentUser.pixProvider = '';
+      currentPixOrderId = '';
+    }else{
+      state.currentUser.pixOrderId =
+        String(data.pixOrderId || '');
+
+      state.currentUser.pixStatus =
+        String(data.pixStatus || '');
+
+      state.currentUser.pixProvider =
+        String(data.pixProvider || '');
+
+      currentPixOrderId =
+        state.currentUser.pixOrderId || '';
+
+      if(!currentPixOrderId){
+        state.currentUser.pixQrCode = '';
+        state.currentUser.pixQrCodeBase64 = '';
+      }
+    }
+
+    saveState();
+    syncLocalUserConfirmation();
+    renderHome();
+  }
+
+  async function syncMyRachaStatusFromCloud({silent=true}={}){
+    if(
+      playerStatusSyncBusy ||
+      !firebaseUser ||
+      isAdminUser()
+    ){
+      return;
+    }
+
+    playerStatusSyncBusy = true;
+
+    try{
+      const playerRef =
+        doc(db, 'players', firebaseUser.uid);
+
+      const snapshot =
+        await getDoc(playerRef);
+
+      if(!snapshot.exists()){
+        state.currentUser.status = 'registered';
+        state.currentUser.paymentReported = false;
+        saveState();
+        syncLocalUserConfirmation();
+        renderHome();
+        return;
+      }
+
+      applyRemotePlayerState(
+        snapshot.data() || {}
+      );
+    }catch(error){
+      if(!silent){
+        console.error(
+          'Sincronização do status do jogador:',
+          error
+        );
+      }else{
+        console.warn(
+          'Sincronização silenciosa do status:',
+          error
+        );
+      }
+    }finally{
+      playerStatusSyncBusy = false;
+    }
+  }
+
   function startPlayerListener(uid){
     if(playerDocUnsubscribe){
       playerDocUnsubscribe();
@@ -7734,83 +7868,55 @@ let messagingInstance = null;
 
     if(!uid || uid === ADMIN_UID) return;
 
-    const playerRef = doc(db, 'players', uid);
+    const playerRef =
+      doc(db, 'players', uid);
 
-    playerDocUnsubscribe = onSnapshot(playerRef, snap => {
-      if(!snap.exists()) return;
-
-      const data = snap.data();
-
-      // Perfil permanente vem da nuvem; status/Pix continuam ligados ao racha atual.
-      if(data.name) state.currentUser.name = data.name;
-      if(data.phone) state.currentUser.phone = data.phone;
-      if(data.email) state.currentUser.email = data.email;
-      state.currentUser.position =
-        data.position === 'goalkeeper'
-          ? 'goalkeeper'
-          : 'field';
-      if(data.photoURL){
-        state.currentUser.photoURL = data.photoURL;
-        state.currentUser.photo = data.photoURL;
-      }
-
-      const remoteStatus = String(data.status || 'registered').toLowerCase();
-      const allowedStatuses = ['registered','confirmed','rejected','no','maybe'];
-
-      // O Firebase é a fonte de verdade do racha atual.
-      state.currentUser.status = allowedStatuses.includes(remoteStatus) ?
-        remoteStatus :
-        'registered';
-      state.currentUser.paymentType = data.paymentType || '';
-      state.currentUser.paymentReported =
-        state.currentUser.status === 'confirmed' || !!data.paymentReported;
-
-      if(state.currentUser.status === 'confirmed'){
-        state.currentUser.pixStatus = 'paid';
-        stopPixPolling();
-
-        // Pagamento concluído: não deixa Order/QR antigos presos no telefone.
-        state.currentUser.pixOrderId = '';
-        state.currentUser.pixQrCode = '';
-        state.currentUser.pixQrCodeBase64 = '';
-        state.currentUser.pixProvider = '';
-        currentPixOrderId = '';
-
-        saveState();
-        syncLocalUserConfirmation();
-        renderHome();
-
-        if(confirmationView.classList.contains('active')){
-          if(pixPaymentStatus){
-            setPixStatus('PAGAMENTO CONFIRMADO ✓\nSua vaga está garantida.', 'ok');
+    playerDocUnsubscribe =
+      onSnapshot(
+        playerRef,
+        snap => {
+          if(!snap.exists()){
+            state.currentUser.status = 'registered';
+            state.currentUser.paymentReported = false;
+            saveState();
+            syncLocalUserConfirmation();
+            renderHome();
+            return;
           }
 
-          setTimeout(() => {
-            paymentFlow.classList.remove('show');
-            confirmationView.classList.remove('payment-mode');
-            showView('homeView');
-          }, 900);
-        }
-      }else{
-        // Para registered/no/maybe/rejected, o estado remoto substitui status antigo local.
-        state.currentUser.pixOrderId = data.pixOrderId || '';
-        state.currentUser.pixStatus = data.pixStatus || '';
-        state.currentUser.pixProvider = data.pixProvider || '';
-        currentPixOrderId = state.currentUser.pixOrderId || '';
+          applyRemotePlayerState(
+            snap.data() || {}
+          );
 
-        if(!currentPixOrderId){
-          state.currentUser.pixQrCode = '';
-          state.currentUser.pixQrCodeBase64 = '';
-        }
+          if(
+            state.currentUser.status === 'confirmed' &&
+            confirmationView.classList.contains('active')
+          ){
+            if(pixPaymentStatus){
+              setPixStatus(
+                'PAGAMENTO CONFIRMADO ✓\\nSua vaga está garantida.',
+                'ok'
+              );
+            }
 
-        stopPixPolling();
-        saveState();
-        syncLocalUserConfirmation();
-        renderHome();
-      }
-    }, error => {
-      console.warn('Listener do jogador:', error);
-    });
+            setTimeout(() => {
+              paymentFlow.classList.remove('show');
+              confirmationView.classList.remove('payment-mode');
+              showView('homeView');
+            }, 900);
+          }
+        },
+        error => {
+          console.warn(
+            'Listener do jogador:',
+            error
+          );
+
+          syncMyRachaStatusFromCloud({
+            silent:true
+          }).catch(() => {});
+        }
+      );
   }
 
   function startAdminPaymentsListener(){
@@ -10545,6 +10651,12 @@ async function removeSponsorLogo(slot){
     views.forEach(v => v.classList.toggle('active', v.id === id));
     app.classList.toggle('hide-nav', id !== 'homeView');
 
+    if(id === 'homeView'){
+      setTimeout(() => {
+        syncMyRachaStatusFromCloud({silent:true});
+      }, 0);
+    }
+
     if(id !== 'confirmedListView'){
       stopConfirmedListAutoRefresh();
     }
@@ -12407,6 +12519,28 @@ sponsorFileInput.addEventListener('change', async () => {
     }
   });
 
+
+  // ERRO 3 — ao voltar ao aplicativo, sincroniza o status real.
+  window.addEventListener('pageshow', () => {
+    setTimeout(() => {
+      syncMyRachaStatusFromCloud({silent:true});
+    }, 80);
+  });
+
+  window.addEventListener('focus', () => {
+    setTimeout(() => {
+      syncMyRachaStatusFromCloud({silent:true});
+    }, 80);
+  });
+
+  document.addEventListener('visibilitychange', () => {
+    if(document.visibilityState === 'visible'){
+      setTimeout(() => {
+        syncMyRachaStatusFromCloud({silent:true});
+      }, 80);
+    }
+  });
+
   let firstAuthCheck = true;
 
   onAuthStateChanged(auth, async user => {
@@ -12464,6 +12598,9 @@ sponsorFileInput.addEventListener('change', async () => {
       updateAdminAuthUI();
       startPlayerListener(user.uid);
       startRachaListener();
+
+      await syncMyRachaStatusFromCloud({silent:false});
+
       renderApprovals();
       refreshPlayerPushUI();
 
