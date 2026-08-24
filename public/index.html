@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <!-- GREEN PARK BUILD: 2026-08-23-v12-erro3-status-confirmado-firebase -->
+  <!-- GREEN PARK BUILD: 2026-08-24-v13-admin-v4-producao -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#071018">
@@ -5784,6 +5784,361 @@ body:not([data-admin="true"]) .team-admin-controls{
   }
 }
 
+
+/* ==========================================================
+   GREEN PARK — ADMIN V4 PRODUÇÃO
+   Mantém identidade oficial e reorganiza operação.
+   ========================================================== */
+
+body:not(.admin-authenticated) #adminV4Dashboard{
+  display:none !important;
+}
+
+#adminView .admin-v4-dashboard{
+  display:grid;
+  gap:12px;
+  margin:0 0 14px;
+}
+
+#adminView .admin-v4-section-label{
+  margin:2px 0 7px;
+  color:#8e9b95;
+  font-size:9px;
+  font-weight:950;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+
+#adminView .admin-v4-metrics{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:7px;
+}
+
+#adminView .admin-v4-metric{
+  min-width:0;
+  min-height:92px;
+  padding:10px 8px;
+  border:1px solid #2c3b43;
+  border-radius:14px;
+  background:linear-gradient(180deg,#121d24,#0f181e);
+}
+
+#adminView .admin-v4-metric-icon{
+  width:27px;
+  height:27px;
+  display:grid;
+  place-items:center;
+  border-radius:9px;
+  background:rgba(86,213,46,.12);
+  color:var(--green2);
+  font-size:12px;
+  font-weight:950;
+}
+
+#adminView .admin-v4-metric.warn .admin-v4-metric-icon{
+  color:#ffd36b;
+  background:rgba(242,183,53,.12);
+}
+
+#adminView .admin-v4-metric.danger .admin-v4-metric-icon{
+  color:#ff9b9b;
+  background:rgba(217,78,78,.12);
+}
+
+#adminView .admin-v4-metric strong{
+  display:block;
+  margin-top:8px;
+  overflow:hidden;
+  color:#fff;
+  font-size:16px;
+  line-height:1;
+  font-weight:950;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+#adminView .admin-v4-metric.money strong{
+  font-size:12px;
+}
+
+#adminView .admin-v4-metric small{
+  display:block;
+  margin-top:5px;
+  color:#87958f;
+  font-size:7.5px;
+  line-height:1.2;
+  font-weight:850;
+}
+
+#adminView .admin-v4-quick-wrap{
+  overflow:hidden;
+  border:1px solid #293740;
+  border-radius:16px;
+  background:#101920;
+}
+
+#adminView .admin-v4-quick-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:12px 13px 8px;
+}
+
+#adminView .admin-v4-quick-head strong{
+  color:#fff;
+  font-size:12px;
+}
+
+#adminView .admin-v4-quick-head span{
+  color:#718078;
+  font-size:8px;
+}
+
+#adminView .admin-v4-quick{
+  display:flex;
+  gap:7px;
+  overflow-x:auto;
+  padding:0 12px 12px;
+  scrollbar-width:none;
+}
+
+#adminView .admin-v4-quick::-webkit-scrollbar{
+  display:none;
+}
+
+#adminView .admin-v4-quick-btn{
+  flex:0 0 79px;
+  min-height:70px;
+  padding:8px 5px;
+  border:1px solid #304049;
+  border-radius:12px;
+  background:#111a21;
+  color:#fff;
+  font-size:8px;
+  line-height:1.15;
+  font-weight:900;
+  text-align:center;
+}
+
+#adminView .admin-v4-quick-icon{
+  width:27px;
+  height:27px;
+  display:grid;
+  place-items:center;
+  margin:0 auto 6px;
+  border-radius:9px;
+  background:rgba(86,213,46,.12);
+  color:var(--green2);
+  font-size:13px;
+  font-weight:950;
+}
+
+#adminView .admin-accordion-stack{
+  gap:8px !important;
+}
+
+#adminView .admin-accordion{
+  border-radius:15px !important;
+}
+
+#adminView .admin-accordion-summary{
+  min-height:60px !important;
+  padding:12px 13px !important;
+}
+
+#adminView .admin-accordion-summary-title{
+  font-size:14px !important;
+}
+
+#adminView .admin-accordion-summary-subtitle{
+  font-size:9px !important;
+}
+
+#adminView .admin-accordion-chevron{
+  width:28px !important;
+  height:28px !important;
+  font-size:15px !important;
+}
+
+#adminView .admin-accordion-body{
+  padding:0 13px 13px !important;
+}
+
+#adminView .finance-player-tools{
+  display:grid;
+  gap:8px;
+  margin-bottom:9px;
+}
+
+#adminView .finance-player-search{
+  position:relative;
+}
+
+#adminView .finance-player-search input{
+  width:100%;
+  height:42px;
+  padding:0 12px 0 34px;
+  border:1px solid #35434c;
+  border-radius:11px;
+  background:#111a21;
+  color:#fff;
+  outline:none;
+}
+
+#adminView .finance-player-search span{
+  position:absolute;
+  left:11px;
+  top:10px;
+  color:#819087;
+  font-size:16px;
+}
+
+#adminView .finance-player-filters{
+  display:flex;
+  gap:6px;
+  overflow-x:auto;
+  scrollbar-width:none;
+}
+
+#adminView .finance-player-filters::-webkit-scrollbar{
+  display:none;
+}
+
+#adminView .finance-filter-btn{
+  flex:0 0 auto;
+  min-height:30px;
+  padding:0 9px;
+  border:1px solid #33434b;
+  border-radius:999px;
+  background:#111a21;
+  color:#98a49e;
+  font-size:8px;
+  font-weight:900;
+}
+
+#adminView .finance-filter-btn.active{
+  border-color:var(--green);
+  background:rgba(86,213,46,.12);
+  color:var(--green2);
+}
+
+#adminView .finance-player{
+  grid-template-columns:34px minmax(0,1fr) auto !important;
+  gap:8px !important;
+  padding:8px !important;
+}
+
+#adminView .finance-player-avatar{
+  width:34px;
+  height:34px;
+  display:grid;
+  place-items:center;
+  overflow:hidden;
+  border:1px solid #356b47;
+  border-radius:50%;
+  background:#162229;
+  color:var(--green2);
+  font-size:9px;
+  font-weight:950;
+}
+
+#adminView .finance-player-avatar img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+#adminView .finance-player-name{
+  font-size:10px !important;
+}
+
+#adminView .finance-player-meta{
+  font-size:8px !important;
+}
+
+#adminView .finance-player-actions{
+  max-width:128px;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+}
+
+#adminView .finance-player-actions select{
+  max-width:112px !important;
+}
+
+#adminView .finance-entry-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+}
+
+#adminView .finance-entry-grid .wide{
+  grid-column:1/-1;
+}
+
+#adminView .finance-entry-grid input,
+#adminView .finance-entry-grid select{
+  width:100%;
+  height:44px;
+  border:1px solid #35434c;
+  border-radius:10px;
+  background:#111a21;
+  color:#fff;
+  padding:0 10px;
+  outline:none;
+}
+
+#adminView .finance-dual-actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:7px;
+  margin-top:8px;
+}
+
+#adminView .finance-revenue-action{
+  min-height:44px;
+  border:0;
+  border-radius:10px;
+  background:var(--green);
+  color:#102011;
+  font-size:9px;
+  font-weight:950;
+}
+
+#adminView .finance-expense-action{
+  min-height:44px;
+  border:1px solid rgba(217,78,78,.52);
+  border-radius:10px;
+  background:rgba(217,78,78,.08);
+  color:#ffaaaa;
+  font-size:9px;
+  font-weight:950;
+}
+
+#adminView .danger-zone{
+  border-color:rgba(217,78,78,.5) !important;
+  background:rgba(217,78,78,.07) !important;
+}
+
+@media(max-width:350px){
+  #adminView .admin-v4-metrics{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+
+  #adminView .finance-player{
+    grid-template-columns:32px minmax(0,1fr) !important;
+  }
+
+  #adminView .finance-player-actions{
+    grid-column:1/-1;
+    max-width:none;
+    justify-content:flex-end;
+  }
+}
+
+
 </style>
 
 <style id="greenpark-mobile-touch-hardening">
@@ -6585,6 +6940,111 @@ button {
       </div>
     </div>
 
+    <section class="admin-v4-dashboard" id="adminV4Dashboard">
+      <div>
+        <div class="admin-v4-section-label">Visão geral</div>
+
+        <div class="admin-v4-metrics">
+          <article class="admin-v4-metric">
+            <div class="admin-v4-metric-icon">✓</div>
+            <strong id="adminV4Confirmed">0/40</strong>
+            <small>CONFIRMADOS</small>
+          </article>
+
+          <article class="admin-v4-metric">
+            <div class="admin-v4-metric-icon">🧤</div>
+            <strong id="adminV4Goalkeepers">0/2</strong>
+            <small>GOLEIROS</small>
+          </article>
+
+          <article class="admin-v4-metric">
+            <div class="admin-v4-metric-icon">M</div>
+            <strong id="adminV4Monthly">0</strong>
+            <small>MENSALISTAS</small>
+          </article>
+
+          <article class="admin-v4-metric">
+            <div class="admin-v4-metric-icon">D</div>
+            <strong id="adminV4Daily">0</strong>
+            <small>DIARISTAS</small>
+          </article>
+
+          <article class="admin-v4-metric money">
+            <div class="admin-v4-metric-icon">R$</div>
+            <strong id="adminV4Received">R$ 0</strong>
+            <small>RECEBIDO / MÊS</small>
+          </article>
+
+          <article class="admin-v4-metric money danger">
+            <div class="admin-v4-metric-icon">↓</div>
+            <strong id="adminV4Expenses">R$ 0</strong>
+            <small>DESPESAS / MÊS</small>
+          </article>
+
+          <article class="admin-v4-metric money">
+            <div class="admin-v4-metric-icon">▣</div>
+            <strong id="adminV4Balance">R$ 0</strong>
+            <small>SALDO ATUAL</small>
+          </article>
+
+          <article class="admin-v4-metric warn">
+            <div class="admin-v4-metric-icon">◷</div>
+            <strong id="adminV4Pending">0</strong>
+            <small>PAGAMENTOS PENDENTES</small>
+          </article>
+        </div>
+      </div>
+
+      <div class="admin-v4-quick-wrap">
+        <div class="admin-v4-quick-head">
+          <strong>Ações rápidas</strong>
+          <span>1 toque</span>
+        </div>
+
+        <div class="admin-v4-quick">
+          <button class="admin-v4-quick-btn" id="adminV4QuickNewRacha" type="button">
+            <span class="admin-v4-quick-icon">＋</span>
+            NOVO RACHA
+          </button>
+
+          <button class="admin-v4-quick-btn" id="adminV4QuickPlayers" type="button">
+            <span class="admin-v4-quick-icon">👤</span>
+            JOGADORES
+          </button>
+
+          <button class="admin-v4-quick-btn" id="adminV4QuickRevenue" type="button">
+            <span class="admin-v4-quick-icon">+R$</span>
+            RECEITA
+          </button>
+
+          <button class="admin-v4-quick-btn" id="adminV4QuickExpense" type="button">
+            <span class="admin-v4-quick-icon">−R$</span>
+            DESPESA
+          </button>
+
+          <button class="admin-v4-quick-btn" id="adminV4QuickPayments" type="button">
+            <span class="admin-v4-quick-icon">✓</span>
+            PAGAMENTOS
+          </button>
+
+          <button class="admin-v4-quick-btn" id="adminV4QuickNotice" type="button">
+            <span class="admin-v4-quick-icon">▤</span>
+            COMUNICADO
+          </button>
+
+          <button class="admin-v4-quick-btn" id="adminV4QuickSponsors" type="button">
+            <span class="admin-v4-quick-icon">◆</span>
+            PATROCÍNIOS
+          </button>
+
+          <button class="admin-v4-quick-btn" id="adminV4QuickStats" type="button">
+            <span class="admin-v4-quick-icon">▥</span>
+            ESTATÍSTICAS
+          </button>
+        </div>
+      </div>
+    </section>
+
     <div class="admin-accordion-stack">
 
       <!-- 1. ACESSO -->
@@ -6809,7 +7269,75 @@ button {
           <button class="finance-action" id="financeSaveSettings" type="button">SALVAR CONFIGURAÇÃO</button>
 
           <div class="finance-section-title">Controle dos jogadores</div>
-          <div class="finance-player-list" id="financePlayersList"><div class="finance-status">Carregando...</div></div>
+
+          <div class="finance-player-tools">
+            <div class="finance-player-search">
+              <span>⌕</span>
+              <input
+                id="financePlayerSearch"
+                type="search"
+                placeholder="Buscar jogador..."
+                autocomplete="off"
+              >
+            </div>
+
+            <div class="finance-player-filters">
+              <button class="finance-filter-btn active" type="button" data-finance-filter="all">TODOS</button>
+              <button class="finance-filter-btn" type="button" data-finance-filter="confirmed">CONFIRMADOS</button>
+              <button class="finance-filter-btn" type="button" data-finance-filter="monthly">MENSALISTAS</button>
+              <button class="finance-filter-btn" type="button" data-finance-filter="daily">DIARISTAS</button>
+              <button class="finance-filter-btn" type="button" data-finance-filter="goalkeeper">GOLEIROS</button>
+            </div>
+          </div>
+
+          <div class="finance-player-list" id="financePlayersList">
+            <div class="finance-status">Carregando...</div>
+          </div>
+
+          <div class="finance-section-title">Registrar receita</div>
+
+          <div class="finance-entry-grid">
+            <input
+              class="wide"
+              id="financeRevenueDescription"
+              type="text"
+              maxlength="100"
+              placeholder="Descrição da receita"
+            >
+
+            <input
+              id="financeRevenueAmount"
+              type="number"
+              min="0"
+              step="0.01"
+              placeholder="Valor"
+            >
+
+            <select id="financeRevenueMethod">
+              <option value="Pix">Pix</option>
+              <option value="Dinheiro">Dinheiro</option>
+              <option value="Patrocínio">Patrocínio</option>
+              <option value="Transferência">Transferência</option>
+              <option value="Outro">Outro</option>
+            </select>
+
+            <select class="wide" id="financeRevenueCategory">
+              <option value="Racha">Racha</option>
+              <option value="Patrocínio">Patrocínio</option>
+              <option value="Mensalidade">Mensalidade</option>
+              <option value="Venda">Venda</option>
+              <option value="Outros">Outros</option>
+            </select>
+          </div>
+
+          <button
+            class="finance-revenue-action"
+            id="financeRevenueButton"
+            type="button"
+            style="width:100%;margin-top:8px;"
+          >
+            + REGISTRAR RECEITA
+          </button>
 
           <div class="finance-section-title">Registrar despesa</div>
           <div class="finance-form-grid">
@@ -6817,7 +7345,7 @@ button {
             <input id="financeExpenseAmount" type="number" min="0" step="0.01" placeholder="Valor">
             <select id="financeExpenseCategory"><option>Campo</option><option>Material</option><option>Água</option><option>Premiação</option><option>Outros</option></select>
           </div>
-          <button class="finance-action" id="financeExpenseButton" type="button">REGISTRAR DESPESA</button>
+          <button class="finance-expense-action" id="financeExpenseButton" type="button" style="width:100%;margin-top:8px;">− REGISTRAR DESPESA</button>
 
           <div class="finance-section-title">Últimos movimentos</div>
           <div class="finance-movements" id="financeMovements"><div class="finance-status">Sem movimentos carregados.</div></div>
@@ -7000,6 +7528,7 @@ const listarControlePagamentosCall = httpsCallable(functions, 'listarControlePag
 const definirPlanoJogadorCall = httpsCallable(functions, 'definirPlanoJogador');
 const registrarMensalidadeCall = httpsCallable(functions, 'registrarMensalidade');
 const registrarDespesaCall = httpsCallable(functions, 'registrarDespesa');
+const registrarReceitaCall = httpsCallable(functions, 'registrarReceita');
 const salvarConfiguracaoFinanceiraCall = httpsCallable(functions, 'salvarConfiguracaoFinanceira');
 const obterMeuPlanoCall = httpsCallable(functions, 'obterMeuPlano');
 const confirmarPresencaMensalistaCall = httpsCallable(functions, 'confirmarPresencaMensalista');
@@ -7721,6 +8250,13 @@ let messagingInstance = null;
 
       saveState();
       renderHome();
+
+      if(isAdminUser()){
+        adminV4SetText(
+          'adminV4Confirmed',
+          `${confirmedTotal()}/${Math.max(1,Number(state.config.maxPlayers)||40)}`
+        );
+      }
     }, error => {
       console.warn('Listener do racha online:', error);
     });
@@ -10635,6 +11171,13 @@ async function removeSponsorLogo(slot){
 
 
   function prepareAdminAccordion(){
+    if(isAdminUser()){
+      setTimeout(
+        () => refreshAdminV4Dashboard(),
+        0
+      );
+    }
+
     const sections =
       Array.from(document.querySelectorAll('[data-admin-accordion]'));
 
@@ -10692,6 +11235,7 @@ async function removeSponsorLogo(slot){
 
 
   function renderApprovals(){
+    renderAdminV4Pending();
     if(isAdminUser() && remotePendingPayments !== null){
       pendingApprovalCount.textContent =
         remotePendingPayments.length +
@@ -11929,6 +12473,160 @@ sponsorFileInput.addEventListener('change', async () => {
 });
 
   // --------------------------------
+  // ADMIN V4 — DASHBOARD / AÇÕES RÁPIDAS
+  // --------------------------------
+  let financePlayersCacheV4 = [];
+  let financePlayerFilterV4 = 'all';
+
+  function adminV4SetText(id, value){
+    const el = document.getElementById(id);
+    if(el) el.textContent = value;
+  }
+
+  function renderAdminV4FinanceSummary(data={}){
+    adminV4SetText(
+      'adminV4Received',
+      financeMoneyBR(data.receivedMonth || 0)
+    );
+
+    adminV4SetText(
+      'adminV4Expenses',
+      financeMoneyBR(data.expensesMonth || 0)
+    );
+
+    adminV4SetText(
+      'adminV4Balance',
+      financeMoneyBR(data.balance || 0)
+    );
+  }
+
+  function renderAdminV4Pending(){
+    const pending =
+      Array.isArray(remotePendingPayments)
+        ? remotePendingPayments.length
+        : 0;
+
+    adminV4SetText(
+      'adminV4Pending',
+      String(pending)
+    );
+  }
+
+  async function refreshAdminV4Dashboard(){
+    if(!isAdminUser()) return;
+
+    try{
+      const [
+        financeResponse,
+        playersResponse,
+        confirmedResponse
+      ] = await Promise.all([
+        obterDashboardFinanceiroCall({}),
+        listarControlePagamentosCall({}),
+        listarConfirmadosCall({})
+      ]);
+
+      const finance =
+        financeResponse.data || {};
+
+      const allPlayers =
+        Array.isArray(playersResponse.data?.players)
+          ? playersResponse.data.players
+          : [];
+
+      const confirmedPlayers =
+        Array.isArray(confirmedResponse.data?.players)
+          ? confirmedResponse.data.players
+          : [];
+
+      const monthly =
+        allPlayers.filter(
+          player => player.billingType === 'monthly'
+        ).length;
+
+      const daily =
+        allPlayers.length - monthly;
+
+      const keepers =
+        confirmedPlayers.filter(
+          player => player.position === 'goalkeeper'
+        ).length;
+
+      const max =
+        Math.max(
+          1,
+          Number(state.config.maxPlayers) || 40
+        );
+
+      adminV4SetText(
+        'adminV4Confirmed',
+        `${confirmedPlayers.length}/${max}`
+      );
+
+      adminV4SetText(
+        'adminV4Goalkeepers',
+        `${keepers}/2`
+      );
+
+      adminV4SetText(
+        'adminV4Monthly',
+        String(monthly)
+      );
+
+      adminV4SetText(
+        'adminV4Daily',
+        String(daily)
+      );
+
+      renderAdminV4FinanceSummary(finance);
+      renderAdminV4Pending();
+    }catch(error){
+      console.warn(
+        'Dashboard Admin V4:',
+        error
+      );
+    }
+  }
+
+  function openAdminV4Accordion(area, focusId=''){
+    if(!isAdminUser()) return;
+
+    const section =
+      document.querySelector(
+        `[data-admin-accordion="${area}"]`
+      );
+
+    if(!section) return;
+
+    document
+      .querySelectorAll('[data-admin-accordion]')
+      .forEach(item => {
+        item.classList.remove('open');
+      });
+
+    section.classList.add('open');
+
+    if(area === 'finance'){
+      refreshFinanceAll();
+    }
+
+    setTimeout(() => {
+      section.scrollIntoView({
+        behavior:'smooth',
+        block:'start'
+      });
+
+      if(focusId){
+        setTimeout(() => {
+          document
+            .getElementById(focusId)
+            ?.focus();
+        }, 280);
+      }
+    }, 40);
+  }
+
+  // --------------------------------
   // FINANCEIRO / MENSALISTAS
   // --------------------------------
   const financeMoneyBR = value => Number(value || 0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
@@ -11945,6 +12643,7 @@ sponsorFileInput.addEventListener('change', async () => {
     document.getElementById('financeReceivedToday').textContent = financeMoneyBR(data.receivedToday);
     document.getElementById('financeReceivedMonth').textContent = financeMoneyBR(data.receivedMonth);
     document.getElementById('financeExpensesMonth').textContent = financeMoneyBR(data.expensesMonth);
+    renderAdminV4FinanceSummary(data);
 
     const daily = Number(data.dailyCount || 0);
     const monthly = Number(data.monthlyCount || 0);
@@ -11990,71 +12689,295 @@ sponsorFileInput.addEventListener('change', async () => {
     }
   }
 
-  async function loadFinancePlayers(){
-    const box = document.getElementById('financePlayersList');
+  function renderFinancePlayersV4(){
+    const box =
+      document.getElementById(
+        'financePlayersList'
+      );
+
     if(!box || !isAdminUser()) return;
-    box.innerHTML = '<div class="finance-status">Carregando jogadores...</div>';
-    try{
-      const response = await listarControlePagamentosCall({});
-      const players = response.data?.players || [];
-      box.innerHTML = '';
-      if(!players.length){ box.innerHTML = '<div class="finance-status">Nenhum jogador cadastrado.</div>'; return; }
-      players.forEach(player => {
-        const row = document.createElement('div');
-        row.className = 'finance-player';
-        const info = document.createElement('div');
-        const name = document.createElement('div');
-        name.className = 'finance-player-name';
-        name.textContent = String(player.name || 'JOGADOR').toLocaleUpperCase('pt-BR');
-        const meta = document.createElement('div');
-        meta.className = 'finance-player-meta';
-        meta.textContent = player.billingType === 'monthly'
-          ? (player.monthlyActive ? 'MENSALISTA • MÊS PAGO' : 'MENSALISTA • PENDENTE')
+
+    const search =
+      String(
+        document
+          .getElementById(
+            'financePlayerSearch'
+          )
+          ?.value || ''
+      )
+        .trim()
+        .toLocaleLowerCase('pt-BR');
+
+    const players =
+      financePlayersCacheV4.filter(
+        player => {
+          const name =
+            String(player.name || '')
+              .toLocaleLowerCase('pt-BR');
+
+          const searchOk =
+            !search ||
+            name.includes(search);
+
+          let filterOk = true;
+
+          if(
+            financePlayerFilterV4 ===
+            'confirmed'
+          ){
+            filterOk =
+              player.status ===
+              'confirmed';
+          }else if(
+            financePlayerFilterV4 ===
+            'monthly'
+          ){
+            filterOk =
+              player.billingType ===
+              'monthly';
+          }else if(
+            financePlayerFilterV4 ===
+            'daily'
+          ){
+            filterOk =
+              player.billingType !==
+              'monthly';
+          }else if(
+            financePlayerFilterV4 ===
+            'goalkeeper'
+          ){
+            filterOk =
+              player.position ===
+              'goalkeeper';
+          }
+
+          return searchOk && filterOk;
+        }
+      );
+
+    box.innerHTML = '';
+
+    if(!players.length){
+      box.innerHTML =
+        '<div class="finance-status">' +
+        'Nenhum jogador encontrado.' +
+        '</div>';
+      return;
+    }
+
+    players.forEach(player => {
+      const row =
+        document.createElement('div');
+
+      row.className =
+        'finance-player';
+
+      const avatar =
+        document.createElement('div');
+
+      avatar.className =
+        'finance-player-avatar';
+
+      mountPlayerPhoto(
+        avatar,
+        player,
+        playerInitials(
+          player.name || 'Jogador'
+        )
+      );
+
+      const info =
+        document.createElement('div');
+
+      const name =
+        document.createElement('div');
+
+      name.className =
+        'finance-player-name';
+
+      name.textContent =
+        String(
+          player.name || 'JOGADOR'
+        ).toLocaleUpperCase('pt-BR');
+
+      const meta =
+        document.createElement('div');
+
+      meta.className =
+        'finance-player-meta';
+
+      const typeText =
+        player.billingType === 'monthly'
+          ? (
+              player.monthlyActive
+                ? 'MENSALISTA • MÊS PAGO'
+                : 'MENSALISTA • PENDENTE'
+            )
           : 'DIARISTA';
-        info.append(name,meta);
 
-        const actions = document.createElement('div');
-        actions.className = 'finance-player-actions';
-        const select = document.createElement('select');
-        select.innerHTML = '<option value="daily">DIÁRIA</option><option value="monthly">MENSALISTA</option>';
-        select.value = player.billingType === 'monthly' ? 'monthly' : 'daily';
-        select.addEventListener('change', async () => {
+      const positionText =
+        player.position === 'goalkeeper'
+          ? 'GOLEIRO'
+          : 'LINHA';
+
+      const statusText =
+        player.status === 'confirmed'
+          ? 'CONFIRMADO'
+          : 'CADASTRADO';
+
+      meta.textContent =
+        `${typeText} • ${positionText} • ${statusText}`;
+
+      info.append(name, meta);
+
+      const actions =
+        document.createElement('div');
+
+      actions.className =
+        'finance-player-actions';
+
+      const select =
+        document.createElement('select');
+
+      select.innerHTML =
+        '<option value="daily">DIÁRIA</option>' +
+        '<option value="monthly">MENSALISTA</option>';
+
+      select.value =
+        player.billingType === 'monthly'
+          ? 'monthly'
+          : 'daily';
+
+      select.addEventListener(
+        'change',
+        async () => {
           select.disabled = true;
-          try{
-            await definirPlanoJogadorCall({playerId:player.id,billingType:select.value});
-            setFinanceStatus('Plano de ' + name.textContent + ' atualizado.', 'ok');
-            await refreshFinanceAll();
-          }catch(error){
-            alert('Não foi possível alterar o plano: ' + (error?.message || 'erro'));
-          }finally{ select.disabled = false; }
-        });
-        actions.appendChild(select);
 
-        if(select.value === 'monthly'){
-          const pay = document.createElement('button');
-          pay.className = 'finance-mini-btn';
-          pay.textContent = player.monthlyActive ? 'MÊS OK ✓' : 'MARCAR PAGO';
-          pay.disabled = !!player.monthlyActive;
-          pay.addEventListener('click', async () => {
+          try{
+            await definirPlanoJogadorCall({
+              playerId:player.id,
+              billingType:select.value
+            });
+
+            setFinanceStatus(
+              'Plano de ' +
+              name.textContent +
+              ' atualizado.',
+              'ok'
+            );
+
+            await refreshFinanceAll();
+            await refreshAdminV4Dashboard();
+          }catch(error){
+            alert(
+              'Não foi possível alterar o plano: ' +
+              (error?.message || 'erro')
+            );
+          }finally{
+            select.disabled = false;
+          }
+        }
+      );
+
+      actions.appendChild(select);
+
+      if(select.value === 'monthly'){
+        const pay =
+          document.createElement('button');
+
+        pay.className =
+          'finance-mini-btn';
+
+        pay.textContent =
+          player.monthlyActive
+            ? 'MÊS OK ✓'
+            : 'MARCAR PAGO';
+
+        pay.disabled =
+          !!player.monthlyActive;
+
+        pay.addEventListener(
+          'click',
+          async () => {
             pay.disabled = true;
+
             try{
-              const r = await registrarMensalidadeCall({playerId:player.id,method:'Pix/Manual'});
-              setFinanceStatus('Mensalidade de ' + name.textContent + ' registrada: ' + financeMoneyBR(r.data?.amount), 'ok');
+              const response =
+                await registrarMensalidadeCall({
+                  playerId:player.id,
+                  method:'Pix/Manual'
+                });
+
+              setFinanceStatus(
+                'Mensalidade de ' +
+                name.textContent +
+                ' registrada: ' +
+                financeMoneyBR(
+                  response.data?.amount
+                ),
+                'ok'
+              );
+
               await refreshFinanceAll();
+              await refreshAdminV4Dashboard();
             }catch(error){
-              alert('Não foi possível registrar mensalidade: ' + (error?.message || 'erro'));
+              alert(
+                'Não foi possível registrar mensalidade: ' +
+                (error?.message || 'erro')
+              );
+
               pay.disabled = false;
             }
-          });
-          actions.appendChild(pay);
-        }
+          }
+        );
 
-        row.append(info,actions);
-        box.appendChild(row);
-      });
+        actions.appendChild(pay);
+      }
+
+      row.append(
+        avatar,
+        info,
+        actions
+      );
+
+      box.appendChild(row);
+    });
+  }
+
+
+  async function loadFinancePlayers(){
+    const box =
+      document.getElementById(
+        'financePlayersList'
+      );
+
+    if(!box || !isAdminUser()) return;
+
+    box.innerHTML =
+      '<div class="finance-status">' +
+      'Carregando jogadores...' +
+      '</div>';
+
+    try{
+      const response =
+        await listarControlePagamentosCall({});
+
+      financePlayersCacheV4 =
+        Array.isArray(
+          response.data?.players
+        )
+          ? response.data.players
+          : [];
+
+      renderFinancePlayersV4();
     }catch(error){
       console.error(error);
-      box.innerHTML = '<div class="finance-status error">Falha ao carregar jogadores: ' + (error?.message || 'erro') + '</div>';
+
+      box.innerHTML =
+        '<div class="finance-status error">' +
+        'Falha ao carregar jogadores: ' +
+        (error?.message || 'erro') +
+        '</div>';
     }
   }
 
@@ -12079,6 +13002,241 @@ sponsorFileInput.addEventListener('change', async () => {
   }
 
   document.getElementById('financeRefreshButton')?.addEventListener('click', refreshFinanceAll);
+
+  document
+    .getElementById('financePlayerSearch')
+    ?.addEventListener(
+      'input',
+      renderFinancePlayersV4
+    );
+
+  document
+    .querySelectorAll(
+      '[data-finance-filter]'
+    )
+    .forEach(button => {
+      button.addEventListener(
+        'click',
+        () => {
+          financePlayerFilterV4 =
+            button.dataset
+              .financeFilter || 'all';
+
+          document
+            .querySelectorAll(
+              '[data-finance-filter]'
+            )
+            .forEach(item => {
+              item.classList.toggle(
+                'active',
+                item === button
+              );
+            });
+
+          renderFinancePlayersV4();
+        }
+      );
+    });
+
+  document
+    .getElementById(
+      'financeRevenueButton'
+    )
+    ?.addEventListener(
+      'click',
+      async () => {
+        const description =
+          document
+            .getElementById(
+              'financeRevenueDescription'
+            )
+            .value
+            .trim();
+
+        const amount =
+          Number(
+            document
+              .getElementById(
+                'financeRevenueAmount'
+              )
+              .value || 0
+          );
+
+        const method =
+          document
+            .getElementById(
+              'financeRevenueMethod'
+            )
+            .value;
+
+        const category =
+          document
+            .getElementById(
+              'financeRevenueCategory'
+            )
+            .value;
+
+        if(
+          description.length < 2 ||
+          amount <= 0
+        ){
+          alert(
+            'Informe descrição e valor da receita.'
+          );
+          return;
+        }
+
+        const button =
+          document.getElementById(
+            'financeRevenueButton'
+          );
+
+        button.disabled = true;
+        button.textContent =
+          'SALVANDO RECEITA...';
+
+        try{
+          await registrarReceitaCall({
+            description,
+            amount,
+            method,
+            category
+          });
+
+          document
+            .getElementById(
+              'financeRevenueDescription'
+            )
+            .value = '';
+
+          document
+            .getElementById(
+              'financeRevenueAmount'
+            )
+            .value = '';
+
+          setFinanceStatus(
+            'Receita registrada.',
+            'ok'
+          );
+
+          await loadFinanceDashboard();
+          await refreshAdminV4Dashboard();
+        }catch(error){
+          alert(
+            'Não foi possível registrar receita: ' +
+            (error?.message || 'erro')
+          );
+        }finally{
+          button.disabled = false;
+          button.textContent =
+            '+ REGISTRAR RECEITA';
+        }
+      }
+    );
+
+  document
+    .getElementById(
+      'adminV4QuickPlayers'
+    )
+    ?.addEventListener(
+      'click',
+      () => openConfirmedList('all')
+    );
+
+  document
+    .getElementById(
+      'adminV4QuickRevenue'
+    )
+    ?.addEventListener(
+      'click',
+      () => openAdminV4Accordion(
+        'finance',
+        'financeRevenueDescription'
+      )
+    );
+
+  document
+    .getElementById(
+      'adminV4QuickExpense'
+    )
+    ?.addEventListener(
+      'click',
+      () => openAdminV4Accordion(
+        'finance',
+        'financeExpenseDescription'
+      )
+    );
+
+  document
+    .getElementById(
+      'adminV4QuickPayments'
+    )
+    ?.addEventListener(
+      'click',
+      () => openAdminV4Accordion(
+        'attendance'
+      )
+    );
+
+  document
+    .getElementById(
+      'adminV4QuickNewRacha'
+    )
+    ?.addEventListener(
+      'click',
+      () => {
+        openAdminV4Accordion(
+          'organization'
+        );
+
+        setTimeout(() => {
+          document
+            .getElementById(
+              'resetAppButton'
+            )
+            ?.scrollIntoView({
+              behavior:'smooth',
+              block:'center'
+            });
+        }, 320);
+      }
+    );
+
+  document
+    .getElementById(
+      'adminV4QuickNotice'
+    )
+    ?.addEventListener(
+      'click',
+      () => openFeatureView(
+        'noticesView'
+      )
+    );
+
+  document
+    .getElementById(
+      'adminV4QuickSponsors'
+    )
+    ?.addEventListener(
+      'click',
+      () => openFeatureView(
+        'sponsorsView'
+      )
+    );
+
+  document
+    .getElementById(
+      'adminV4QuickStats'
+    )
+    ?.addEventListener(
+      'click',
+      () => openFeatureView(
+        'statsView'
+      )
+    );
+
+
 
   document.getElementById('financeSaveSettings')?.addEventListener('click', async () => {
     const button = document.getElementById('financeSaveSettings');
@@ -12109,6 +13267,7 @@ sponsorFileInput.addEventListener('change', async () => {
       document.getElementById('financeExpenseAmount').value='';
       setFinanceStatus('Despesa registrada.', 'ok');
       await loadFinanceDashboard();
+      await refreshAdminV4Dashboard();
     }catch(error){ alert('Não foi possível registrar despesa: ' + (error?.message || 'erro')); }
     finally{ button.disabled = false; }
   });

@@ -6778,6 +6778,16 @@ exports.listarControlePagamentos = onCall(
                       "Jogador",
                       60,
                   ),
+                photoURL:
+                  financeString(
+                      data.photoURL,
+                      2000,
+                  ),
+                position:
+                  data.position ===
+                    "goalkeeper" ?
+                    "goalkeeper" :
+                    "field",
                 billingType,
                 monthlyPaidThrough,
                 monthlyActive:
@@ -7027,6 +7037,96 @@ exports.registrarMensalidade = onCall(
           current.monthKey,
         amount:
           settings.monthlyPrice,
+      };
+    },
+);
+
+
+exports.registrarReceita = onCall(
+    {
+      invoker: "public",
+      region:
+        "southamerica-east1",
+      timeoutSeconds: 15,
+    },
+    async (request) => {
+      financeAdminOrThrow(
+          request,
+      );
+
+      const description =
+        financeString(
+            request.data
+                ?.description,
+            100,
+        );
+
+      const amount =
+        financeMoney(
+            request.data
+                ?.amount,
+        );
+
+      const category =
+        financeString(
+            request.data
+                ?.category ||
+              "Outros",
+            40,
+        );
+
+      const method =
+        financeString(
+            request.data
+                ?.method ||
+              "Pix",
+            30,
+        );
+
+      if (
+        description.length < 2 ||
+        amount <= 0
+      ) {
+        throw new HttpsError(
+            "invalid-argument",
+            "Descrição e valor da receita são obrigatórios.",
+        );
+      }
+
+      const db =
+        getFirestore();
+
+      const ref =
+        await db
+            .collection(
+                "finance_receipts",
+            )
+            .add(
+                {
+                  name:
+                    description,
+                  description,
+                  amount,
+                  type:
+                    "manual",
+                  category,
+                  method,
+                  status:
+                    "approved",
+                  manual:
+                    true,
+                  createdAt:
+                    FieldValue
+                        .serverTimestamp(),
+                  createdBy:
+                    request.auth.uid,
+                },
+            );
+
+      return {
+        ok: true,
+        id: ref.id,
+        amount,
       };
     },
 );
