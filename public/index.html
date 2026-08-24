@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <!-- GREEN PARK BUILD: 2026-08-23-v10-erro1-goleiros-2-vagas-sem-cobranca -->
+  <!-- GREEN PARK BUILD: 2026-08-23-v11-erro2-notificacoes-ios-android -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#071018">
@@ -5927,9 +5927,9 @@ button {
     </section>
 
     <section class="player-push-card" id="playerPushCard">
-      <div class="player-push-title">Aviso da confirmação</div>
+      <div class="player-push-title">Notificações do Green Park</div>
       <div class="player-push-help">
-        Ative para receber no telefone confirmações de pagamento, comunicados e avisos do racha.
+        Ative os avisos neste aparelho para receber confirmações, comunicados e informações do racha.
       </div>
 
       <button class="player-push-btn" id="enablePlayerPushButton" type="button">
@@ -7250,6 +7250,16 @@ let messagingInstance = null;
     return /iPhone|iPad|iPod/i.test(navigator.userAgent);
   }
 
+  function isAndroidDevice(){
+    return /Android/i.test(navigator.userAgent);
+  }
+
+  function playerPushDeviceName(){
+    if(isIOSDevice()) return 'IPHONE';
+    if(isAndroidDevice()) return 'ANDROID';
+    return 'TELEFONE';
+  }
+
   function needsIOSHomeScreenInstall(){
     return isIOSDevice() && !isStandaloneWebApp();
   }
@@ -7285,46 +7295,117 @@ let messagingInstance = null;
   }
 
   function shouldShowPlayerPush(){
-    if(!firebaseUser || isAdminUser()) return false;
-
-    return (
-      state.currentUser.paymentReported ||
-      state.currentUser.status === 'requested' ||
-      state.currentUser.status === 'confirmed' ||
-      state.currentUser.status === 'rejected'
-    );
+    // ERRO 2:
+    // o card de avisos não depende mais de pagamento ou presença.
+    // Se existe um jogador autenticado e não é Admin, o card permanece visível.
+    return !!firebaseUser && !isAdminUser();
   }
 
   function refreshPlayerPushUI(){
     const show = shouldShowPlayerPush();
+
     playerPushCard.classList.toggle('show', show);
 
     if(!show) return;
 
+    const deviceName = playerPushDeviceName();
+
+    enablePlayerPushButton.disabled = false;
+
+    // No iPhone, Web Push só deve ser solicitado pelo app aberto
+    // a partir do ícone instalado na Tela de Início.
+    if(needsIOSHomeScreenInstall()){
+      enablePlayerPushButton.textContent = 'COMO ATIVAR AVISOS NO IPHONE';
+      setPlayerPushState(
+        '1. Adicione o Green Park à Tela de Início. 2. Abra pelo ícone. 3. Toque em ativar avisos.'
+      );
+      return;
+    }
+
+    if(!('Notification' in window) || !('serviceWorker' in navigator)){
+      enablePlayerPushButton.textContent = 'AVISOS NÃO DISPONÍVEIS';
+      enablePlayerPushButton.disabled = true;
+      setPlayerPushState(
+        'Este navegador não oferece suporte às notificações do aplicativo.',
+        'error'
+      );
+      return;
+    }
+
+    const permission = Notification.permission;
     const key = 'greenpark_player_fcm_token_' + firebaseUser.uid;
     const saved = localStorage.getItem(key);
 
-    if(saved && 'Notification' in window && Notification.permission === 'granted'){
+    if(permission === 'granted' && saved){
       enablePlayerPushButton.textContent = 'AVISOS ATIVADOS ✓';
-      setPlayerPushState('Este telefone receberá confirmações, comunicados e avisos do racha.', 'ok');
+      setPlayerPushState(
+        'Avisos ativos neste ' + deviceName.toLowerCase() +
+        '. Você receberá confirmações, comunicados e avisos do racha.',
+        'ok'
+      );
 
       refreshPushTokenSilently(
         firebaseUser.uid,
-        'greenpark_player_fcm_token_' + firebaseUser.uid
+        key
       ).catch(() => {});
 
       return;
     }
 
-    if(needsIOSHomeScreenInstall()){
-      enablePlayerPushButton.textContent = 'COMO ATIVAR AVISOS NO IPHONE';
-      setPlayerPushState('No iPhone, os avisos funcionam pelo app adicionado à Tela de Início.');
+    if(permission === 'denied'){
+      enablePlayerPushButton.textContent = 'AVISOS BLOQUEADOS';
+      enablePlayerPushButton.disabled = true;
+      setPlayerPushState(
+        'As notificações estão bloqueadas neste aparelho. Libere o Green Park nas configurações de notificações e volte ao app.',
+        'error'
+      );
       return;
     }
 
-    enablePlayerPushButton.textContent = 'ATIVAR AVISOS NESTE TELEFONE';
-    setPlayerPushState('Ative para receber confirmações, comunicados e avisos do racha.');
+    if(permission === 'granted' && !saved){
+      enablePlayerPushButton.textContent =
+        'FINALIZAR ATIVAÇÃO NESTE ' + deviceName;
+      setPlayerPushState(
+        'A permissão já foi concedida. Toque para concluir o registro deste aparelho.'
+      );
+      return;
+    }
+
+    enablePlayerPushButton.textContent =
+      'ATIVAR AVISOS NESTE ' + deviceName;
+
+    if(isIOSDevice()){
+      setPlayerPushState(
+        'Toque para permitir os avisos neste iPhone.'
+      );
+    }else if(isAndroidDevice()){
+      setPlayerPushState(
+        'Toque para permitir os avisos neste Android.'
+      );
+    }else{
+      setPlayerPushState(
+        'Ative para receber confirmações, comunicados e avisos do racha.'
+      );
+    }
   }
+
+
+  // Ao instalar o PWA, voltar das Configurações ou retornar para o app,
+  // rechecamos a permissão. Assim o botão não desaparece nem fica preso
+  // em um estado antigo.
+  window.addEventListener('pageshow', () => {
+    setTimeout(refreshPlayerPushUI, 50);
+  });
+
+  window.addEventListener('focus', () => {
+    setTimeout(refreshPlayerPushUI, 50);
+  });
+
+  document.addEventListener('visibilitychange', () => {
+    if(document.visibilityState === 'visible'){
+      setTimeout(refreshPlayerPushUI, 50);
+    }
+  });
 
   async function activatePlayerPush(){
     const user = await ensureFirebasePlayer();
@@ -7368,8 +7449,7 @@ let messagingInstance = null;
 
     localStorage.setItem('greenpark_player_fcm_token_' + user.uid, token);
 
-    enablePlayerPushButton.textContent = 'AVISOS ATIVADOS ✓';
-    setPlayerPushState('Pronto. Você receberá a resposta do administrador neste telefone.', 'ok');
+    refreshPlayerPushUI();
 
     return token;
   }
@@ -12332,6 +12412,7 @@ sponsorFileInput.addEventListener('change', async () => {
   onAuthStateChanged(auth, async user => {
     firebaseUser = user;
     setTimeout(() => refreshContentAdminUI(), 0);
+    setTimeout(() => refreshPlayerPushUI(), 0);
 
     if(!user){
       setFirebaseStatus('Conectando jogador ao Firebase...');
