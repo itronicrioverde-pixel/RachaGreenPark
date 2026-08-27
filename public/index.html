@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <!-- GREEN PARK BUILD: 2026-08-27-v15-cadastro-recorrente-goleiro -->
+  <!-- GREEN PARK BUILD: 2026-08-27-v16-validacao-email-pix -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#071018">
@@ -8609,6 +8609,70 @@ let messagingInstance = null;
     return result.user;
   }
 
+  function isValidPaymentEmail(rawValue){
+    const value = String(rawValue || '').trim().toLowerCase();
+
+    if(
+      !value ||
+      value.length > 254 ||
+      !/^[a-z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)+$/i.test(value)
+    ){
+      return false;
+    }
+
+    const at = value.lastIndexOf('@');
+    const local = value.slice(0, at);
+    const domain = value.slice(at + 1);
+
+    return !(
+      !local ||
+      local.length > 64 ||
+      local.startsWith('.') ||
+      local.endsWith('.') ||
+      local.includes('..') ||
+      domain.includes('..')
+    );
+  }
+
+  function openEmailCorrection(){
+    playerName.value =
+      (state.currentUser.name || '').toLocaleUpperCase('pt-BR');
+
+    playerPhone.value =
+      state.currentUser.phone || '';
+
+    playerEmail.value =
+      state.currentUser.email || '';
+
+    selfieData =
+      state.currentUser.photoURL ||
+      state.currentUser.photo ||
+      '';
+
+    cardNamePreview.textContent =
+      playerName.value || 'Jogador Green Park';
+
+    cardPhonePreview.textContent =
+      playerPhone.value || '(00) 00000-0000';
+
+    renderRegistrationPosition();
+
+    if(selfieData){
+      selfieImage.src = selfieData;
+      selfiePreview.classList.add('has-photo');
+    }else{
+      selfieImage.removeAttribute('src');
+      selfiePreview.classList.remove('has-photo');
+    }
+
+    showView('registerView');
+
+    setTimeout(() => {
+      playerEmail.focus();
+      playerEmail.select();
+    }, 180);
+  }
+
   async function savePlayerToCloud(){
     const user = await ensureFirebasePlayer();
 
@@ -12336,8 +12400,13 @@ async function removeSponsorLogo(slot){
     }
 
     const email = String(state.currentUser.email || '').trim().toLowerCase();
-    if(!email || !/^\S+@\S+\.\S+$/.test(email)){
-      alert('Seu cadastro está sem e-mail. Volte ao cadastro e informe uma vez para continuar.');
+
+    if(!isValidPaymentEmail(email)){
+      alert(
+        'E-MAIL INVÁLIDO\n\n' +
+        'Corrija seu e-mail para conseguir gerar o Pix.'
+      );
+      openEmailCorrection();
       return;
     }
 
@@ -12385,7 +12454,26 @@ async function removeSponsorLogo(slot){
       console.error(error);
       generatePixButton.disabled = false;
       generatePixButton.textContent = 'GERAR PIX';
-      alert('Não foi possível gerar o Pix: ' + (error?.message || 'erro desconhecido'));
+
+      const message =
+        String(error?.message || 'erro desconhecido');
+
+      if(
+        /e-?mail/i.test(message) ||
+        /payer\.email/i.test(message)
+      ){
+        alert(
+          'E-MAIL INVÁLIDO\n\n' +
+          'Corrija seu e-mail para conseguir gerar o Pix.'
+        );
+        openEmailCorrection();
+        return;
+      }
+
+      alert(
+        'Não foi possível gerar o Pix: ' +
+        message
+      );
     }
   });
 
@@ -12554,9 +12642,13 @@ async function removeSponsorLogo(slot){
     if(!selfieData){alert('Tire uma selfie para continuar.');return}
     if(!name){alert('Informe seu nome ou apelido.');playerName.focus();return}
     if(phoneDigits.length < 10){alert('Informe um telefone válido com DDD.');playerPhone.focus();return}
-    if(!email || !/^\S+@\S+\.\S+$/.test(email)){
-      alert('Informe um e-mail válido. Você só precisará informar uma vez.');
+    if(!isValidPaymentEmail(email)){
+      alert(
+        'Informe um e-mail válido.\n\n' +
+        'Exemplo: nome@gmail.com'
+      );
       playerEmail.focus();
+      playerEmail.select();
       return;
     }
 

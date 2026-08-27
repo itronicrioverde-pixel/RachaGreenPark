@@ -415,6 +415,31 @@ const crypto = require("crypto");
 const MERCADO_PAGO_ACCESS_TOKEN =
   defineSecret("MERCADO_PAGO_ACCESS_TOKEN");
 
+function greenParkValidPayerEmail(rawValue) {
+  const value = String(rawValue || "").trim().toLowerCase();
+
+  if (
+    !value ||
+    value.length > 254 ||
+    !/^[a-z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)+$/i.test(value)
+  ) {
+    return false;
+  }
+
+  const at = value.lastIndexOf("@");
+  const local = value.slice(0, at);
+  const domain = value.slice(at + 1);
+
+  return !(
+    !local ||
+    local.length > 64 ||
+    local.startsWith(".") ||
+    local.endsWith(".") ||
+    local.includes("..") ||
+    domain.includes("..")
+  );
+}
+
 exports.criarPagamentoPix = onCall(
     {
       region: "southamerica-east1",
@@ -439,10 +464,10 @@ exports.criarPagamentoPix = onCall(
         );
       }
 
-      if (!email || !email.includes("@")) {
+      if (!greenParkValidPayerEmail(email)) {
         throw new HttpsError(
             "invalid-argument",
-            "Informe um e-mail válido.",
+            "E-mail inválido. Corrija o e-mail do cadastro e tente novamente.",
         );
       }
 
@@ -562,6 +587,22 @@ exports.criarPagamentoPix = onCall(
             response.status,
             JSON.stringify(order),
         );
+
+        const mercadoPagoErrorText =
+          JSON.stringify(order || {});
+
+        if (
+          response.status === 400 &&
+          (
+            mercadoPagoErrorText.includes("$.payer.email") ||
+            mercadoPagoErrorText.includes("payer.email")
+          )
+        ) {
+          throw new HttpsError(
+              "invalid-argument",
+              "E-mail inválido. Corrija o e-mail do cadastro e tente novamente.",
+          );
+        }
 
         throw new HttpsError(
             "internal",
