@@ -96,12 +96,18 @@ service cloud.firestore {
         || (
           isOwner(userId)
 
-          && request.resource.data.uid == resource.data.uid
+          && request.resource.data.uid == userId
+
+          && (
+            !('uid' in resource.data)
+            || resource.data.uid == userId
+          )
 
           && request.resource.data
             .diff(resource.data)
             .affectedKeys()
             .hasOnly([
+              'uid',
               'name',
               'phone',
               'email',

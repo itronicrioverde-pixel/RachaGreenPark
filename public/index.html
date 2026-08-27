@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <!-- GREEN PARK BUILD: 2026-08-24-v14-sorteio-livre-reservas -->
+  <!-- GREEN PARK BUILD: 2026-08-27-v15-cadastro-recorrente-goleiro -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#071018">
@@ -12058,6 +12058,70 @@ async function removeSponsorLogo(slot){
         return;
       }
 
+      const existingProfileReady =
+        snap.exists() &&
+        !!String(state.currentUser.name || '').trim() &&
+        !!String(state.currentUser.phone || '').trim() &&
+        !!String(state.currentUser.email || '').trim();
+
+      // Jogador já cadastrado não refaz cadastro a cada racha.
+      if(existingProfileReady){
+        if(state.currentUser.position === 'goalkeeper'){
+          const positionResult = await salvarMinhaPosicaoCall({
+            position:'goalkeeper'
+          });
+
+          const positionData = positionResult.data || {};
+
+          if(positionData.goalkeeperConfirmed === true){
+            state.currentUser.status = 'confirmed';
+            state.currentUser.paymentReported = false;
+            state.currentUser.paymentType = '';
+            state.currentUser.pixOrderId = '';
+            state.currentUser.pixQrCode = '';
+            state.currentUser.pixQrCodeBase64 = '';
+            state.currentUser.pixStatus = 'waived';
+            state.currentUser.pixProvider = '';
+            currentPixOrderId = '';
+            stopPixPolling();
+
+            if(remoteRacha && positionData.confirmedCount !== undefined){
+              remoteRacha.confirmedCount =
+                Number(positionData.confirmedCount) || 0;
+            }
+
+            saveState();
+            syncLocalUserConfirmation();
+            renderHome();
+            showView('homeView');
+
+            alert(
+              'GOLEIRO CONFIRMADO ✓\n\n' +
+              'Sua vaga foi garantida sem cobrança.'
+            );
+            return;
+          }
+        }
+
+        selectedPaymentType =
+          state.currentUser.paymentType || 'daily';
+
+        paymentFlow.classList.add('show');
+        confirmationView.classList.add('payment-mode');
+        renderPixFromState();
+        showView('confirmationView');
+
+        setTimeout(
+          () => paymentFlow.scrollIntoView({
+            behavior:'smooth',
+            block:'start'
+          }),
+          100
+        );
+        return;
+      }
+
+      // Só jogador novo ou cadastro antigo incompleto entra aqui.
       playerName.value = (state.currentUser.name || '').toLocaleUpperCase('pt-BR');
       playerPhone.value = state.currentUser.phone || '';
       playerEmail.value = state.currentUser.email || '';
