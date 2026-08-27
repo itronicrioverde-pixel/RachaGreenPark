@@ -4,6 +4,8 @@ const {
 } = require("firebase-functions/v2/firestore");
 
 const {initializeApp} = require("firebase-admin/app");
+const {getAuth} = require("firebase-admin/auth");
+const {getStorage} = require("firebase-admin/storage");
 const {getFirestore, FieldValue} = require("firebase-admin/firestore");
 const {getMessaging} = require("firebase-admin/messaging");
 
@@ -440,6 +442,27 @@ function greenParkValidPayerEmail(rawValue) {
   );
 }
 
+function greenParkPlayerHasPhoto(playerData = {}) {
+  const photoURL =
+    String(playerData.photoURL || "").trim();
+
+  return (
+    photoURL.startsWith("https://") ||
+    photoURL.startsWith("http://")
+  );
+}
+
+
+function greenParkRequirePlayerPhoto(playerData = {}) {
+  if (!greenParkPlayerHasPhoto(playerData)) {
+    throw new HttpsError(
+        "failed-precondition",
+        "Foto de perfil obrigatória. Adicione sua foto antes de entrar ou pagar o racha.",
+    );
+  }
+}
+
+
 exports.criarPagamentoPix = onCall(
     {
       region: "southamerica-east1",
@@ -485,6 +508,10 @@ exports.criarPagamentoPix = onCall(
           .get();
       const goalkeeperPlayerData = goalkeeperPlayerSnapshot.exists ?
         goalkeeperPlayerSnapshot.data() || {} : {};
+
+      greenParkRequirePlayerPhoto(
+          goalkeeperPlayerData,
+      );
 
       if (goalkeeperPlayerData.position === "goalkeeper") {
         const goalkeeperResult = await greenParkApplyPlayerPosition({
@@ -4127,6 +4154,13 @@ async function greenParkApplyPlayerPosition({
     }
 
     const playerData = playerSnapshot.data() || {};
+
+    if (position === "goalkeeper") {
+      greenParkRequirePlayerPhoto(
+          playerData,
+      );
+    }
+
     const rachaSnapshot = await transaction.get(rachaRef);
     const currentRachaData = rachaSnapshot.exists ?
       rachaSnapshot.data() || {} : {};
@@ -4334,6 +4368,487 @@ exports.definirPosicaoJogador = onCall(
       });
 
       return {ok: true, playerId, position, ...result};
+    },
+);
+
+
+async function greenParkRemovePlayerFromCurrentRacha(
+    db,
+    playerId,
+    adminUid,
+) {
+  const playerRef =
+    db.collection("players").doc(playerId);
+
+  const snapshot =
+    await playerRef.get();
+
+  if (!snapshot.exists) {
+    throw new HttpsError(
+        "not-found",
+        "Atleta não encontrado.",
+    );
+  }
+
+  const data =
+    snapshot.data() || {};
+
+  if (data.status === "confirmed") {
+    await playerRef.set(
+        {
+          status: "registered",
+          attendanceType: "",
+          paymentReported: false,
+          paymentType: "",
+          pixOrderId: "",
+          pixStatus: "",
+          pixProvider: "",
+          paymentExempt: false,
+          goalkeeperFree: false,
+          paymentStatus:
+            FieldValue.delete(),
+          paymentOrderId:
+            FieldValue.delete(),
+          paymentProvider:
+            FieldValue.delete(),
+          confirmationSource:
+            FieldValue.delete(),
+          confirmedAt:
+            FieldValue.delete(),
+          goalkeeperConfirmedAt:
+            FieldValue.delete(),
+          removedFromRachaAt:
+            FieldValue.serverTimestamp(),
+          removedFromRachaBy:
+            adminUid,
+          updatedAt:
+            FieldValue.serverTimestamp(),
+        },
+        {merge: true},
+    );
+  }
+
+  return atualizarContagemRacha(db);
+}
+
+
+exports.cancelarJogadorDoRacha = onCall(
+    {
+      invoker: "public",
+      region: "southamerica-east1",
+      timeoutSeconds: 20,
+    },
+    async (request) => {
+      unifiedAdminOrThrow(request);
+
+      const playerId =
+        String(request.data?.playerId || "")
+            .trim()
+            .slice(0, 128);
+
+      if (
+        !playerId ||
+        playerId === GREEN_PARK_ADMIN_UID_FINANCE
+      ) {
+        throw new HttpsError(
+            "invalid-argument",
+            "Atleta inválido.",
+        );
+      }
+
+      const db = getFirestore();
+
+      const confirmedCount =
+        await greenParkRemovePlayerFromCurrentRacha(
+            db,
+            playerId,
+            request.auth.uid,
+        );
+
+      return {
+        ok: true,
+        playerId,
+        confirmedCount,
+        profilePreserved: true,
+        financePreserved: true,
+        statsPreserved: true,
+      };
+    },
+);
+
+
+// Apaga identidade/cadastro do atleta.
+// Histórico financeiro e estatístico não é apagado:
+// ele é anonimizado para manter saldo, auditoria e gols antigos.
+function greenParkRecordDirectlyReferencesPlayer(
+    value,
+    {
+      playerId,
+      email,
+      phone,
+    },
+) {
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+
+  if (Array.isArray(value)) {
+    return value.some((item) =>
+      greenParkRecordDirectlyReferencesPlayer(
+          item,
+          {playerId, email, phone},
+      )
+    );
+  }
+
+  for (const [key, item] of Object.entries(value)) {
+    if (
+      ["userId", "playerId", "uid", "payerId"].includes(key) &&
+      String(item || "") === playerId
+    ) {
+      return true;
+    }
+
+    if (
+      email &&
+      ["email", "payerEmail"].includes(key) &&
+      String(item || "").trim().toLowerCase() === email
+    ) {
+      return true;
+    }
+
+    if (
+      phone &&
+      ["phone", "telefone"].includes(key) &&
+      String(item || "").replace(/\D/g, "") === phone
+    ) {
+      return true;
+    }
+
+    if (
+      item &&
+      typeof item === "object" &&
+      greenParkRecordDirectlyReferencesPlayer(
+          item,
+          {playerId, email, phone},
+      )
+    ) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+
+function greenParkRedactPlayerNode(
+    value,
+    identity,
+    forceMatch = false,
+) {
+  if (!value || typeof value !== "object") {
+    return value;
+  }
+
+  if (Array.isArray(value)) {
+    return value.map((item) =>
+      greenParkRedactPlayerNode(
+          item,
+          identity,
+          false,
+      )
+    );
+  }
+
+  const directMatch =
+    forceMatch ||
+    Object.entries(value).some(([key, item]) => {
+      if (
+        ["userId", "playerId", "uid", "payerId"].includes(key) &&
+        String(item || "") === identity.playerId
+      ) {
+        return true;
+      }
+
+      if (
+        identity.email &&
+        ["email", "payerEmail"].includes(key) &&
+        String(item || "").trim().toLowerCase() === identity.email
+      ) {
+        return true;
+      }
+
+      if (
+        identity.phone &&
+        ["phone", "telefone"].includes(key) &&
+        String(item || "").replace(/\D/g, "") === identity.phone
+      ) {
+        return true;
+      }
+
+      return false;
+    });
+
+  const result = {};
+
+  for (const [key, item] of Object.entries(value)) {
+    if (
+      directMatch &&
+      ["name", "playerName", "displayName", "nickname", "apelido"].includes(key)
+    ) {
+      result[key] = "JOGADOR REMOVIDO";
+      continue;
+    }
+
+    if (
+      directMatch &&
+      ["email", "payerEmail", "phone", "telefone", "photoURL", "photo"].includes(key)
+    ) {
+      result[key] = "";
+      continue;
+    }
+
+    if (
+      directMatch &&
+      ["fcmToken"].includes(key)
+    ) {
+      result[key] = "";
+      continue;
+    }
+
+    if (
+      directMatch &&
+      key === "fcmTokens"
+    ) {
+      result[key] = [];
+      continue;
+    }
+
+    if (
+      ["userId", "playerId", "uid", "payerId"].includes(key) &&
+      String(item || "") === identity.playerId
+    ) {
+      result[key] = "";
+      continue;
+    }
+
+    result[key] =
+      item && typeof item === "object" ?
+        greenParkRedactPlayerNode(
+            item,
+            identity,
+            false,
+        ) :
+        item;
+  }
+
+  if (directMatch) {
+    result.deletedPlayerData = true;
+  }
+
+  return result;
+}
+
+
+async function greenParkAnonymizePlayerHistory(
+    db,
+    identity,
+) {
+  const collections =
+    await db.listCollections();
+
+  let updatedDocuments = 0;
+
+  for (const collection of collections) {
+    if (collection.id === "players") {
+      continue;
+    }
+
+    const snapshot =
+      await collection.get();
+
+    for (const docSnap of snapshot.docs) {
+      const data =
+        docSnap.data() || {};
+
+      const forceMatch =
+        docSnap.id === identity.playerId;
+
+      if (
+        !forceMatch &&
+        !greenParkRecordDirectlyReferencesPlayer(
+            data,
+            identity,
+        )
+      ) {
+        continue;
+      }
+
+      const redacted =
+        greenParkRedactPlayerNode(
+            data,
+            identity,
+            forceMatch,
+        );
+
+      redacted.deletedPlayerDataAt =
+        FieldValue.serverTimestamp();
+
+      await docSnap.ref.set(
+          redacted,
+          {merge: false},
+      );
+
+      updatedDocuments += 1;
+    }
+  }
+
+  return updatedDocuments;
+}
+
+
+exports.excluirJogadorDefinitivamente = onCall(
+    {
+      invoker: "public",
+      region: "southamerica-east1",
+      timeoutSeconds: 60,
+      memory: "512MiB",
+    },
+    async (request) => {
+      unifiedAdminOrThrow(request);
+
+      const playerId =
+        String(request.data?.playerId || "")
+            .trim()
+            .slice(0, 128);
+
+      const confirmation =
+        String(request.data?.confirmation || "")
+            .trim()
+            .toUpperCase();
+
+      if (confirmation !== "EXCLUIR") {
+        throw new HttpsError(
+            "failed-precondition",
+            "Confirmação de exclusão inválida.",
+        );
+      }
+
+      if (
+        !playerId ||
+        playerId === GREEN_PARK_ADMIN_UID_FINANCE
+      ) {
+        throw new HttpsError(
+            "invalid-argument",
+            "Atleta inválido.",
+        );
+      }
+
+      const db = getFirestore();
+      const playerRef =
+        db.collection("players").doc(playerId);
+
+      const playerSnapshot =
+        await playerRef.get();
+
+      if (!playerSnapshot.exists) {
+        throw new HttpsError(
+            "not-found",
+            "Cadastro do atleta não encontrado.",
+        );
+      }
+
+      const playerData =
+        playerSnapshot.data() || {};
+
+      const identity = {
+        playerId,
+        email:
+          String(playerData.email || "")
+              .trim()
+              .toLowerCase(),
+        phone:
+          String(playerData.phone || "")
+              .replace(/\D/g, ""),
+      };
+
+      // Primeiro remove a vaga do racha atual.
+      if (playerData.status === "confirmed") {
+        await greenParkRemovePlayerFromCurrentRacha(
+            db,
+            playerId,
+            request.auth.uid,
+        );
+      }
+
+      // Mantém valores e gols históricos,
+      // mas retira identidade pessoal dos registros relacionados.
+      const anonymizedDocuments =
+        await greenParkAnonymizePlayerHistory(
+            db,
+            identity,
+        );
+
+      // Apaga arquivos de perfil no Storage.
+      let deletedStorageFiles = 0;
+
+      try {
+        const bucket =
+          getStorage().bucket();
+
+        const [files] =
+          await bucket.getFiles({
+            prefix: "players/" + playerId + "/",
+          });
+
+        for (const file of files) {
+          await file.delete({
+            ignoreNotFound: true,
+          });
+
+          deletedStorageFiles += 1;
+        }
+      } catch (error) {
+        console.warn(
+            "Storage do atleta:",
+            playerId,
+            error?.message || error,
+        );
+      }
+
+      // Apaga documento principal.
+      if (typeof db.recursiveDelete === "function") {
+        await db.recursiveDelete(playerRef);
+      } else {
+        await playerRef.delete();
+      }
+
+      // Apaga conta anônima/Auth daquele aparelho.
+      try {
+        await getAuth().deleteUser(playerId);
+      } catch (error) {
+        if (error?.code !== "auth/user-not-found") {
+          console.warn(
+              "Auth do atleta:",
+              playerId,
+              error?.message || error,
+          );
+        }
+      }
+
+      const confirmedCount =
+        await atualizarContagemRacha(db);
+
+      return {
+        ok: true,
+        playerId,
+        confirmedCount,
+        anonymizedDocuments,
+        deletedStorageFiles,
+        personalDataDeleted: true,
+        financePreserved: true,
+        statsPreserved: true,
+      };
     },
 );
 
@@ -7408,6 +7923,10 @@ exports.confirmarPresencaMensalista = onCall(
 
       const data =
         snapshot.data() || {};
+
+      greenParkRequirePlayerPhoto(
+          data,
+      );
 
       const current =
         financeSaoPauloParts();

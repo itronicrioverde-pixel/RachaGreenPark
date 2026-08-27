@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <!-- GREEN PARK BUILD: 2026-08-27-v16-validacao-email-pix -->
+  <!-- GREEN PARK BUILD: 2026-08-27-v18-admin-cancelar-excluir-foto -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#071018">
@@ -6165,6 +6165,55 @@ body:not(.admin-authenticated) #adminV4Dashboard{
 .gpfree-status{display:none;padding:9px 10px;border-radius:10px;font-size:9px;line-height:1.4}.gpfree-status.show{display:block;border:1px solid #2f4d3b;background:#0c1e13;color:#a9ddb0}.gpfree-status.error{border-color:#63363b;background:#2a1518;color:#ffaaaa}
 @media(max-width:360px){#teamsAdminActions,.gpfree-actions{grid-template-columns:1fr}}
 
+
+/* ==========================================================
+   GREENPARK_ADMIN_DELETE_V18
+   Ações administrativas de jogador
+   ========================================================== */
+
+.admin-player-danger-actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  margin-top:6px;
+}
+
+.admin-cancel-racha-btn,
+.admin-delete-player-btn{
+  min-height:32px;
+  padding:0 10px;
+  border-radius:9px;
+  font-size:8px;
+  line-height:1.1;
+  font-weight:950;
+}
+
+.admin-cancel-racha-btn{
+  border:1px solid rgba(242,183,53,.52);
+  background:rgba(242,183,53,.09);
+  color:#ffd36b;
+}
+
+.admin-delete-player-btn{
+  border:1px solid rgba(217,78,78,.58);
+  background:rgba(217,78,78,.11);
+  color:#ffaaaa;
+}
+
+.admin-cancel-racha-btn:disabled,
+.admin-delete-player-btn:disabled{
+  opacity:.42;
+}
+
+.admin-player-contact{
+  margin-top:4px;
+  color:#7f8e87;
+  font-size:7.5px;
+  line-height:1.35;
+  overflow-wrap:anywhere;
+}
+
+
 </style>
 
 <style id="greenpark-mobile-touch-hardening">
@@ -7590,6 +7639,8 @@ const buscarLocalCall = httpsCallable(functions, 'buscarLocal');
 const listarConfirmadosCall = httpsCallable(functions, 'listarConfirmados');
 const listarJogadoresAdminCall = httpsCallable(functions, 'listarJogadoresAdmin');
 const definirPosicaoJogadorCall = httpsCallable(functions, 'definirPosicaoJogador');
+const cancelarJogadorDoRachaCall = httpsCallable(functions, 'cancelarJogadorDoRacha');
+const excluirJogadorDefinitivamenteCall = httpsCallable(functions, 'excluirJogadorDefinitivamente');
 const salvarMinhaPosicaoCall = httpsCallable(functions, 'salvarMinhaPosicao');
 const salvarMeuPushTokenCall = httpsCallable(functions, 'salvarMeuPushToken');
 const obterRankingCall = httpsCallable(functions, 'obterRanking');
@@ -8818,6 +8869,127 @@ let messagingInstance = null;
       `${dateText} • ${timeText} • ${locationText}`;
   }
 
+  async function cancelPlayerFromCurrentRacha(player){
+    if(!isAdminUser()) return;
+
+    const playerId =
+      String(player?.id || player?.playerId || '').trim();
+
+    const playerNameText =
+      String(player?.name || 'Jogador').trim() || 'Jogador';
+
+    if(!playerId){
+      alert('Não foi possível identificar o atleta.');
+      return;
+    }
+
+    const ok = confirm(
+      'REMOVER DO RACHA?\n\n' +
+      playerNameText.toLocaleUpperCase('pt-BR') +
+      '\n\nO cadastro, gols e histórico financeiro continuam salvos. ' +
+      'Somente a vaga do racha atual será removida.'
+    );
+
+    if(!ok) return;
+
+    const response =
+      await cancelarJogadorDoRachaCall({
+        playerId
+      });
+
+    const data = response.data || {};
+
+    if(
+      remoteRacha &&
+      data.confirmedCount !== undefined
+    ){
+      remoteRacha.confirmedCount =
+        Number(data.confirmedCount) || 0;
+    }
+
+    await loadConfirmedList();
+
+    if(typeof refreshAdminV4Dashboard === 'function'){
+      refreshAdminV4Dashboard();
+    }
+
+    renderHome();
+
+    alert(
+      playerNameText.toLocaleUpperCase('pt-BR') +
+      '\n\nREMOVIDO DO RACHA ✓'
+    );
+  }
+
+
+  async function deletePlayerPermanently(player){
+    if(!isAdminUser()) return;
+
+    const playerId =
+      String(player?.id || player?.playerId || '').trim();
+
+    const playerNameText =
+      String(player?.name || 'Jogador').trim() || 'Jogador';
+
+    if(!playerId){
+      alert('Não foi possível identificar o atleta.');
+      return;
+    }
+
+    const first = confirm(
+      'EXCLUIR CADASTRO DEFINITIVAMENTE?\n\n' +
+      playerNameText.toLocaleUpperCase('pt-BR') +
+      '\n\nSerão apagados cadastro, telefone, e-mail, foto, notificações ' +
+      'e acesso deste atleta.\n\n' +
+      'Financeiro e gols históricos serão preservados SEM os dados pessoais.'
+    );
+
+    if(!first) return;
+
+    const typed = prompt(
+      'Para confirmar a exclusão definitiva, digite:\n\nEXCLUIR'
+    );
+
+    if(
+      String(typed || '')
+        .trim()
+        .toLocaleUpperCase('pt-BR') !== 'EXCLUIR'
+    ){
+      alert('Exclusão cancelada.');
+      return;
+    }
+
+    const response =
+      await excluirJogadorDefinitivamenteCall({
+        playerId,
+        confirmation:'EXCLUIR'
+      });
+
+    const data = response.data || {};
+
+    if(
+      remoteRacha &&
+      data.confirmedCount !== undefined
+    ){
+      remoteRacha.confirmedCount =
+        Number(data.confirmedCount) || 0;
+    }
+
+    await loadConfirmedList();
+
+    if(typeof refreshAdminV4Dashboard === 'function'){
+      refreshAdminV4Dashboard();
+    }
+
+    renderHome();
+
+    alert(
+      playerNameText.toLocaleUpperCase('pt-BR') +
+      '\n\nCADASTRO EXCLUÍDO DEFINITIVAMENTE ✓'
+    );
+  }
+
+
   async function loadConfirmedList(){
     if(confirmedListLoading) return;
     confirmedListLoading = true;
@@ -8938,6 +9110,111 @@ let messagingInstance = null;
 
           meta.append(positionSelect, badge);
 
+          const contact =
+            document.createElement('div');
+
+          contact.className =
+            'admin-player-contact';
+
+          contact.textContent =
+            [
+              String(player.phone || '').trim(),
+              String(player.email || '').trim()
+            ]
+              .filter(Boolean)
+              .join(' • ') ||
+            'SEM CONTATO SALVO';
+
+          meta.appendChild(contact);
+
+          const dangerActions =
+            document.createElement('div');
+
+          dangerActions.className =
+            'admin-player-danger-actions';
+
+          if(player.status === 'confirmed'){
+            const cancelRacha =
+              document.createElement('button');
+
+            cancelRacha.type = 'button';
+            cancelRacha.className =
+              'admin-cancel-racha-btn';
+
+            cancelRacha.textContent =
+              'REMOVER DO RACHA';
+
+            cancelRacha.addEventListener(
+              'click',
+              async () => {
+                cancelRacha.disabled = true;
+
+                try{
+                  await cancelPlayerFromCurrentRacha(player);
+                }catch(error){
+                  console.error(
+                    'Cancelar do racha:',
+                    error
+                  );
+
+                  alert(
+                    'Não foi possível remover do racha: ' +
+                    (error?.message || 'erro')
+                  );
+                }finally{
+                  cancelRacha.disabled = false;
+                }
+              }
+            );
+
+            dangerActions.appendChild(
+              cancelRacha
+            );
+          }
+
+          const deletePlayer =
+            document.createElement('button');
+
+          deletePlayer.type = 'button';
+          deletePlayer.className =
+            'admin-delete-player-btn';
+
+          deletePlayer.textContent =
+            'EXCLUIR CADASTRO';
+
+          deletePlayer.addEventListener(
+            'click',
+            async () => {
+              deletePlayer.disabled = true;
+
+              try{
+                await deletePlayerPermanently(
+                  player
+                );
+              }catch(error){
+                console.error(
+                  'Excluir cadastro:',
+                  error
+                );
+
+                alert(
+                  'Não foi possível excluir o cadastro: ' +
+                  (error?.message || 'erro')
+                );
+              }finally{
+                deletePlayer.disabled = false;
+              }
+            }
+          );
+
+          dangerActions.appendChild(
+            deletePlayer
+          );
+
+          meta.appendChild(
+            dangerActions
+          );
+
           row.appendChild(avatar);
           row.appendChild(name);
           row.appendChild(meta);
@@ -8993,6 +9270,39 @@ let messagingInstance = null;
         row.appendChild(number);
         row.appendChild(name);
         row.appendChild(badge);
+
+        if(isAdminUser()){
+          const cancelRacha =
+            document.createElement('button');
+
+          cancelRacha.type = 'button';
+          cancelRacha.className =
+            'admin-cancel-racha-btn';
+
+          cancelRacha.textContent = 'REMOVER';
+
+          cancelRacha.addEventListener(
+            'click',
+            async () => {
+              cancelRacha.disabled = true;
+
+              try{
+                await cancelPlayerFromCurrentRacha(
+                  player
+                );
+              }catch(error){
+                alert(
+                  'Não foi possível remover: ' +
+                  (error?.message || 'erro')
+                );
+              }finally{
+                cancelRacha.disabled = false;
+              }
+            }
+          );
+
+          row.appendChild(cancelRacha);
+        }
 
         confirmedListItems.appendChild(row);
       });
@@ -12122,11 +12432,19 @@ async function removeSponsorLogo(slot){
         return;
       }
 
+      const existingProfileHasPhoto =
+        !!String(
+          state.currentUser.photoURL ||
+          state.currentUser.photo ||
+          ''
+        ).trim();
+
       const existingProfileReady =
         snap.exists() &&
         !!String(state.currentUser.name || '').trim() &&
         !!String(state.currentUser.phone || '').trim() &&
-        !!String(state.currentUser.email || '').trim();
+        !!String(state.currentUser.email || '').trim() &&
+        existingProfileHasPhoto;
 
       // Jogador já cadastrado não refaz cadastro a cada racha.
       if(existingProfileReady){
@@ -12183,6 +12501,13 @@ async function removeSponsorLogo(slot){
           100
         );
         return;
+      }
+
+      if(snap.exists() && !existingProfileHasPhoto){
+        alert(
+          'FOTO OBRIGATÓRIA\n\n' +
+          'Para entrar no racha, todo atleta precisa ter uma foto de perfil.'
+        );
       }
 
       // Só jogador novo ou cadastro antigo incompleto entra aqui.
