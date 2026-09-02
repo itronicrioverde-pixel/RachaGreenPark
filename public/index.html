@@ -6426,6 +6426,50 @@ body:not(.admin-authenticated) #adminV4Dashboard{
 }
 
 
+/* GREENPARK_PLAYER_LIST_UI_V6 */
+
+/* O texto REMOVER não pode ultrapassar a borda */
+#confirmedListView .admin-cancel-racha-btn{
+  width:max-content;
+  min-width:92px;
+  min-height:34px;
+  padding-left:14px;
+  padding-right:14px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  white-space:nowrap;
+  box-sizing:border-box;
+}
+
+/*
+  Na base de jogadores mostramos somente primeiro + segundo nome.
+  Se os dois nomes forem grandes, permite quebrar em 2 linhas
+  em vez de cortar com "...".
+*/
+#confirmedListView .admin-player-short-name{
+  min-width:0;
+  overflow:visible;
+  text-overflow:clip;
+  white-space:normal;
+  line-height:1.15;
+  overflow-wrap:normal;
+  word-break:normal;
+}
+
+@media (max-width:380px){
+  #confirmedListView .admin-player-short-name{
+    font-size:12px;
+  }
+
+  #confirmedListView .admin-cancel-racha-btn{
+    min-width:88px;
+    padding-left:12px;
+    padding-right:12px;
+  }
+}
+
+
 </style>
 
 <style id="greenpark-mobile-touch-hardening">
@@ -9979,6 +10023,25 @@ let messagingInstance = null;
   }
 
 
+  // GREENPARK_PLAYER_LIST_UI_V6
+  function greenParkFirstTwoNames(value){
+    const parts =
+      String(value || 'Jogador')
+        .trim()
+        .split(/\s+/)
+        .filter(Boolean);
+
+    const shortName =
+      parts
+        .slice(0, 2)
+        .join(' ');
+
+    return String(
+      shortName || 'Jogador'
+    ).toLocaleUpperCase('pt-BR');
+  }
+
+
   async function loadConfirmedList(){
     if(confirmedListLoading) return;
     confirmedListLoading = true;
@@ -10027,7 +10090,11 @@ let messagingInstance = null;
 
           const name = document.createElement('div');
           name.className = 'confirmed-player-name';
-          name.textContent = String(player.name || 'Jogador').toLocaleUpperCase('pt-BR');
+          name.classList.add('admin-player-short-name');
+          name.textContent =
+            greenParkFirstTwoNames(
+              player.name
+            );
 
           const meta = document.createElement('div');
           meta.className = 'admin-player-meta';
