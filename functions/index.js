@@ -6381,6 +6381,8 @@ exports.excluirMidiaGaleria = onCall(
 // Painel de cobertura + teste privado do aparelho do Admin.
 // ============================================================
 
+// GREEN PARK PUSH ADMIN V4
+// Retorna também a relação dos jogadores ainda sem Push ativo.
 exports.obterStatusPushAdmin = onCall(
     {
       invoker: "public",
@@ -6401,6 +6403,8 @@ exports.obterStatusPushAdmin = onCall(
       let activePlayers = 0;
       let totalTokens = 0;
 
+      const inactivePlayerList = [];
+
       snapshot.docs.forEach((docSnap) => {
         if (
           docSnap.id ===
@@ -6417,14 +6421,48 @@ exports.obterStatusPushAdmin = onCall(
         const tokens =
           collectFcmTokens(data);
 
-        if (
+        const pushActive =
           data.notificationsEnabled === true &&
-          tokens.length > 0
-        ) {
+          tokens.length > 0;
+
+        if (pushActive) {
           activePlayers += 1;
           totalTokens += tokens.length;
+          return;
         }
+
+        const name =
+          safeContentString(
+              data.name ||
+              data.nickname ||
+              "SEM NOME",
+              100,
+          );
+
+        const phone =
+          safeContentString(
+              data.phone,
+              40,
+          );
+
+        inactivePlayerList.push({
+          name,
+          phone,
+          permissionEnabled:
+            data.notificationsEnabled === true,
+          tokenCount: tokens.length,
+        });
       });
+
+      inactivePlayerList.sort(
+          (a, b) =>
+            String(a.name || "")
+                .localeCompare(
+                    String(b.name || ""),
+                    "pt-BR",
+                    {sensitivity: "base"},
+                ),
+      );
 
       return {
         ok: true,
@@ -6436,6 +6474,7 @@ exports.obterStatusPushAdmin = onCall(
               totalPlayers - activePlayers,
           ),
         totalTokens,
+        inactivePlayerList,
       };
     },
 );

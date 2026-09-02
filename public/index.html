@@ -1673,6 +1673,111 @@
       color:#ff9a9a;
     }
 
+    /* GREENPARK_PUSH_INACTIVE_V4 */
+    .push-inactive-details{
+      overflow:hidden;
+      margin-top:10px;
+      border:1px solid #34443d;
+      border-radius:12px;
+      background:#0d1713;
+    }
+
+    .push-inactive-details summary{
+      min-height:45px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      padding:0 12px;
+      cursor:pointer;
+      list-style:none;
+      color:#fff;
+      font-size:9px;
+      font-weight:950;
+      text-transform:uppercase;
+    }
+
+    .push-inactive-details summary::-webkit-details-marker{
+      display:none;
+    }
+
+    .push-inactive-details summary::after{
+      content:'+';
+      color:var(--green2);
+      font-size:17px;
+    }
+
+    .push-inactive-details[open] summary::after{
+      content:'−';
+    }
+
+    .push-inactive-count{
+      margin-left:auto;
+      padding:4px 8px;
+      border-radius:999px;
+      background:rgba(242,183,53,.12);
+      color:#ffd36b;
+      font-size:8px;
+      font-weight:950;
+    }
+
+    .push-inactive-list{
+      max-height:320px;
+      overflow:auto;
+      border-top:1px solid #293a32;
+    }
+
+    .push-inactive-row{
+      display:grid;
+      grid-template-columns:minmax(0,1fr) auto;
+      gap:9px;
+      align-items:center;
+      min-height:48px;
+      padding:8px 11px;
+      border-bottom:1px solid rgba(255,255,255,.055);
+    }
+
+    .push-inactive-row:last-child{
+      border-bottom:0;
+    }
+
+    .push-inactive-name{
+      overflow:hidden;
+      color:#fff;
+      font-size:9.5px;
+      line-height:1.2;
+      font-weight:900;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+    }
+
+    .push-inactive-phone{
+      margin-top:3px;
+      color:#7f9188;
+      font-size:8px;
+      line-height:1.2;
+    }
+
+    .push-inactive-badge{
+      min-width:66px;
+      padding:5px 7px;
+      border-radius:999px;
+      background:rgba(242,183,53,.09);
+      color:#e7c36c;
+      font-size:7px;
+      line-height:1.15;
+      font-weight:950;
+      text-align:center;
+    }
+
+    .push-inactive-empty{
+      padding:14px 11px;
+      color:#8b9c93;
+      font-size:9px;
+      line-height:1.4;
+      text-align:center;
+    }
+
 
     .player-push-card{
       display:none;
@@ -7335,6 +7440,19 @@ button {
               </div>
             </div>
 
+            <details class="push-inactive-details" id="pushInactiveDetails">
+              <summary>
+                <span>Jogadores sem avisos</span>
+                <span class="push-inactive-count" id="pushInactiveCount">--</span>
+              </summary>
+
+              <div class="push-inactive-list" id="pushInactiveList">
+                <div class="push-inactive-empty">
+                  Carregando jogadores...
+                </div>
+              </div>
+            </details>
+
             <button
               class="push-admin-test-btn"
               id="sendAdminPushTestButton"
@@ -7973,6 +8091,9 @@ let messagingInstance = null;
   const pushAdminTokens = document.getElementById('pushAdminTokens');
   const sendAdminPushTestButton = document.getElementById('sendAdminPushTestButton');
   const pushAdminTestState = document.getElementById('pushAdminTestState');
+  const pushInactiveDetails = document.getElementById('pushInactiveDetails');
+  const pushInactiveCount = document.getElementById('pushInactiveCount');
+  const pushInactiveList = document.getElementById('pushInactiveList');
 
   const launchParams = new URLSearchParams(window.location.search);
   const launchTarget = launchParams.get('open') || '';
@@ -8616,6 +8737,128 @@ let messagingInstance = null;
   }
 
 
+  function renderAdminPushInactivePlayers(items, failed = false){
+    if(
+      !pushInactiveList ||
+      !pushInactiveCount
+    ){
+      return;
+    }
+
+    pushInactiveList.innerHTML = '';
+
+    if(failed){
+      pushInactiveCount.textContent = '--';
+
+      const message =
+        document.createElement('div');
+
+      message.className =
+        'push-inactive-empty';
+
+      message.textContent =
+        'Não foi possível carregar a lista agora.';
+
+      pushInactiveList.appendChild(
+        message
+      );
+
+      return;
+    }
+
+    const players =
+      Array.isArray(items) ?
+        items :
+        [];
+
+    pushInactiveCount.textContent =
+      String(players.length);
+
+    if(players.length === 0){
+      const empty =
+        document.createElement('div');
+
+      empty.className =
+        'push-inactive-empty';
+
+      empty.textContent =
+        'Todos os jogadores cadastrados estão aptos a receber avisos.';
+
+      pushInactiveList.appendChild(
+        empty
+      );
+
+      return;
+    }
+
+    players.forEach(player => {
+      const row =
+        document.createElement('div');
+
+      row.className =
+        'push-inactive-row';
+
+      const main =
+        document.createElement('div');
+
+      const name =
+        document.createElement('div');
+
+      name.className =
+        'push-inactive-name';
+
+      name.textContent =
+        String(
+          player?.name ||
+          'SEM NOME'
+        );
+
+      const phone =
+        document.createElement('div');
+
+      phone.className =
+        'push-inactive-phone';
+
+      phone.textContent =
+        String(
+          player?.phone ||
+          'Telefone não informado'
+        );
+
+      main.append(
+        name,
+        phone
+      );
+
+      const badge =
+        document.createElement('div');
+
+      badge.className =
+        'push-inactive-badge';
+
+      if(
+        player?.permissionEnabled === true &&
+        Number(player?.tokenCount || 0) === 0
+      ){
+        badge.textContent =
+          'SEM TOKEN';
+      }else{
+        badge.textContent =
+          'NÃO ATIVOU';
+      }
+
+      row.append(
+        main,
+        badge
+      );
+
+      pushInactiveList.appendChild(
+        row
+      );
+    });
+  }
+
+
   async function refreshAdminPushOverview(){
     if(
       !isAdminUser() ||
@@ -8659,6 +8902,12 @@ let messagingInstance = null;
       pushAdminTokens.textContent =
         String(tokens);
 
+      renderAdminPushInactivePlayers(
+        Array.isArray(data.inactivePlayerList) ?
+          data.inactivePlayerList :
+          []
+      );
+
       const missing =
         Math.max(0, total - active);
 
@@ -8683,6 +8932,11 @@ let messagingInstance = null;
 
       pushAdminPlayers.textContent = '-- / --';
       pushAdminTokens.textContent = '--';
+
+      renderAdminPushInactivePlayers(
+        [],
+        true
+      );
 
       setAdminPushTestState(
         'Não foi possível carregar o status dos avisos.',
