@@ -7953,6 +7953,208 @@ let messagingInstance = null;
     return isIOSDevice() && !isStandaloneWebApp();
   }
 
+  // GREEN PARK PUSH ACTIVATION V1
+  // O navegador exige ação do usuário para conceder a permissão.
+  // Este fluxo torna a ativação visível e recupera automaticamente
+  // aparelhos que já haviam concedido permissão anteriormente.
+  let playerPushReconnectInFlight = false;
+
+  function playerPushReminderSessionKey(){
+    if(!firebaseUser) return 'greenpark_push_reminder_dismissed';
+    return 'greenpark_push_reminder_dismissed_' + firebaseUser.uid;
+  }
+
+  function playerPushReminderWasDismissed(){
+    try{
+      return sessionStorage.getItem(
+        playerPushReminderSessionKey()
+      ) === '1';
+    }catch{
+      return false;
+    }
+  }
+
+  function dismissPlayerPushReminder(){
+    const overlay =
+      document.getElementById('playerPushReminderOverlay');
+
+    if(overlay){
+      overlay.style.display = 'none';
+    }
+
+    try{
+      sessionStorage.setItem(
+        playerPushReminderSessionKey(),
+        '1'
+      );
+    }catch{}
+  }
+
+  function hidePlayerPushReminder(){
+    const overlay =
+      document.getElementById('playerPushReminderOverlay');
+
+    if(overlay){
+      overlay.style.display = 'none';
+    }
+  }
+
+  function refreshPlayerPushReminder(){
+    const overlay =
+      document.getElementById('playerPushReminderOverlay');
+
+    const title =
+      document.getElementById('playerPushReminderTitle');
+
+    const text =
+      document.getElementById('playerPushReminderText');
+
+    const action =
+      document.getElementById('playerPushReminderAction');
+
+    if(!overlay || !title || !text || !action){
+      return;
+    }
+
+    if(!firebaseUser || isAdminUser()){
+      hidePlayerPushReminder();
+      return;
+    }
+
+    // iPhone no Safari ainda precisa instalar o PWA.
+    if(needsIOSHomeScreenInstall()){
+      if(playerPushReminderWasDismissed()){
+        hidePlayerPushReminder();
+        return;
+      }
+
+      title.textContent = 'ATIVE OS AVISOS DO GREEN PARK';
+
+      text.textContent =
+        'No iPhone, adicione o Green Park à Tela de Início e abra pelo ícone. ' +
+        'Assim você poderá receber comunicados, confirmações e avisos do racha.';
+
+      action.textContent = 'COMO ATIVAR NO IPHONE';
+      overlay.style.display = 'flex';
+      return;
+    }
+
+    if(
+      !('Notification' in window) ||
+      !('serviceWorker' in navigator)
+    ){
+      hidePlayerPushReminder();
+      return;
+    }
+
+    const key =
+      'greenpark_player_fcm_token_' + firebaseUser.uid;
+
+    const saved =
+      localStorage.getItem(key);
+
+    // Permissão + token local = aparelho já ativado.
+    if(
+      Notification.permission === 'granted' &&
+      saved
+    ){
+      hidePlayerPushReminder();
+
+      try{
+        sessionStorage.removeItem(
+          playerPushReminderSessionKey()
+        );
+      }catch{}
+
+      return;
+    }
+
+    if(playerPushReminderWasDismissed()){
+      hidePlayerPushReminder();
+      return;
+    }
+
+    if(Notification.permission === 'denied'){
+      title.textContent = 'AVISOS BLOQUEADOS';
+
+      text.textContent =
+        'As notificações estão bloqueadas neste aparelho. ' +
+        'Libere as notificações do Green Park nas configurações para não perder os comunicados.';
+
+      action.textContent = 'COMO LIBERAR OS AVISOS';
+      overlay.style.display = 'flex';
+      return;
+    }
+
+    if(Notification.permission === 'granted'){
+      title.textContent = 'RECONECTAR AVISOS';
+
+      text.textContent =
+        'A permissão já está liberada. Vamos registrar novamente este aparelho no Green Park.';
+
+      action.textContent = 'RECONECTAR AGORA';
+      overlay.style.display = 'flex';
+      return;
+    }
+
+    title.textContent = 'NÃO PERCA OS AVISOS DO RACHA';
+
+    text.textContent =
+      'Ative as notificações para receber comunicados, confirmação de pagamento e informações importantes do Green Park.';
+
+    action.textContent = 'ATIVAR AVISOS AGORA';
+    overlay.style.display = 'flex';
+  }
+
+  async function runPlayerPushReminderAction(){
+    if(needsIOSHomeScreenInstall()){
+      showIOSPushInstallInstructions();
+      return;
+    }
+
+    if(
+      'Notification' in window &&
+      Notification.permission === 'denied'
+    ){
+      alert(
+        'As notificações estão bloqueadas neste aparelho.\\n\\n' +
+        'Abra as configurações de notificações do aparelho ou navegador, ' +
+        'libere o Green Park e depois volte ao aplicativo.'
+      );
+      return;
+    }
+
+    const button =
+      document.getElementById('playerPushReminderAction');
+
+    if(button){
+      button.disabled = true;
+      button.textContent = 'ATIVANDO...';
+    }
+
+    try{
+      await activatePlayerPush();
+      hidePlayerPushReminder();
+    }catch(error){
+      console.error(
+        'Falha ativando Push pelo lembrete:',
+        error
+      );
+
+      alert(
+        error.message ||
+        'Não foi possível ativar os avisos neste aparelho.'
+      );
+    }finally{
+      if(button){
+        button.disabled = false;
+      }
+
+      refreshPlayerPushUI();
+      refreshPlayerPushReminder();
+    }
+  }
+
   function showIOSPushInstallInstructions(){
     alert(
       'Para receber notificações no iPhone:\n\n' +
@@ -7994,6 +8196,9 @@ let messagingInstance = null;
     const show = shouldShowPlayerPush();
 
     playerPushCard.classList.toggle('show', show);
+
+    // Reavalia também o lembrete global de ativação.
+    setTimeout(refreshPlayerPushReminder, 120);
 
     if(!show) return;
 
@@ -8053,10 +8258,48 @@ let messagingInstance = null;
 
     if(permission === 'granted' && !saved){
       enablePlayerPushButton.textContent =
-        'FINALIZAR ATIVAÇÃO NESTE ' + deviceName;
+        'RECONECTANDO AVISOS...';
+
       setPlayerPushState(
-        'A permissão já foi concedida. Toque para concluir o registro deste aparelho.'
+        'A permissão já existe. Estamos registrando novamente este aparelho.'
       );
+
+      if(!playerPushReconnectInFlight){
+        playerPushReconnectInFlight = true;
+        enablePlayerPushButton.disabled = true;
+
+        refreshPushTokenSilently(
+          firebaseUser.uid,
+          key
+        ).then(token => {
+          if(token){
+            enablePlayerPushButton.textContent =
+              'AVISOS ATIVADOS ✓';
+
+            setPlayerPushState(
+              'Avisos ativos neste ' +
+              deviceName.toLowerCase() +
+              '. Você receberá confirmações, comunicados e avisos do racha.',
+              'ok'
+            );
+
+            hidePlayerPushReminder();
+          }else{
+            enablePlayerPushButton.textContent =
+              'FINALIZAR ATIVAÇÃO NESTE ' +
+              deviceName;
+
+            setPlayerPushState(
+              'Não foi possível registrar automaticamente. Toque para concluir a ativação.'
+            );
+          }
+        }).finally(() => {
+          playerPushReconnectInFlight = false;
+          enablePlayerPushButton.disabled = false;
+          refreshPlayerPushReminder();
+        });
+      }
+
       return;
     }
 
@@ -13060,6 +13303,26 @@ async function removeSponsorLogo(slot){
     }
   });
 
+  const playerPushReminderAction =
+    document.getElementById('playerPushReminderAction');
+
+  const playerPushReminderLater =
+    document.getElementById('playerPushReminderLater');
+
+  if(playerPushReminderAction){
+    playerPushReminderAction.addEventListener(
+      'click',
+      runPlayerPushReminderAction
+    );
+  }
+
+  if(playerPushReminderLater){
+    playerPushReminderLater.addEventListener(
+      'click',
+      dismissPlayerPushReminder
+    );
+  }
+
   enablePushButton.addEventListener('click', async () => {
     if(needsIOSHomeScreenInstall()){
       showIOSPushInstallInstructions();
@@ -14648,5 +14911,114 @@ sponsorFileInput.addEventListener('change', async () => {
   }
 })();
 </script>
+
+  <!-- GREEN PARK PUSH ACTIVATION V1 -->
+  <div
+    id="playerPushReminderOverlay"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="playerPushReminderTitle"
+    style="
+      display:none;
+      position:fixed;
+      inset:0;
+      z-index:99999;
+      align-items:flex-end;
+      justify-content:center;
+      padding:18px;
+      padding-bottom:max(18px, env(safe-area-inset-bottom));
+      background:rgba(0,0,0,.38);
+      box-sizing:border-box;
+    "
+  >
+    <div
+      style="
+        width:min(100%,460px);
+        background:#fff;
+        border-radius:24px;
+        padding:22px;
+        box-shadow:0 18px 55px rgba(0,0,0,.24);
+        font-family:inherit;
+        box-sizing:border-box;
+      "
+    >
+      <div
+        style="
+          width:42px;
+          height:5px;
+          border-radius:999px;
+          background:#d9d9d9;
+          margin:0 auto 20px;
+        "
+      ></div>
+
+      <div
+        id="playerPushReminderTitle"
+        style="
+          font-size:19px;
+          line-height:1.2;
+          font-weight:800;
+          color:#111;
+          text-align:center;
+          margin-bottom:10px;
+        "
+      >
+        NÃO PERCA OS AVISOS DO RACHA
+      </div>
+
+      <div
+        id="playerPushReminderText"
+        style="
+          font-size:14px;
+          line-height:1.45;
+          color:#555;
+          text-align:center;
+          margin-bottom:18px;
+        "
+      >
+        Ative as notificações para receber os comunicados do Green Park.
+      </div>
+
+      <button
+        id="playerPushReminderAction"
+        type="button"
+        style="
+          width:100%;
+          min-height:52px;
+          border:0;
+          border-radius:15px;
+          background:#0a9b47;
+          color:#fff;
+          font:inherit;
+          font-size:14px;
+          font-weight:800;
+          cursor:pointer;
+          padding:12px 16px;
+        "
+      >
+        ATIVAR AVISOS AGORA
+      </button>
+
+      <button
+        id="playerPushReminderLater"
+        type="button"
+        style="
+          width:100%;
+          min-height:44px;
+          margin-top:8px;
+          border:0;
+          background:transparent;
+          color:#777;
+          font:inherit;
+          font-size:13px;
+          font-weight:700;
+          cursor:pointer;
+        "
+      >
+        AGORA NÃO
+      </button>
+    </div>
+  </div>
+
 </body>
 </html>
