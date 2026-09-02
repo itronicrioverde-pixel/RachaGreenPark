@@ -6493,7 +6493,7 @@ exports.publicarComunicado = onCall(
               .collection("players")
               .get();
 
-        const tokens = [];
+        const tokens = new Set();
 
         playersSnapshot.docs.forEach((docSnap) => {
           if (docSnap.id === GREEN_PARK_ADMIN_UID_CONTENT) {
@@ -6501,19 +6501,20 @@ exports.publicarComunicado = onCall(
           }
 
           const data = docSnap.data() || {};
-          const token = String(data.fcmToken || "").trim();
 
-          if (
-            token &&
-            data.notificationsEnabled === true &&
-            !tokens.includes(token)
-          ) {
-            tokens.push(token);
+          if (data.notificationsEnabled !== true) {
+            return;
           }
+
+          collectFcmTokens(data).forEach((token) => {
+            tokens.add(token);
+          });
         });
 
-        for (let index = 0; index < tokens.length; index += 500) {
-          const batchTokens = tokens.slice(index, index + 500);
+        const tokenList = [...tokens];
+
+        for (let index = 0; index < tokenList.length; index += 500) {
+          const batchTokens = tokenList.slice(index, index + 500);
 
           const response = await getMessaging().sendEachForMulticast({
             tokens: batchTokens,
@@ -6535,6 +6536,26 @@ exports.publicarComunicado = onCall(
                 link: "https://racha-95fca.web.app/",
               },
             },
+          });
+
+          response.responses.forEach((item, responseIndex) => {
+            if (item.success) {
+              return;
+            }
+
+            const failedToken =
+              batchTokens[responseIndex] || "";
+
+            console.warn(
+                "Push comunicado falhou:",
+                "token=" +
+                  failedToken.slice(0, 12) +
+                  "...",
+                "code=" +
+                  (item.error?.code || "sem-codigo"),
+                "message=" +
+                  (item.error?.message || "sem-mensagem"),
+            );
           });
 
           pushSent += response.successCount || 0;
