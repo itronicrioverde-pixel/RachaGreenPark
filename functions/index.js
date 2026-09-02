@@ -6377,6 +6377,219 @@ exports.excluirMidiaGaleria = onCall(
 
 
 // ============================================================
+// GREEN PARK PUSH ADMIN V3
+// Painel de cobertura + teste privado do aparelho do Admin.
+// ============================================================
+
+exports.obterStatusPushAdmin = onCall(
+    {
+      invoker: "public",
+      region: "southamerica-east1",
+      timeoutSeconds: 20,
+    },
+    async (request) => {
+      contentAdminOrThrow(request);
+
+      const db = getFirestore();
+
+      const snapshot =
+        await db
+            .collection("players")
+            .get();
+
+      let totalPlayers = 0;
+      let activePlayers = 0;
+      let totalTokens = 0;
+
+      snapshot.docs.forEach((docSnap) => {
+        if (
+          docSnap.id ===
+          GREEN_PARK_ADMIN_UID_CONTENT
+        ) {
+          return;
+        }
+
+        totalPlayers += 1;
+
+        const data =
+          docSnap.data() || {};
+
+        const tokens =
+          collectFcmTokens(data);
+
+        if (
+          data.notificationsEnabled === true &&
+          tokens.length > 0
+        ) {
+          activePlayers += 1;
+          totalTokens += tokens.length;
+        }
+      });
+
+      return {
+        ok: true,
+        totalPlayers,
+        activePlayers,
+        inactivePlayers:
+          Math.max(
+              0,
+              totalPlayers - activePlayers,
+          ),
+        totalTokens,
+      };
+    },
+);
+
+
+exports.enviarTestePushAdmin = onCall(
+    {
+      invoker: "public",
+      region: "southamerica-east1",
+      timeoutSeconds: 20,
+    },
+    async (request) => {
+      contentAdminOrThrow(request);
+
+      const token =
+        safeContentString(
+            request.data?.token,
+            4096,
+        );
+
+      if (!token) {
+        throw new HttpsError(
+            "invalid-argument",
+            "Este aparelho ainda não possui um token Push.",
+        );
+      }
+
+      const db = getFirestore();
+
+      const adminRef =
+        db
+            .collection("players")
+            .doc(
+                GREEN_PARK_ADMIN_UID_CONTENT,
+            );
+
+      const adminSnapshot =
+        await adminRef.get();
+
+      const adminData =
+        adminSnapshot.exists ?
+          adminSnapshot.data() || {} :
+          {};
+
+      const adminTokens =
+        collectFcmTokens(adminData);
+
+      if (!adminTokens.includes(token)) {
+        throw new HttpsError(
+            "failed-precondition",
+            "Este aparelho precisa registrar novamente as notificações do administrador.",
+        );
+      }
+
+      try {
+        const messageId =
+          await getMessaging().send({
+            token,
+            notification: {
+              title:
+                "GREEN PARK FC • TESTE",
+              body:
+                "Notificações funcionando corretamente neste aparelho.",
+            },
+            data: {
+              type: "admin-test",
+              url: GREENPARK_APP_URL,
+            },
+            webpush: {
+              headers: {
+                Urgency: "high",
+                TTL: "300",
+              },
+              fcmOptions: {
+                link: GREENPARK_APP_URL,
+              },
+            },
+          });
+
+        console.log(
+            "Teste Push privado do Admin enviado:",
+            messageId,
+        );
+
+        return {
+          ok: true,
+          sent: 1,
+        };
+      } catch (error) {
+        const errorCode =
+          String(
+              error?.code || "",
+          );
+
+        if (
+          errorCode ===
+          "messaging/registration-token-not-registered"
+        ) {
+          const remainingTokens =
+            adminTokens.filter(
+                (savedToken) =>
+                  savedToken !== token,
+            );
+
+          const patch = {
+            fcmTokens: remainingTokens,
+            notificationUpdatedAt:
+              FieldValue.serverTimestamp(),
+          };
+
+          const currentPrimary =
+            String(
+                adminData.fcmToken || "",
+            ).trim();
+
+          if (currentPrimary === token) {
+            patch.fcmToken =
+              remainingTokens.length ?
+                remainingTokens[
+                    remainingTokens.length - 1
+                ] :
+                FieldValue.delete();
+          }
+
+          if (!remainingTokens.length) {
+            patch.notificationsEnabled = false;
+          }
+
+          await adminRef.set(
+              patch,
+              {merge: true},
+          );
+
+          throw new HttpsError(
+              "failed-precondition",
+              "O registro Push deste aparelho expirou. Ative as notificações novamente.",
+          );
+        }
+
+        console.error(
+            "Falha no teste Push privado do Admin:",
+            error,
+        );
+
+        throw new HttpsError(
+            "internal",
+            "Não foi possível enviar o teste Push.",
+        );
+      }
+    },
+);
+
+
+// ============================================================
 // COMUNICADOS
 // ============================================================
 

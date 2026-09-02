@@ -1605,6 +1605,74 @@
     .push-state.ok{color:var(--green2)}
     .push-state.error{color:#ff8d8d}
 
+    /* GREENPARK_PUSH_ADMIN_V3 */
+    .push-admin-overview{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:7px;
+      margin-top:12px;
+    }
+
+    .push-admin-overview-item{
+      min-width:0;
+      padding:11px 9px;
+      border:1px solid #2d4037;
+      border-radius:12px;
+      background:#0c1812;
+      text-align:center;
+    }
+
+    .push-admin-overview-item strong{
+      display:block;
+      color:var(--green2);
+      font-size:17px;
+      line-height:1;
+      font-weight:950;
+    }
+
+    .push-admin-overview-item small{
+      display:block;
+      margin-top:6px;
+      color:#87968e;
+      font-size:7.5px;
+      line-height:1.25;
+      font-weight:900;
+      text-transform:uppercase;
+    }
+
+    .push-admin-test-btn{
+      width:100%;
+      min-height:46px;
+      margin-top:10px;
+      border:1px solid #3b6547;
+      border-radius:11px;
+      background:#11261a;
+      color:var(--green2);
+      font-size:9px;
+      font-weight:950;
+    }
+
+    .push-admin-test-btn:disabled{
+      opacity:.45;
+    }
+
+    .push-admin-test-state{
+      min-height:14px;
+      margin-top:7px;
+      color:#8d9b94;
+      font-size:8.5px;
+      line-height:1.4;
+      text-align:center;
+    }
+
+    .push-admin-test-state.ok{
+      color:var(--green2);
+    }
+
+    .push-admin-test-state.error{
+      color:#ff9a9a;
+    }
+
 
     .player-push-card{
       display:none;
@@ -7255,6 +7323,31 @@ button {
               Notificações ainda não ativadas neste aparelho.
             </div>
 
+            <div class="push-admin-overview">
+              <div class="push-admin-overview-item">
+                <strong id="pushAdminPlayers">-- / --</strong>
+                <small>Jogadores com avisos ativos</small>
+              </div>
+
+              <div class="push-admin-overview-item">
+                <strong id="pushAdminTokens">--</strong>
+                <small>Registros de aparelhos</small>
+              </div>
+            </div>
+
+            <button
+              class="push-admin-test-btn"
+              id="sendAdminPushTestButton"
+              type="button"
+            >
+              ENVIAR TESTE SÓ PARA ESTE APARELHO
+            </button>
+
+            <div
+              class="push-admin-test-state"
+              id="pushAdminTestState"
+            ></div>
+
             <textarea class="push-token" id="adminFcmToken" readonly></textarea>
 
             <button class="push-copy-btn" id="copyFcmTokenButton" type="button">
@@ -7643,6 +7736,8 @@ const cancelarJogadorDoRachaCall = httpsCallable(functions, 'cancelarJogadorDoRa
 const excluirJogadorDefinitivamenteCall = httpsCallable(functions, 'excluirJogadorDefinitivamente');
 const salvarMinhaPosicaoCall = httpsCallable(functions, 'salvarMinhaPosicao');
 const salvarMeuPushTokenCall = httpsCallable(functions, 'salvarMeuPushToken');
+const obterStatusPushAdminCall = httpsCallable(functions, 'obterStatusPushAdmin');
+const enviarTestePushAdminCall = httpsCallable(functions, 'enviarTestePushAdmin');
 const obterRankingCall = httpsCallable(functions, 'obterRanking');
 const salvarRankingRachaCall = httpsCallable(functions, 'salvarRankingRacha');
 const carregarRankingRachaCall = httpsCallable(functions, 'carregarRankingRacha');
@@ -7874,6 +7969,10 @@ let messagingInstance = null;
   const pushState = document.getElementById('pushState');
   const adminFcmToken = document.getElementById('adminFcmToken');
   const copyFcmTokenButton = document.getElementById('copyFcmTokenButton');
+  const pushAdminPlayers = document.getElementById('pushAdminPlayers');
+  const pushAdminTokens = document.getElementById('pushAdminTokens');
+  const sendAdminPushTestButton = document.getElementById('sendAdminPushTestButton');
+  const pushAdminTestState = document.getElementById('pushAdminTestState');
 
   const launchParams = new URLSearchParams(window.location.search);
   const launchTarget = launchParams.get('open') || '';
@@ -8507,6 +8606,209 @@ let messagingInstance = null;
     }
   }
 
+  function setAdminPushTestState(message = '', type = ''){
+    if(!pushAdminTestState) return;
+
+    pushAdminTestState.textContent = message;
+    pushAdminTestState.className =
+      'push-admin-test-state' +
+      (type ? ' ' + type : '');
+  }
+
+
+  async function refreshAdminPushOverview(){
+    if(
+      !isAdminUser() ||
+      !pushAdminPlayers ||
+      !pushAdminTokens
+    ){
+      return;
+    }
+
+    pushAdminPlayers.textContent = '...';
+    pushAdminTokens.textContent = '...';
+
+    try{
+      const response =
+        await obterStatusPushAdminCall({});
+
+      const data =
+        response.data || {};
+
+      const active =
+        Math.max(
+          0,
+          Number(data.activePlayers || 0)
+        );
+
+      const total =
+        Math.max(
+          0,
+          Number(data.totalPlayers || 0)
+        );
+
+      const tokens =
+        Math.max(
+          0,
+          Number(data.totalTokens || 0)
+        );
+
+      pushAdminPlayers.textContent =
+        active + ' / ' + total;
+
+      pushAdminTokens.textContent =
+        String(tokens);
+
+      const missing =
+        Math.max(0, total - active);
+
+      if(missing > 0){
+        setAdminPushTestState(
+          missing +
+          (missing === 1 ?
+            ' jogador ainda não ativou os avisos.' :
+            ' jogadores ainda não ativaram os avisos.')
+        );
+      }else if(total > 0){
+        setAdminPushTestState(
+          'Todos os jogadores cadastrados estão com avisos ativos.',
+          'ok'
+        );
+      }
+    }catch(error){
+      console.warn(
+        'Status Push do Admin:',
+        error
+      );
+
+      pushAdminPlayers.textContent = '-- / --';
+      pushAdminTokens.textContent = '--';
+
+      setAdminPushTestState(
+        'Não foi possível carregar o status dos avisos.',
+        'error'
+      );
+    }
+  }
+
+
+  async function sendPrivateAdminPushTest(){
+    if(!isAdminUser()){
+      alert(
+        'Entre como administrador para enviar o teste.'
+      );
+      return;
+    }
+
+    if(needsIOSHomeScreenInstall()){
+      showIOSPushInstallInstructions();
+      return;
+    }
+
+    if(
+      !('Notification' in window) ||
+      Notification.permission !== 'granted'
+    ){
+      alert(
+        'Ative as notificações neste aparelho antes de enviar o teste.'
+      );
+      return;
+    }
+
+    if(!sendAdminPushTestButton){
+      return;
+    }
+
+    const originalText =
+      sendAdminPushTestButton.textContent;
+
+    sendAdminPushTestButton.disabled = true;
+    sendAdminPushTestButton.textContent =
+      'PREPARANDO TESTE...';
+
+    setAdminPushTestState(
+      'Atualizando o registro deste aparelho...'
+    );
+
+    try{
+      let token =
+        await refreshPushTokenSilently(
+          ADMIN_UID,
+          'greenpark_admin_fcm_token'
+        );
+
+      if(!token){
+        token =
+          String(
+            localStorage.getItem(
+              'greenpark_admin_fcm_token'
+            ) || ''
+          ).trim();
+      }
+
+      if(!token){
+        throw new Error(
+          'Este aparelho ainda não possui um registro Push válido. Ative as notificações novamente.'
+        );
+      }
+
+      sendAdminPushTestButton.textContent =
+        'ENVIANDO SÓ PARA ESTE APARELHO...';
+
+      const response =
+        await enviarTestePushAdminCall({
+          token
+        });
+
+      if(
+        Number(response.data?.sent || 0) !== 1
+      ){
+        throw new Error(
+          'O Firebase não confirmou o envio do teste.'
+        );
+      }
+
+      setAdminPushTestState(
+        'Teste enviado somente para este aparelho.',
+        'ok'
+      );
+
+      sendAdminPushTestButton.textContent =
+        'TESTE ENVIADO ✓';
+
+      setTimeout(() => {
+        if(sendAdminPushTestButton){
+          sendAdminPushTestButton.textContent =
+            originalText;
+        }
+      }, 2200);
+
+      await refreshAdminPushOverview();
+    }catch(error){
+      console.error(
+        'Teste Push privado:',
+        error
+      );
+
+      setAdminPushTestState(
+        error?.message ||
+        'Não foi possível enviar o teste.',
+        'error'
+      );
+
+      sendAdminPushTestButton.textContent =
+        originalText;
+
+      alert(
+        error?.message ||
+        'Não foi possível enviar o teste Push.'
+      );
+    }finally{
+      sendAdminPushTestButton.disabled = false;
+    }
+  }
+
+
   async function restorePushUI(){
     if(!isAdminUser()){
       pushAdminBox.classList.remove('show');
@@ -8514,6 +8816,13 @@ let messagingInstance = null;
     }
 
     pushAdminBox.classList.add('show');
+
+    refreshAdminPushOverview().catch(error => {
+      console.warn(
+        'Falha atualizando painel Push:',
+        error
+      );
+    });
 
     let savedToken = localStorage.getItem('greenpark_admin_fcm_token');
 
@@ -13459,6 +13768,13 @@ async function removeSponsorLogo(slot){
       enablePushButton.disabled = false;
     }
   });
+
+  if(sendAdminPushTestButton){
+    sendAdminPushTestButton.addEventListener(
+      'click',
+      sendPrivateAdminPushTest
+    );
+  }
 
   copyFcmTokenButton.addEventListener('click', async () => {
     const token = adminFcmToken.value.trim();
