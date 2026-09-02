@@ -6493,7 +6493,11 @@ exports.publicarComunicado = onCall(
               .collection("players")
               .get();
 
-        const tokens = new Set();
+        // GREEN PARK PUSH DELIVERY V2
+        // Mantém a relação token -> jogador para remover somente
+        // tokens que o Firebase confirmar como definitivamente inválidos.
+        const tokenOwners = new Map();
+        const deadTokensByPlayer = new Map();
 
         playersSnapshot.docs.forEach((docSnap) => {
           if (docSnap.id === GREEN_PARK_ADMIN_UID_CONTENT) {
@@ -6507,11 +6511,20 @@ exports.publicarComunicado = onCall(
           }
 
           collectFcmTokens(data).forEach((token) => {
-            tokens.add(token);
+            if (!tokenOwners.has(token)) {
+              tokenOwners.set(token, []);
+            }
+
+            tokenOwners.get(token).push(docSnap.ref);
           });
         });
 
-        const tokenList = [...tokens];
+        const tokenList = [...tokenOwners.keys()];
+
+        const noticeUrl =
+          GREENPARK_APP_URL +
+          "?open=notice&noticeId=" +
+          encodeURIComponent(ref.id);
 
         for (let index = 0; index < tokenList.length; index += 500) {
           const batchTokens = tokenList.slice(index, index + 500);
@@ -6525,7 +6538,7 @@ exports.publicarComunicado = onCall(
             data: {
               type: "notice",
               noticeId: ref.id,
-              url: "https://racha-95fca.web.app/",
+              url: noticeUrl,
             },
             webpush: {
               headers: {
@@ -6533,7 +6546,7 @@ exports.publicarComunicado = onCall(
                 TTL: "300",
               },
               fcmOptions: {
-                link: "https://racha-95fca.web.app/",
+                link: noticeUrl,
               },
             },
           });
@@ -6546,20 +6559,126 @@ exports.publicarComunicado = onCall(
             const failedToken =
               batchTokens[responseIndex] || "";
 
+            const errorCode =
+              item.error?.code || "sem-codigo";
+
             console.warn(
                 "Push comunicado falhou:",
                 "token=" +
                   failedToken.slice(0, 12) +
                   "...",
                 "code=" +
-                  (item.error?.code || "sem-codigo"),
+                  errorCode,
                 "message=" +
                   (item.error?.message || "sem-mensagem"),
             );
+
+            // Só removemos automaticamente quando o próprio
+            // Firebase declara que aquele registro não existe mais.
+            if (
+              errorCode ===
+              "messaging/registration-token-not-registered"
+            ) {
+              const owners =
+                tokenOwners.get(failedToken) || [];
+
+              owners.forEach((playerRef) => {
+                const playerKey = playerRef.path;
+
+                if (!deadTokensByPlayer.has(playerKey)) {
+                  deadTokensByPlayer.set(
+                      playerKey,
+                      {
+                        ref: playerRef,
+                        tokens: new Set(),
+                      },
+                  );
+                }
+
+                deadTokensByPlayer
+                    .get(playerKey)
+                    .tokens
+                    .add(failedToken);
+              });
+            }
           });
 
           pushSent += response.successCount || 0;
           pushFailed += response.failureCount || 0;
+        }
+
+        // Limpeza controlada:
+        // não apaga jogador, não desativa notificações e
+        // não remove nenhum token que não tenha sido confirmado
+        // como NotRegistered pelo Firebase.
+        for (
+          const cleanup of
+          deadTokensByPlayer.values()
+        ) {
+          try {
+            const playerSnapshot =
+              await cleanup.ref.get();
+
+            if (!playerSnapshot.exists) {
+              continue;
+            }
+
+            const playerData =
+              playerSnapshot.data() || {};
+
+            const currentTokens =
+              collectFcmTokens(playerData);
+
+            const remainingTokens =
+              currentTokens.filter(
+                  (token) =>
+                    !cleanup.tokens.has(token),
+              );
+
+            const currentPrimary =
+              String(
+                  playerData.fcmToken || "",
+              ).trim();
+
+            const patch = {
+              fcmTokens: remainingTokens,
+              notificationUpdatedAt:
+                FieldValue.serverTimestamp(),
+            };
+
+            if (
+              currentPrimary &&
+              cleanup.tokens.has(currentPrimary)
+            ) {
+              patch.fcmToken =
+                remainingTokens.length ?
+                  remainingTokens[
+                      remainingTokens.length - 1
+                  ] :
+                  FieldValue.delete();
+            }
+
+            await cleanup.ref.set(
+                patch,
+                {merge: true},
+            );
+
+            console.log(
+                "Tokens Push inválidos removidos:",
+                cleanup.ref.id,
+                "removidos=" +
+                  cleanup.tokens.size,
+                "restantes=" +
+                  remainingTokens.length,
+            );
+          } catch (cleanupError) {
+            console.warn(
+                "Falha limpando token Push inválido:",
+                cleanup.ref.id,
+                cleanupError?.message ||
+                  cleanupError,
+            );
+          }
         }
       } catch (pushError) {
         console.error(

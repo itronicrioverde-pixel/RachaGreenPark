@@ -7880,6 +7880,16 @@ let messagingInstance = null;
   let targetPaymentId = launchParams.get('paymentId') || '';
   const wantsAdminPayment = launchTarget === 'admin-payment';
 
+  // GREEN PARK NOTICE DEEP LINK V2
+  let targetNoticeId =
+    String(launchParams.get('noticeId') || '').trim();
+
+  const wantsNotice =
+    launchTarget === 'notice' &&
+    !!targetNoticeId;
+
+  let noticeLaunchHandled = false;
+
   let firebaseUser = null;
   let remotePendingPayments = null;
   let remoteRacha = null;
@@ -11151,6 +11161,18 @@ let messagingInstance = null;
     items.forEach(item => {
       const card = document.createElement('article');
       card.className = 'notice-card gpnotice-card';
+      card.dataset.noticeId = String(item.id || '');
+
+      if(
+        targetNoticeId &&
+        String(item.id || '') === targetNoticeId
+      ){
+        card.style.outline =
+          '2px solid var(--green)';
+        card.style.outlineOffset = '2px';
+        card.style.boxShadow =
+          '0 0 0 5px rgba(86,213,46,.12), 0 16px 38px rgba(0,0,0,.18)';
+      }
 
       const date = document.createElement('div');
       date.className = 'notice-date';
@@ -11219,6 +11241,46 @@ let messagingInstance = null;
     });
   }
 
+  function focusNoticeLaunchTarget(){
+    if(
+      !wantsNotice ||
+      !targetNoticeId ||
+      noticeLaunchHandled
+    ){
+      return;
+    }
+
+    const target =
+      Array.from(
+        noticeList.querySelectorAll(
+          '[data-notice-id]'
+        )
+      ).find(
+        element =>
+          element.dataset.noticeId ===
+          targetNoticeId
+      );
+
+    if(!target){
+      return;
+    }
+
+    noticeLaunchHandled = true;
+
+    setTimeout(() => {
+      target.scrollIntoView({
+        behavior:'smooth',
+        block:'center'
+      });
+    }, 120);
+
+    setTimeout(() => {
+      target.style.outline = '';
+      target.style.outlineOffset = '';
+      target.style.boxShadow = '';
+    }, 4500);
+  }
+
   async function loadNotices(){
     try{
       await ensureFirebasePlayer();
@@ -11231,6 +11293,7 @@ let messagingInstance = null;
           []
       );
 
+      focusNoticeLaunchTarget();
       refreshContentAdminUI();
     }catch(error){
       console.error('Comunicados:', error);
@@ -11238,6 +11301,57 @@ let messagingInstance = null;
         '<div class="feature-empty"><strong>Não foi possível carregar os comunicados.</strong><span>Tente novamente em alguns segundos.</span></div>';
     }
   }
+
+  async function openNoticeLaunchTarget(){
+    if(!wantsNotice){
+      return;
+    }
+
+    try{
+      await ensureFirebasePlayer();
+
+      stopContentAutoRefresh();
+      showView('noticesView');
+
+      await loadNotices();
+
+      startContentAutoRefresh(
+        'noticesView',
+        loadNotices
+      );
+    }catch(error){
+      console.warn(
+        'Não foi possível abrir o comunicado da notificação:',
+        error
+      );
+
+      showView('homeView');
+    }
+  }
+
+  function scheduleNoticeLaunchTarget(){
+    if(!wantsNotice){
+      return;
+    }
+
+    setTimeout(
+      () => openNoticeLaunchTarget(),
+      350
+    );
+  }
+
+  if(wantsNotice){
+    if(document.readyState === 'complete'){
+      scheduleNoticeLaunchTarget();
+    }else{
+      window.addEventListener(
+        'load',
+        scheduleNoticeLaunchTarget,
+        {once:true}
+      );
+    }
+  }
+
 
   async function publishNotice(){
     if(!isAdminUser()){
