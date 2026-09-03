@@ -988,6 +988,243 @@ function addStyle(){
 }
 
 
+
+/* ==========================================================
+   GREENPARK_TOURNAMENT_CLASSIFICATION_FIT_V72
+
+   A CLASSIFICACAO INTEIRA CABE NA TELA.
+   SEM ROLAGEM HORIZONTAL.
+   ========================================================== */
+
+
+/* remove a mensagem de deslizar */
+.gptv71-scroll-hint{
+  display:none!important;
+}
+
+
+/* nao deixa a tabela aumentar a pagina */
+.gptv71-table-scroll{
+  width:100%!important;
+  max-width:100%!important;
+
+  overflow-x:hidden!important;
+  overflow-y:hidden!important;
+}
+
+
+/* remove os 650px da versao anterior */
+.gptv71-ranking-table{
+  width:100%!important;
+  min-width:0!important;
+  max-width:100%!important;
+}
+
+
+/*
+ * 10 COLUNAS:
+ *
+ * POS | EQUIPE | J | V | E | D | GP | GC | SG | PTS
+ *
+ * Tudo dentro da largura real do celular.
+ */
+.gptv71-ranking-head,
+.gptv71-ranking-row{
+
+  width:100%!important;
+
+  grid-template-columns:
+    18px
+    minmax(72px,1fr)
+    repeat(7,22px)
+    30px!important;
+
+  gap:0!important;
+
+  box-sizing:border-box!important;
+}
+
+
+/* CABECALHO */
+
+.gptv71-ranking-head{
+  min-height:25px!important;
+
+  padding:0 2px!important;
+
+  font-size:5.2px!important;
+
+  letter-spacing:-.01em!important;
+}
+
+
+/* LINHA */
+
+.gptv71-ranking-row{
+  min-height:39px!important;
+
+  padding:0 2px!important;
+}
+
+
+/* POSICAO */
+
+.gptv71-ranking-pos{
+  font-size:6.5px!important;
+}
+
+
+/* EQUIPE */
+
+.gptv71-ranking-team{
+
+  min-width:0!important;
+
+  grid-template-columns:
+    22px
+    minmax(0,1fr)!important;
+
+  gap:3px!important;
+
+  padding-right:2px!important;
+}
+
+
+/* ESCUDO */
+
+.gptv71-ranking-logo{
+  width:22px!important;
+  height:22px!important;
+
+  border-radius:6px!important;
+
+  font-size:5px!important;
+}
+
+
+/* NOME */
+
+.gptv71-ranking-team strong{
+
+  min-width:0!important;
+
+  font-size:6px!important;
+
+  line-height:1.05!important;
+
+  overflow:hidden!important;
+
+  text-overflow:ellipsis!important;
+
+  white-space:nowrap!important;
+}
+
+
+/* ESTATISTICAS */
+
+.gptv71-stat{
+  font-size:5.8px!important;
+  font-weight:900!important;
+}
+
+
+/* PONTOS */
+
+.gptv71-pts{
+  font-size:7.5px!important;
+}
+
+
+/* CARD DO GRUPO */
+
+.gptv6-group-title{
+  padding:7px 8px!important;
+}
+
+
+.gptv6-group-title strong{
+  font-size:8px!important;
+}
+
+
+.gptv6-group-title span{
+  font-size:5.8px!important;
+}
+
+
+/* CRITERIOS */
+
+.gptv71-ranking-info{
+  margin-bottom:6px!important;
+
+  padding:6px 7px!important;
+
+  font-size:5.5px!important;
+
+  line-height:1.3!important;
+}
+
+
+/* TEXTO DO RODAPE */
+
+.gptv71-qualified-note{
+  padding:6px 7px!important;
+
+  font-size:5.5px!important;
+}
+
+
+/* ==========================================================
+   IPHONES MAIS ESTREITOS
+   ========================================================== */
+
+@media(max-width:350px){
+
+  .gptv71-ranking-head,
+  .gptv71-ranking-row{
+
+    grid-template-columns:
+      16px
+      minmax(60px,1fr)
+      repeat(7,20px)
+      27px!important;
+
+  }
+
+
+  .gptv71-ranking-team{
+
+    grid-template-columns:
+      20px
+      minmax(0,1fr)!important;
+
+    gap:2px!important;
+  }
+
+
+  .gptv71-ranking-logo{
+    width:20px!important;
+    height:20px!important;
+  }
+
+
+  .gptv71-ranking-team strong{
+    font-size:5.5px!important;
+  }
+
+
+  .gptv71-stat{
+    font-size:5.4px!important;
+  }
+
+
+  .gptv71-pts{
+    font-size:7px!important;
+  }
+
+}
+
+
 @media(max-width:350px){
   .gptv6-summary{
     grid-template-columns:1fr;
