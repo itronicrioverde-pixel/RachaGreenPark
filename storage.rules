@@ -54,6 +54,17 @@ service firebase.storage {
       allow delete: if isAdmin();
     }
 
+    // GREEN PARK TOURNAMENT TEAM LOGOS V5
+    match /tournaments/{tournamentId}/teams/{teamId}/{fileName} {
+      allow read: if signedIn();
+
+      allow create, update: if isAdmin()
+        && request.resource.size < 10 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*');
+
+      allow delete: if isAdmin();
+    }
+
     // Logos: há uma subpasta por posição.
     match /sponsors/{allPaths=**} {
       allow read: if signedIn();

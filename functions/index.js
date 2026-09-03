@@ -10325,3 +10325,9 @@ Object.assign(
     exports,
     require("./tournamentConfigV4"),
 );
+
+// GREEN PARK TOURNAMENT TEAMS V5 MODULE
+Object.assign(
+    exports,
+    require("./tournamentTeamsV5"),
+);
