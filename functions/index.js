@@ -7970,6 +7970,22 @@ exports.registrarMensalidade = onCall(
               "monthly",
             monthlyPaidThrough:
               current.monthKey,
+            status:
+              "confirmed",
+            attendanceType:
+              "monthly",
+            paymentType:
+              "monthly",
+            paymentExempt:
+              false,
+            goalkeeperFree:
+              false,
+            confirmationSource:
+              "monthly-payment",
+            confirmedAt:
+              player.confirmedAt ||
+              FieldValue
+                  .serverTimestamp(),
             updatedAt:
               FieldValue
                   .serverTimestamp(),
@@ -7979,8 +7995,15 @@ exports.registrarMensalidade = onCall(
 
       await batch.commit();
 
+      const confirmedCount =
+        await financeUpdateConfirmedCount(
+            db,
+        );
+
       return {
         ok: true,
+        confirmed: true,
+        confirmedCount,
         month:
           current.monthKey,
         amount:
@@ -8380,6 +8403,9 @@ exports.confirmarPresencaMensalista = onCall(
 );
 
 
+// GREENPARK_MONTHLY_AUTO_V1
+// Mensalista pago entra automaticamente em cada novo racha
+// enquanto monthlyPaidThrough cobrir o mês corrente.
 exports.prepararNovoRacha = onCall(
     {
       invoker: "public",
@@ -8395,6 +8421,9 @@ exports.prepararNovoRacha = onCall(
       const db =
         getFirestore();
 
+      const current =
+        financeSaoPauloParts();
+
       const playersSnapshot =
         await db
             .collection("players")
@@ -8407,6 +8436,34 @@ exports.prepararNovoRacha = onCall(
               GREEN_PARK_ADMIN_UID_FINANCE,
         );
 
+      /*
+       * Guarda ANTES do reset quem possui mensalidade
+       * válida para o mês atual.
+       *
+       * billingType monthly sozinho não basta:
+       * precisa ter mensalidade efetivamente paga.
+       */
+      const activeMonthlyPlayers =
+        players.filter(
+            (docSnap) => {
+              const data =
+                docSnap.data() || {};
+
+              const paidThrough =
+                financeString(
+                    data.monthlyPaidThrough,
+                    7,
+                );
+
+              return (
+                data.billingType ===
+                  "monthly" &&
+                paidThrough >=
+                  current.monthKey
+              );
+            },
+        );
+
       const confirmedBefore =
         players.filter(
             (docSnap) =>
@@ -8417,8 +8474,11 @@ exports.prepararNovoRacha = onCall(
               "confirmed",
         ).length;
 
-      // Primeiro passe: zera a presença de TODOS os jogadores,
-      // preservando cadastro, foto, posição, plano e histórico.
+      /*
+       * 1. Zera a presença do racha anterior.
+       * Cadastro, foto, posição, plano, mensalidade,
+       * financeiro e histórico continuam preservados.
+       */
       for (
         let index = 0;
         index < players.length;
@@ -8478,8 +8538,11 @@ exports.prepararNovoRacha = onCall(
         await batch.commit();
       }
 
-      // Segundo passe: consulta diretamente quem ainda ficou confirmado.
-      // Se houver qualquer sobra, força o reset novamente.
+      /*
+       * 2. Segurança extra:
+       * se algum confirmado antigo tiver sobrevivido,
+       * força o reset.
+       */
       let remainingSnapshot =
         await db
             .collection("players")
@@ -8493,7 +8556,8 @@ exports.prepararNovoRacha = onCall(
       if (!remainingSnapshot.empty) {
         for (
           let index = 0;
-          index < remainingSnapshot.docs.length;
+          index <
+            remainingSnapshot.docs.length;
           index += 350
         ) {
           const batch =
@@ -8549,7 +8613,71 @@ exports.prepararNovoRacha = onCall(
         }
       }
 
-      // Verificação final no servidor.
+      /*
+       * 3. REGRA NOVA:
+       * mensalistas pagos do mês entram automaticamente.
+       *
+       * Isso reserva as vagas deles antes da entrada
+       * dos diaristas.
+       */
+      for (
+        let index = 0;
+        index <
+          activeMonthlyPlayers.length;
+        index += 350
+      ) {
+        const batch =
+          db.batch();
+
+        activeMonthlyPlayers
+            .slice(
+                index,
+                index + 350,
+            )
+            .forEach(
+                (docSnap) => {
+                  batch.set(
+                      docSnap.ref,
+                      {
+                        status:
+                          "confirmed",
+                        attendanceType:
+                          "monthly",
+                        paymentType:
+                          "monthly",
+                        paymentReported:
+                          false,
+                        paymentExempt:
+                          false,
+                        goalkeeperFree:
+                          false,
+                        confirmationSource:
+                          "monthly-auto",
+                        confirmedAt:
+                          FieldValue
+                              .serverTimestamp(),
+                        monthlyAutoConfirmedAt:
+                          FieldValue
+                              .serverTimestamp(),
+                        updatedAt:
+                          FieldValue
+                              .serverTimestamp(),
+                      },
+                      {merge: true},
+                  );
+                },
+            );
+
+        await batch.commit();
+      }
+
+      /*
+       * 4. Verificação final.
+       *
+       * Agora não esperamos ZERO.
+       * Esperamos exatamente a quantidade de
+       * mensalistas com pagamento válido.
+       */
       remainingSnapshot =
         await db
             .collection("players")
@@ -8566,6 +8694,9 @@ exports.prepararNovoRacha = onCall(
               docSnap.id !==
               GREEN_PARK_ADMIN_UID_FINANCE,
         ).length;
+
+      const monthlyAutoConfirmed =
+        activeMonthlyPlayers.length;
 
       await db
           .collection("racha")
@@ -8589,18 +8720,26 @@ exports.prepararNovoRacha = onCall(
                 attendanceResetAt:
                   FieldValue
                       .serverTimestamp(),
+                monthlyAutoConfirmed,
+                monthlyAutoMonth:
+                  current.monthKey,
                 resetVersion:
-                  "v9.4",
+                  "v10-monthly-auto",
               },
               {merge: true},
           );
 
-      if (confirmedAfter !== 0) {
+      if (
+        confirmedAfter !==
+        monthlyAutoConfirmed
+      ) {
         throw new HttpsError(
             "internal",
-            "O servidor ainda encontrou " +
+            "O novo racha deveria começar com " +
+            monthlyAutoConfirmed +
+            " mensalista(s), mas o servidor encontrou " +
             confirmedAfter +
-            " jogador(es) confirmado(s) após o reset.",
+            " confirmado(s).",
         );
       }
 
@@ -8610,8 +8749,11 @@ exports.prepararNovoRacha = onCall(
           players.length,
         confirmedBefore,
         confirmedAfter,
+        monthlyAutoConfirmed,
+        monthlyMonth:
+          current.monthKey,
         resetVersion:
-          "v9.4",
+          "v10-monthly-auto",
       };
     },
 );
