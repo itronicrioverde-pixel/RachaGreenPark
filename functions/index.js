@@ -7072,6 +7072,291 @@ exports.excluirComunicado = onCall(
 
 
 // ============================================================
+// GREEN PARK TOURNAMENTS V1
+// Torneios ficam totalmente separados do racha semanal.
+// ============================================================
+
+function tournamentStatusValue(value) {
+  const status =
+    safeContentString(
+        value,
+        30,
+    );
+
+  const allowed = [
+    "draft",
+    "open",
+    "in_progress",
+    "finished",
+  ];
+
+  return allowed.includes(status) ?
+    status :
+    "draft";
+}
+
+
+function tournamentPublicPayload(
+    id,
+    data = {},
+) {
+  let updatedAt = 0;
+
+  if (
+    data.updatedAt &&
+    typeof data.updatedAt.toMillis ===
+      "function"
+  ) {
+    updatedAt =
+      data.updatedAt.toMillis();
+  }
+
+  return {
+    id:
+      safeContentString(
+          id,
+          120,
+      ),
+    name:
+      safeContentString(
+          data.name,
+          80,
+      ),
+    date:
+      safeContentString(
+          data.date,
+          20,
+      ),
+    location:
+      safeContentString(
+          data.location,
+          120,
+      ),
+    status:
+      tournamentStatusValue(
+          data.status,
+      ),
+    format:
+      "groups_knockout",
+    teamsCount: 10,
+    groupCount: 2,
+    teamsPerGroup: 5,
+    qualifyPerGroup: 4,
+    updatedAt,
+  };
+}
+
+
+exports.obterTorneioAtual = onCall(
+    {
+      invoker: "public",
+      region: "southamerica-east1",
+      timeoutSeconds: 20,
+    },
+    async (request) => {
+      contentAuthOrThrow(request);
+
+      const db =
+        getFirestore();
+
+      const settingsSnapshot =
+        await db
+            .collection(
+                "tournament_settings",
+            )
+            .doc("current")
+            .get();
+
+      if (!settingsSnapshot.exists) {
+        return {
+          exists: false,
+          tournament: null,
+        };
+      }
+
+      const tournamentId =
+        safeContentString(
+            settingsSnapshot
+                .data()
+                ?.currentTournamentId,
+            120,
+        );
+
+      if (!tournamentId) {
+        return {
+          exists: false,
+          tournament: null,
+        };
+      }
+
+      const tournamentSnapshot =
+        await db
+            .collection("tournaments")
+            .doc(tournamentId)
+            .get();
+
+      if (!tournamentSnapshot.exists) {
+        return {
+          exists: false,
+          tournament: null,
+        };
+      }
+
+      return {
+        exists: true,
+        tournament:
+          tournamentPublicPayload(
+              tournamentSnapshot.id,
+              tournamentSnapshot.data() ||
+                {},
+          ),
+      };
+    },
+);
+
+
+exports.salvarTorneio = onCall(
+    {
+      invoker: "public",
+      region: "southamerica-east1",
+      timeoutSeconds: 20,
+    },
+    async (request) => {
+      contentAdminOrThrow(request);
+
+      const name =
+        safeContentString(
+            request.data?.name,
+            80,
+        );
+
+      const date =
+        safeContentString(
+            request.data?.date,
+            20,
+        );
+
+      const location =
+        safeContentString(
+            request.data?.location,
+            120,
+        );
+
+      const status =
+        tournamentStatusValue(
+            request.data?.status,
+        );
+
+      let tournamentId =
+        safeContentString(
+            request.data?.id,
+            120,
+        )
+            .replace(
+                /[^a-zA-Z0-9_-]/g,
+                "",
+            );
+
+      if (name.length < 3) {
+        throw new HttpsError(
+            "invalid-argument",
+            "Informe o nome do torneio.",
+        );
+      }
+
+      if (
+        date &&
+        !/^\d{4}-\d{2}-\d{2}$/.test(date)
+      ) {
+        throw new HttpsError(
+            "invalid-argument",
+            "Data do torneio invalida.",
+        );
+      }
+
+      const db =
+        getFirestore();
+
+      const tournamentRef =
+        tournamentId ?
+          db
+              .collection("tournaments")
+              .doc(tournamentId) :
+          db
+              .collection("tournaments")
+              .doc();
+
+      tournamentId =
+        tournamentRef.id;
+
+      const previous =
+        await tournamentRef.get();
+
+      const payload = {
+        name,
+        date,
+        location,
+        status,
+        format:
+          "groups_knockout",
+        teamsCount: 10,
+        groupCount: 2,
+        teamsPerGroup: 5,
+        qualifyPerGroup: 4,
+        updatedBy:
+          request.auth.uid,
+        updatedAt:
+          FieldValue.serverTimestamp(),
+      };
+
+      if (!previous.exists) {
+        payload.createdBy =
+          request.auth.uid;
+
+        payload.createdAt =
+          FieldValue.serverTimestamp();
+      }
+
+      await tournamentRef.set(
+          payload,
+          {merge: true},
+      );
+
+      await db
+          .collection(
+              "tournament_settings",
+          )
+          .doc("current")
+          .set(
+              {
+                currentTournamentId:
+                  tournamentId,
+                updatedBy:
+                  request.auth.uid,
+                updatedAt:
+                  FieldValue
+                      .serverTimestamp(),
+              },
+              {merge: true},
+          );
+
+      const savedSnapshot =
+        await tournamentRef.get();
+
+      return {
+        ok: true,
+        tournament:
+          tournamentPublicPayload(
+              savedSnapshot.id,
+              savedSnapshot.data() ||
+                {},
+          ),
+      };
+    },
+);
+
+
+// ============================================================
 // PATROCINADORES
 // ============================================================
 

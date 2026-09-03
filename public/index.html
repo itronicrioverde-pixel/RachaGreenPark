@@ -6942,6 +6942,521 @@ button {
 
 </style>
 
+
+<style id="greenpark-tournaments-v1">
+/* GREENPARK_TOURNAMENTS_V1 */
+
+#gptournamentView{
+  min-width:0;
+}
+
+.gptournament-shell{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+
+.gptournament-hero{
+  position:relative;
+  overflow:hidden;
+  padding:18px;
+  border:1px solid rgba(86,213,46,.34);
+  border-radius:22px;
+  background:
+    radial-gradient(
+      circle at 100% 0,
+      rgba(86,213,46,.15),
+      transparent 38%
+    ),
+    linear-gradient(
+      145deg,
+      #102219,
+      #08141a 62%
+    );
+  box-shadow:
+    0 18px 38px rgba(0,0,0,.22);
+}
+
+.gptournament-hero::after{
+  content:"";
+  position:absolute;
+  width:170px;
+  height:170px;
+  right:-65px;
+  top:-70px;
+  border:1px solid rgba(86,213,46,.12);
+  border-radius:50%;
+}
+
+.gptournament-hero-top{
+  position:relative;
+  z-index:1;
+  display:grid;
+  grid-template-columns:70px minmax(0,1fr);
+  gap:14px;
+  align-items:center;
+}
+
+.gptournament-logo{
+  width:70px;
+  height:78px;
+  object-fit:contain;
+}
+
+.gptournament-hero-main{
+  min-width:0;
+}
+
+.gptournament-kicker{
+  margin-bottom:5px;
+  color:var(--green2);
+  font-size:9px;
+  font-weight:950;
+  letter-spacing:.12em;
+}
+
+.gptournament-hero h2{
+  margin:0;
+  color:#fff;
+  font-size:21px;
+  line-height:1.08;
+  font-weight:950;
+  text-transform:uppercase;
+}
+
+.gptournament-status{
+  min-height:25px;
+  display:inline-flex;
+  align-items:center;
+  margin-top:9px;
+  padding:0 9px;
+  border-radius:999px;
+  font-size:8px;
+  font-weight:950;
+}
+
+.gptournament-status.draft{
+  border:1px solid #5a654d;
+  background:#25291e;
+  color:#e3d88a;
+}
+
+.gptournament-status.open{
+  border:1px solid #387549;
+  background:#102b18;
+  color:#89ec99;
+}
+
+.gptournament-status.in_progress{
+  border:1px solid var(--green);
+  background:#15351a;
+  color:var(--green2);
+}
+
+.gptournament-status.finished{
+  border:1px solid #40505a;
+  background:#172129;
+  color:#aab6b0;
+}
+
+.gptournament-meta{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin-top:16px;
+}
+
+.gptournament-meta > div{
+  min-width:0;
+  padding:10px 11px;
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:12px;
+  background:rgba(2,12,15,.38);
+}
+
+.gptournament-meta span{
+  display:block;
+  color:#7f9188;
+  font-size:7px;
+  font-weight:950;
+}
+
+.gptournament-meta strong{
+  display:block;
+  margin-top:4px;
+  overflow:hidden;
+  color:#fff;
+  font-size:10px;
+  line-height:1.25;
+  font-weight:900;
+  text-overflow:ellipsis;
+}
+
+.gptournament-numbers{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:7px;
+  margin-top:9px;
+}
+
+.gptournament-numbers > div{
+  min-width:0;
+  padding:10px 5px;
+  border:1px solid rgba(86,213,46,.13);
+  border-radius:11px;
+  background:rgba(7,24,15,.58);
+  text-align:center;
+}
+
+.gptournament-numbers strong{
+  display:block;
+  color:var(--green2);
+  font-size:20px;
+  line-height:1;
+}
+
+.gptournament-numbers span{
+  display:block;
+  margin-top:5px;
+  color:#8da096;
+  font-size:6.5px;
+  line-height:1.2;
+  font-weight:900;
+}
+
+.gptournament-format{
+  padding:11px 12px;
+  border:1px solid #294438;
+  border-radius:13px;
+  background:#0b1b13;
+}
+
+.gptournament-format strong{
+  display:block;
+  color:var(--green2);
+  font-size:8px;
+  font-weight:950;
+}
+
+.gptournament-format span{
+  display:block;
+  margin-top:4px;
+  color:#a2afa8;
+  font-size:9px;
+  line-height:1.45;
+}
+
+.gptournament-tabs{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:5px;
+}
+
+.gptournament-tab{
+  min-width:0;
+  min-height:42px;
+  padding:0 3px;
+  border:1px solid #304049;
+  border-radius:10px;
+  background:#101920;
+  color:#8c9993;
+  font-size:7.5px;
+  font-weight:950;
+}
+
+.gptournament-tab.active{
+  border-color:var(--green);
+  background:#15351a;
+  color:#fff;
+}
+
+.gptournament-panel{
+  display:none;
+  padding:14px;
+  border:1px solid #293a42;
+  border-radius:17px;
+  background:#101920;
+}
+
+.gptournament-panel.active{
+  display:block;
+}
+
+.gptournament-panel-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:11px;
+}
+
+.gptournament-panel-head strong{
+  display:block;
+  color:#fff;
+  font-size:14px;
+}
+
+.gptournament-panel-head span{
+  display:block;
+  margin-top:3px;
+  color:#829087;
+  font-size:9px;
+}
+
+.gptournament-panel-head b{
+  color:var(--green2);
+  font-size:18px;
+}
+
+.gptournament-empty{
+  min-height:150px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+  padding:20px;
+  border:1px dashed #345044;
+  border-radius:14px;
+  background:#0b1612;
+  text-align:center;
+}
+
+.gptournament-empty-icon{
+  color:var(--green2);
+  font-size:28px;
+}
+
+.gptournament-empty strong{
+  color:#fff;
+  font-size:12px;
+}
+
+.gptournament-empty span:last-child{
+  max-width:270px;
+  color:#819188;
+  font-size:9px;
+  line-height:1.45;
+}
+
+.gptournament-groups-preview{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:9px;
+}
+
+.gptournament-group{
+  min-height:125px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  padding:14px;
+  border:1px solid #31513e;
+  border-radius:14px;
+  background:#0b1b13;
+  text-align:center;
+}
+
+.gptournament-group strong{
+  color:var(--green2);
+  font-size:15px;
+}
+
+.gptournament-group span{
+  margin-top:8px;
+  color:#fff;
+  font-size:11px;
+  font-weight:900;
+}
+
+.gptournament-group small{
+  margin-top:4px;
+  color:#82958a;
+  font-size:8px;
+}
+
+.gptournament-bracket{
+  display:grid;
+  grid-template-columns:
+    minmax(0,1fr)
+    20px
+    minmax(0,1fr)
+    20px
+    minmax(0,1fr);
+  align-items:center;
+  gap:4px;
+}
+
+.gptournament-stage{
+  min-width:0;
+  min-height:90px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  padding:8px 4px;
+  border:1px solid #33463e;
+  border-radius:12px;
+  background:#0b1712;
+  text-align:center;
+}
+
+.gptournament-stage.final{
+  border-color:var(--green);
+  background:#14331a;
+}
+
+.gptournament-stage strong{
+  color:#fff;
+  font-size:8px;
+}
+
+.gptournament-stage span{
+  margin-top:5px;
+  color:#83958b;
+  font-size:7px;
+}
+
+.gptournament-arrow{
+  color:var(--green2);
+  font-size:24px;
+  text-align:center;
+}
+
+.gptournament-admin{
+  display:none;
+  padding:15px;
+  border:1px solid rgba(86,213,46,.28);
+  border-radius:17px;
+  background:#0d1c14;
+}
+
+.gptournament-admin.admin-visible{
+  display:block !important;
+}
+
+.gptournament-admin-title{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:12px;
+}
+
+.gptournament-admin-title strong{
+  color:#fff;
+  font-size:11px;
+}
+
+.gptournament-admin-title span{
+  color:var(--green2);
+  font-size:7px;
+  font-weight:950;
+}
+
+.gptournament-admin-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+}
+
+.gptournament-admin-field{
+  min-width:0;
+}
+
+.gptournament-admin-field.wide{
+  grid-column:1/-1;
+}
+
+.gptournament-admin-field span{
+  display:block;
+  margin-bottom:5px;
+  color:#91a097;
+  font-size:8px;
+  font-weight:900;
+}
+
+.gptournament-admin-field input,
+.gptournament-admin-field select{
+  width:100%;
+  height:44px;
+  min-width:0;
+  padding:0 10px;
+  border:1px solid #34464e;
+  border-radius:10px;
+  background:#111a21;
+  color:#fff;
+  outline:none;
+}
+
+.gptournament-admin-field input[readonly]{
+  color:#829087;
+}
+
+.gptournament-save{
+  width:100%;
+  min-height:49px;
+  margin-top:10px;
+  border:0;
+  border-radius:12px;
+  background:var(--green);
+  color:#0b170d;
+  font-size:10px;
+  font-weight:950;
+}
+
+.gptournament-save:disabled{
+  opacity:.5;
+}
+
+.gptournament-admin-status{
+  min-height:14px;
+  margin-top:8px;
+  color:#86958d;
+  font-size:9px;
+  line-height:1.4;
+  text-align:center;
+}
+
+.gptournament-admin-status.ok{
+  color:var(--green2);
+}
+
+.gptournament-admin-status.error{
+  color:#ff9e9e;
+}
+
+@media(max-width:360px){
+
+  .gptournament-hero{
+    padding:15px;
+  }
+
+  .gptournament-hero-top{
+    grid-template-columns:58px minmax(0,1fr);
+    gap:10px;
+  }
+
+  .gptournament-logo{
+    width:58px;
+    height:68px;
+  }
+
+  .gptournament-hero h2{
+    font-size:18px;
+  }
+
+  .gptournament-tab{
+    font-size:6.7px;
+  }
+
+  .gptournament-numbers span{
+    font-size:6px;
+  }
+}
+
+</style>
+
 </head>
 
 <body data-admin="false">
@@ -7030,8 +7545,358 @@ button {
       <button type="button" class="quick" id="openGalleryQuick"><b>▣</b>Galeria</button>
       <button type="button" class="quick" id="openNoticesQuick"><b>▤</b>Comunicados</button>
       <button type="button" class="quick" id="openSponsorsQuick"><b>◆</b>Patrocinadores</button>
+      <button type="button" class="quick" id="openTournamentsQuick"><b>🏆</b>Torneios</button>
     </div>
   </main>
+
+  <!-- GREENPARK_TOURNAMENTS_V1 -->
+  <main class="content view" id="tournamentsView">
+
+    <div class="page-head">
+      <button
+        class="back-btn"
+        id="tournamentsBack"
+        type="button"
+      >←</button>
+
+      <div class="page-head-title">
+        TORNEIOS
+      </div>
+
+      <div></div>
+    </div>
+
+
+    <section class="gptournament-shell">
+
+      <article class="gptournament-hero">
+
+        <div class="gptournament-hero-top">
+          <img
+            class="gptournament-logo"
+            src="./assets/greenpark-escudo-oficial.png"
+            alt="Green Park FC"
+          >
+
+          <div class="gptournament-hero-main">
+            <div class="gptournament-kicker">
+              TORNEIO ATUAL
+            </div>
+
+            <h2 id="tournamentName">
+              PRIMEIRO TORNEIO
+            </h2>
+
+            <span
+              class="gptournament-status draft"
+              id="tournamentStatus"
+            >
+              EM CONFIGURAÇÃO
+            </span>
+          </div>
+        </div>
+
+        <div class="gptournament-meta">
+          <div>
+            <span>DATA</span>
+            <strong id="tournamentDate">
+              A DEFINIR
+            </strong>
+          </div>
+
+          <div>
+            <span>LOCAL</span>
+            <strong id="tournamentLocation">
+              A DEFINIR
+            </strong>
+          </div>
+        </div>
+
+        <div class="gptournament-numbers">
+
+          <div>
+            <strong>10</strong>
+            <span>EQUIPES</span>
+          </div>
+
+          <div>
+            <strong>2</strong>
+            <span>GRUPOS</span>
+          </div>
+
+          <div>
+            <strong>4</strong>
+            <span>CLASSIFICAM / GRUPO</span>
+          </div>
+
+        </div>
+
+      </article>
+
+
+      <div class="gptournament-format">
+        <strong>FORMATO</strong>
+        <span>
+          2 grupos de 5 • classificam 4 por grupo •
+          quartas • semifinais • final
+        </span>
+      </div>
+
+
+      <div class="gptournament-tabs">
+
+        <button
+          class="gptournament-tab active"
+          type="button"
+          data-tournament-tab="teams"
+        >
+          EQUIPES
+        </button>
+
+        <button
+          class="gptournament-tab"
+          type="button"
+          data-tournament-tab="matches"
+        >
+          JOGOS
+        </button>
+
+        <button
+          class="gptournament-tab"
+          type="button"
+          data-tournament-tab="standings"
+        >
+          CLASSIF.
+        </button>
+
+        <button
+          class="gptournament-tab"
+          type="button"
+          data-tournament-tab="bracket"
+        >
+          MATA-MATA
+        </button>
+
+      </div>
+
+
+      <section
+        class="gptournament-panel active"
+        data-tournament-panel="teams"
+      >
+        <div class="gptournament-panel-head">
+          <div>
+            <strong>Equipes</strong>
+            <span>10 vagas disponíveis</span>
+          </div>
+
+          <b>10</b>
+        </div>
+
+        <div class="gptournament-empty">
+          <span class="gptournament-empty-icon">⚽</span>
+          <strong>Equipes ainda não cadastradas</strong>
+          <span>
+            Na próxima etapa vamos cadastrar os
+            10 times, escudos e jogadores.
+          </span>
+        </div>
+      </section>
+
+
+      <section
+        class="gptournament-panel"
+        data-tournament-panel="matches"
+      >
+        <div class="gptournament-panel-head">
+          <div>
+            <strong>Jogos</strong>
+            <span>Tabela oficial do campeonato</span>
+          </div>
+        </div>
+
+        <div class="gptournament-empty">
+          <span class="gptournament-empty-icon">◷</span>
+          <strong>Tabela será gerada aqui</strong>
+          <span>
+            Depois das equipes cadastradas,
+            montaremos os jogos da fase de grupos.
+          </span>
+        </div>
+      </section>
+
+
+      <section
+        class="gptournament-panel"
+        data-tournament-panel="standings"
+      >
+        <div class="gptournament-panel-head">
+          <div>
+            <strong>Classificação</strong>
+            <span>Grupo A + Grupo B</span>
+          </div>
+        </div>
+
+        <div class="gptournament-groups-preview">
+
+          <div class="gptournament-group">
+            <strong>GRUPO A</strong>
+            <span>5 equipes</span>
+            <small>
+              1º ao 4º avançam
+            </small>
+          </div>
+
+          <div class="gptournament-group">
+            <strong>GRUPO B</strong>
+            <span>5 equipes</span>
+            <small>
+              1º ao 4º avançam
+            </small>
+          </div>
+
+        </div>
+      </section>
+
+
+      <section
+        class="gptournament-panel"
+        data-tournament-panel="bracket"
+      >
+        <div class="gptournament-panel-head">
+          <div>
+            <strong>Mata-mata</strong>
+            <span>8 classificados</span>
+          </div>
+        </div>
+
+        <div class="gptournament-bracket">
+
+          <div class="gptournament-stage">
+            <strong>QUARTAS</strong>
+            <span>8 equipes</span>
+          </div>
+
+          <div class="gptournament-arrow">
+            ›
+          </div>
+
+          <div class="gptournament-stage">
+            <strong>SEMIFINAL</strong>
+            <span>4 equipes</span>
+          </div>
+
+          <div class="gptournament-arrow">
+            ›
+          </div>
+
+          <div class="gptournament-stage final">
+            <strong>FINAL</strong>
+            <span>2 equipes</span>
+          </div>
+
+        </div>
+      </section>
+
+
+      <section
+        class="gptournament-admin content-admin-only"
+        id="tournamentAdminPanel"
+      >
+
+        <div class="gptournament-admin-title">
+          <strong>CONFIGURAR TORNEIO</strong>
+          <span>ADMINISTRADOR</span>
+        </div>
+
+        <div class="gptournament-admin-grid">
+
+          <label class="gptournament-admin-field wide">
+            <span>Nome do torneio</span>
+            <input
+              id="tournamentNameInput"
+              type="text"
+              maxlength="80"
+              placeholder="Ex.: Copa dos Amigos 2026"
+            >
+          </label>
+
+          <label class="gptournament-admin-field">
+            <span>Data</span>
+            <input
+              id="tournamentDateInput"
+              type="date"
+            >
+          </label>
+
+          <label class="gptournament-admin-field">
+            <span>Status</span>
+
+            <select id="tournamentStatusInput">
+              <option value="draft">
+                Planejamento
+              </option>
+              <option value="open">
+                Inscrições abertas
+              </option>
+              <option value="in_progress">
+                Em andamento
+              </option>
+              <option value="finished">
+                Encerrado
+              </option>
+            </select>
+          </label>
+
+          <label class="gptournament-admin-field wide">
+            <span>Local</span>
+            <input
+              id="tournamentLocationInput"
+              type="text"
+              maxlength="120"
+              placeholder="Local do torneio"
+            >
+          </label>
+
+          <label class="gptournament-admin-field">
+            <span>Equipes</span>
+            <input
+              type="text"
+              value="10"
+              readonly
+            >
+          </label>
+
+          <label class="gptournament-admin-field">
+            <span>Formato</span>
+            <input
+              type="text"
+              value="2 grupos + mata-mata"
+              readonly
+            >
+          </label>
+
+        </div>
+
+        <button
+          class="gptournament-save"
+          id="tournamentSaveButton"
+          type="button"
+        >
+          SALVAR TORNEIO
+        </button>
+
+        <div
+          class="gptournament-admin-status"
+          id="tournamentAdminStatus"
+        ></div>
+
+      </section>
+
+    </section>
+
+  </main>
+
 
   <!-- LISTA DE CONFIRMADOS -->
   <main class="content view" id="confirmedListView">
@@ -8359,6 +9224,8 @@ const excluirComunicadoCall = httpsCallable(functions, 'excluirComunicado');
 const listarPatrocinadoresCall = httpsCallable(functions, 'listarPatrocinadores');
 const salvarPatrocinadorCall = httpsCallable(functions, 'salvarPatrocinador');
 const removerPatrocinadorCall = httpsCallable(functions, 'removerPatrocinador');
+const obterTorneioAtualCall = httpsCallable(functions, 'obterTorneioAtual');
+const salvarTorneioCall = httpsCallable(functions, 'salvarTorneio');
 const obterDashboardFinanceiroCall = httpsCallable(functions, 'obterDashboardFinanceiro');
 const listarControlePagamentosCall = httpsCallable(functions, 'listarControlePagamentos');
 const definirPlanoJogadorCall = httpsCallable(functions, 'definirPlanoJogador');
@@ -11809,6 +12676,415 @@ let messagingInstance = null;
 
 
   // ============================================================
+  // GREENPARK_TOURNAMENTS_V1
+  // ============================================================
+
+  let tournamentCurrent = null;
+
+
+  function tournamentStatusLabel(status){
+    const labels = {
+      draft:'EM CONFIGURAÇÃO',
+      open:'INSCRIÇÕES ABERTAS',
+      in_progress:'EM ANDAMENTO',
+      finished:'ENCERRADO'
+    };
+
+    return labels[
+      String(status || 'draft')
+    ] || labels.draft;
+  }
+
+
+  function tournamentDateLabel(value){
+    const raw =
+      String(value || '').trim();
+
+    if(
+      !/^\d{4}-\d{2}-\d{2}$/.test(raw)
+    ){
+      return 'A DEFINIR';
+    }
+
+    const [
+      year,
+      month,
+      day
+    ] = raw.split('-');
+
+    return (
+      day +
+      '/' +
+      month +
+      '/' +
+      year
+    );
+  }
+
+
+  function setTournamentAdminStatus(
+    message = '',
+    type = ''
+  ){
+    const element =
+      document.getElementById(
+        'tournamentAdminStatus'
+      );
+
+    if(!element) return;
+
+    element.textContent =
+      message;
+
+    element.className =
+      'gptournament-admin-status' +
+      (type ? ' ' + type : '');
+  }
+
+
+  function renderTournament(data = null){
+    const exists =
+      !!data?.id;
+
+    tournamentCurrent =
+      exists ?
+        data :
+        null;
+
+    const name =
+      document.getElementById(
+        'tournamentName'
+      );
+
+    const date =
+      document.getElementById(
+        'tournamentDate'
+      );
+
+    const location =
+      document.getElementById(
+        'tournamentLocation'
+      );
+
+    const status =
+      document.getElementById(
+        'tournamentStatus'
+      );
+
+    if(name){
+      name.textContent =
+        exists ?
+          String(
+            data.name ||
+            'TORNEIO GREEN PARK'
+          ).toLocaleUpperCase(
+            'pt-BR'
+          ) :
+          'PRIMEIRO TORNEIO';
+    }
+
+    if(date){
+      date.textContent =
+        exists ?
+          tournamentDateLabel(
+            data.date
+          ) :
+          'A DEFINIR';
+    }
+
+    if(location){
+      location.textContent =
+        exists &&
+        data.location ?
+          String(
+            data.location
+          ).toLocaleUpperCase(
+            'pt-BR'
+          ) :
+          'A DEFINIR';
+    }
+
+    if(status){
+      const statusValue =
+        exists ?
+          String(
+            data.status ||
+            'draft'
+          ) :
+          'draft';
+
+      status.className =
+        'gptournament-status ' +
+        statusValue;
+
+      status.textContent =
+        tournamentStatusLabel(
+          statusValue
+        );
+    }
+
+    if(
+      isAdminUser()
+    ){
+      const nameInput =
+        document.getElementById(
+          'tournamentNameInput'
+        );
+
+      const dateInput =
+        document.getElementById(
+          'tournamentDateInput'
+        );
+
+      const locationInput =
+        document.getElementById(
+          'tournamentLocationInput'
+        );
+
+      const statusInput =
+        document.getElementById(
+          'tournamentStatusInput'
+        );
+
+      if(nameInput){
+        nameInput.value =
+          exists ?
+            String(
+              data.name || ''
+            ) :
+            '';
+      }
+
+      if(dateInput){
+        dateInput.value =
+          exists ?
+            String(
+              data.date || ''
+            ) :
+            '';
+      }
+
+      if(locationInput){
+        locationInput.value =
+          exists ?
+            String(
+              data.location || ''
+            ) :
+            '';
+      }
+
+      if(statusInput){
+        statusInput.value =
+          exists ?
+            String(
+              data.status ||
+              'draft'
+            ) :
+            'draft';
+      }
+    }
+  }
+
+
+  async function loadTournament(){
+    try{
+      await ensureFirebasePlayer();
+
+      const response =
+        await obterTorneioAtualCall({});
+
+      const exists =
+        response.data?.exists ===
+        true;
+
+      renderTournament(
+        exists ?
+          response.data
+            ?.tournament :
+          null
+      );
+
+      refreshContentAdminUI();
+    }catch(error){
+      console.error(
+        'Torneio:',
+        error
+      );
+
+      renderTournament(null);
+
+      setTournamentAdminStatus(
+        'Não foi possível carregar o torneio.',
+        'error'
+      );
+    }
+  }
+
+
+  async function saveTournamentAdmin(){
+    if(!isAdminUser()){
+      alert(
+        'Entre como administrador.'
+      );
+      return;
+    }
+
+    const name =
+      String(
+        document
+          .getElementById(
+            'tournamentNameInput'
+          )
+          ?.value || ''
+      )
+        .trim()
+        .slice(0, 80);
+
+    const date =
+      String(
+        document
+          .getElementById(
+            'tournamentDateInput'
+          )
+          ?.value || ''
+      )
+        .trim();
+
+    const location =
+      String(
+        document
+          .getElementById(
+            'tournamentLocationInput'
+          )
+          ?.value || ''
+      )
+        .trim()
+        .slice(0, 120);
+
+    const status =
+      String(
+        document
+          .getElementById(
+            'tournamentStatusInput'
+          )
+          ?.value || 'draft'
+      );
+
+    if(name.length < 3){
+      setTournamentAdminStatus(
+        'Informe o nome do torneio.',
+        'error'
+      );
+
+      return;
+    }
+
+    const button =
+      document.getElementById(
+        'tournamentSaveButton'
+      );
+
+    if(!button) return;
+
+    const original =
+      button.textContent;
+
+    button.disabled = true;
+    button.textContent =
+      'SALVANDO...';
+
+    setTournamentAdminStatus(
+      'Salvando torneio...'
+    );
+
+    try{
+      const response =
+        await salvarTorneioCall({
+          id:
+            tournamentCurrent?.id ||
+            '',
+          name,
+          date,
+          location,
+          status
+        });
+
+      const saved =
+        response.data
+          ?.tournament ||
+        null;
+
+      renderTournament(
+        saved
+      );
+
+      setTournamentAdminStatus(
+        'Torneio salvo com sucesso.',
+        'ok'
+      );
+
+      button.textContent =
+        'TORNEIO SALVO ✓';
+
+      setTimeout(() => {
+        if(button){
+          button.textContent =
+            original;
+        }
+      }, 1800);
+    }catch(error){
+      console.error(
+        'Salvar torneio:',
+        error
+      );
+
+      setTournamentAdminStatus(
+        error?.message ||
+        'Não foi possível salvar.',
+        'error'
+      );
+
+      button.textContent =
+        original;
+    }finally{
+      button.disabled =
+        false;
+    }
+  }
+
+
+  function setTournamentTab(
+    target
+  ){
+    document
+      .querySelectorAll(
+        '[data-tournament-tab]'
+      )
+      .forEach(button => {
+        button.classList.toggle(
+          'active',
+          button.dataset
+            .tournamentTab ===
+            target
+        );
+      });
+
+    document
+      .querySelectorAll(
+        '[data-tournament-panel]'
+      )
+      .forEach(panel => {
+        panel.classList.toggle(
+          'active',
+          panel.dataset
+            .tournamentPanel ===
+            target
+        );
+      });
+  }
+
+
+  // ============================================================
   // GALERIA / COMUNICADOS / PATROCINADORES
   // ============================================================
   let galleryCache = [];
@@ -13474,6 +14750,10 @@ async function removeSponsorLogo(slot){
       startContentAutoRefresh('sponsorsView', loadSponsors);
     }
 
+    if(viewId === 'tournamentsView'){
+      loadTournament();
+    }
+
     refreshContentAdminUI();
     showView(viewId);
   }
@@ -14848,6 +16128,27 @@ document.querySelector('[data-nav="home"]').addEventListener('click', () => show
 
   document.getElementById('openSponsorsQuick').addEventListener('click', () => {
     openFeatureView('sponsorsView');
+  });
+
+  document.getElementById('openTournamentsQuick')?.addEventListener('click', () => {
+    openFeatureView('tournamentsView');
+  });
+
+  document.getElementById('tournamentsBack')?.addEventListener('click', () => {
+    showView('homeView');
+  });
+
+  document.getElementById('tournamentSaveButton')?.addEventListener(
+    'click',
+    saveTournamentAdmin
+  );
+
+  document.querySelectorAll('[data-tournament-tab]').forEach(button => {
+    button.addEventListener('click', () => {
+      setTournamentTab(
+        button.dataset.tournamentTab || 'teams'
+      );
+    });
   });
 
   galleryFileInput.addEventListener('change', () => {
