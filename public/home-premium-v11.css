@@ -1517,3 +1517,45 @@
   }
 
 }
+
+
+/* ==========================================================
+   GREENPARK_CONFIRMATION_SAME_BACKGROUND_V13
+
+   PAGINA VOU / NAO VOU
+   USA EXATAMENTE O MESMO FUNDO FINAL DA HOME
+   ========================================================== */
+
+.phone:has(#homeView.active),
+.phone:has(#confirmationView.active){
+
+  background:
+
+    linear-gradient(
+      180deg,
+      rgba(2,10,17,.69) 0%,
+      rgba(2,12,17,.70) 30%,
+      rgba(3,17,11,.86) 100%
+    ),
+
+    url("./assets/greenpark-home-field.jpg")
+    center center /
+    cover
+    no-repeat!important;
+
+}
+
+
+/* MESMO TRATAMENTO NO TOPO */
+
+.phone:has(#confirmationView.active)
+.topbar{
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(2,9,15,.62),
+      rgba(2,9,15,.10)
+    )!important;
+
+}
