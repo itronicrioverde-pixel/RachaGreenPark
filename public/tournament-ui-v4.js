@@ -298,6 +298,109 @@ function addStyle(){
    IPHONE / TELAS MENORES
    ========================================= */
 
+
+/* =========================================
+   GREENPARK_TOURNAMENT_TEAMS_INPUT_V41
+   ========================================= */
+
+.gptv41-team-field{
+  min-width:0;
+}
+
+.gptv41-team-stepper{
+  width:100%;
+
+  display:grid;
+  grid-template-columns:
+    52px
+    minmax(70px,1fr)
+    52px;
+
+  gap:7px;
+
+  margin-top:6px;
+}
+
+.gptv41-step-button{
+  min-width:0;
+  height:48px;
+
+  border:
+    1px solid rgba(86,213,46,.48);
+
+  border-radius:11px;
+
+  background:#14291a;
+  color:var(--green2);
+
+  font-size:23px;
+  line-height:1;
+  font-weight:800;
+
+  touch-action:manipulation;
+}
+
+.gptv41-step-button:active{
+  transform:scale(.97);
+  background:#1b3a21;
+}
+
+.gptv41-team-input{
+  width:100%!important;
+  min-width:0!important;
+  height:48px!important;
+
+  padding:0 8px!important;
+
+  border:
+    1px solid #3c515a!important;
+
+  border-radius:11px!important;
+
+  background:#111a21!important;
+  color:#fff!important;
+
+  outline:none!important;
+
+  text-align:center!important;
+
+  font-size:18px!important;
+  font-weight:950!important;
+}
+
+.gptv41-team-input:focus{
+  border-color:
+    var(--green)!important;
+
+  box-shadow:
+    0 0 0 2px
+    rgba(86,213,46,.12);
+}
+
+.gptv41-save-full{
+  width:100%!important;
+  min-height:45px!important;
+
+  margin-top:8px!important;
+
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+
+  font-size:9px!important;
+  font-weight:950!important;
+}
+
+
+/* evita qualquer sobreposicao */
+#tournamentsView
+.gptv41-team-field,
+#tournamentsView
+.gptv41-team-field *{
+  box-sizing:border-box;
+}
+
+
 @media(max-width:390px){
 
   #tournamentsView .gptournament-admin-grid{
@@ -421,10 +524,12 @@ function findTeamsAdminField(){
 
 
 function ensureTeamsControl(){
-  const field =
+  // GREENPARK_TOURNAMENT_TEAMS_INPUT_V41
+
+  const oldField =
     findTeamsAdminField();
 
-  if(!field){
+  if(!oldField){
     return false;
   }
 
@@ -436,70 +541,165 @@ function ensureTeamsControl(){
     return true;
   }
 
-  const oldInput =
-    field.querySelector('input');
+  /*
+   * O campo original do HTML e readonly.
+   * Nao usamos mais esse input.
+   * Criamos um controle independente como
+   * irmao do campo original.
+   */
+  oldField.style.display =
+    'none';
 
-  if(oldInput){
-    oldInput.style.display =
-      'none';
-  }
-
-  const control =
+  const field =
     document.createElement(
       'div'
     );
 
-  control.className =
-    'gptv4-team-control';
+  field.className =
+    'gptournament-admin-field ' +
+    'gptv41-team-field';
 
-  control.innerHTML = `
-    <input
-      id="gptv4TeamsCountInput"
-      type="number"
-      min="8"
-      max="32"
-      step="1"
-      inputmode="numeric"
-      value="10"
-      aria-label="Quantidade de equipes"
-    >
+  field.innerHTML = `
+    <span>Equipes</span>
+
+    <div class="gptv41-team-stepper">
+
+      <button
+        id="gptv41TeamsMinus"
+        class="gptv41-step-button"
+        type="button"
+        aria-label="Diminuir equipes"
+      >
+        −
+      </button>
+
+      <input
+        id="gptv4TeamsCountInput"
+        class="gptv41-team-input"
+        type="text"
+        inputmode="numeric"
+        pattern="[0-9]*"
+        maxlength="2"
+        value="10"
+        autocomplete="off"
+        aria-label="Quantidade de equipes"
+      >
+
+      <button
+        id="gptv41TeamsPlus"
+        class="gptv41-step-button"
+        type="button"
+        aria-label="Aumentar equipes"
+      >
+        +
+      </button>
+
+    </div>
 
     <button
-      class="gptv4-team-save"
+      class="gptv4-team-save gptv41-save-full"
       id="gptv4TeamsSave"
       type="button"
     >
-      SALVAR
+      SALVAR QUANTIDADE
     </button>
+
+    <small class="gptv4-team-help">
+      Escolha entre 8 e 32 equipes.
+    </small>
+
+    <div
+      id="gptv4TeamStatus"
+      class="gptv4-team-status"
+    ></div>
   `;
 
-  const help =
-    document.createElement(
-      'small'
-    );
-
-  help.className =
-    'gptv4-team-help';
-
-  help.textContent =
-    'Escolha entre 8 e 32 equipes.';
-
-  const feedback =
-    document.createElement(
-      'div'
-    );
-
-  feedback.id =
-    'gptv4TeamStatus';
-
-  feedback.className =
-    'gptv4-team-status';
-
-  field.append(
-    control,
-    help,
-    feedback
+  oldField.after(
+    field
   );
+
+
+  const input =
+    document.getElementById(
+      'gptv4TeamsCountInput'
+    );
+
+
+  /*
+   * No iPhone usamos inputmode numeric
+   * em vez de type=number.
+   */
+  input?.addEventListener(
+    'input',
+    () => {
+      input.value =
+        String(input.value || '')
+          .replace(
+            /[^0-9]/g,
+            ''
+          )
+          .slice(
+            0,
+            2
+          );
+
+      status('');
+    }
+  );
+
+
+  input?.addEventListener(
+    'blur',
+    () => {
+      if(!input.value){
+        return;
+      }
+
+      let value =
+        Number(input.value);
+
+      if(
+        !Number.isFinite(value)
+      ){
+        value = 10;
+      }
+
+      value =
+        Math.max(
+          8,
+          Math.min(
+            32,
+            Math.round(value)
+          )
+        );
+
+      input.value =
+        String(value);
+    }
+  );
+
+
+  document
+    .getElementById(
+      'gptv41TeamsMinus'
+    )
+    ?.addEventListener(
+      'click',
+      () =>
+        changeTeamsCount(-1)
+    );
+
+
+  document
+    .getElementById(
+      'gptv41TeamsPlus'
+    )
+    ?.addEventListener(
+      'click',
+      () =>
+        changeTeamsCount(1)
+    );
+
 
   document
     .getElementById(
@@ -509,6 +709,7 @@ function ensureTeamsControl(){
       'click',
       saveTeamsCount
     );
+
 
   return true;
 }
@@ -722,6 +923,50 @@ async function loadTournamentConfig(){
       'error'
     );
   }
+}
+
+
+function changeTeamsCount(
+  delta
+){
+  const input =
+    document.getElementById(
+      'gptv4TeamsCountInput'
+    );
+
+  if(!input){
+    return;
+  }
+
+  let current =
+    Number(
+      input.value ||
+      10
+    );
+
+  if(
+    !Number.isFinite(current)
+  ){
+    current = 10;
+  }
+
+  current =
+    Math.round(current) +
+    Number(delta || 0);
+
+  current =
+    Math.max(
+      8,
+      Math.min(
+        32,
+        current
+      )
+    );
+
+  input.value =
+    String(current);
+
+  status('');
 }
 
 
