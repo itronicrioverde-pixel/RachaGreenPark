@@ -2100,3 +2100,44 @@
     none!important;
 
 }
+
+
+/* ==========================================================
+   GREENPARK_CONFIRMATION_PHOTO_RESTORE_V161
+
+   FUNDO DA PAGINA CONTINUA PADRAO.
+   FOTO DA BOLA VOLTA DENTRO DO CARD.
+   ========================================================== */
+
+#confirmationView
+.confirmation-field-photo{
+
+  display:block!important;
+
+}
+
+
+/*
+ * Mantem a imagem existente.
+ * Nenhuma nova foto é criada.
+ */
+#confirmationView
+.confirmation-field-photo
+.confirmation-field-main{
+
+  display:block!important;
+
+}
+
+
+/*
+ * Mantem também o escudo que
+ * já fazia parte da composição.
+ */
+#confirmationView
+.confirmation-field-photo
+.confirmation-field-logo{
+
+  display:block!important;
+
+}
