@@ -15,6 +15,7 @@ import {
 
 
 /* GREENPARK_TOURNAMENT_ADMIN_CLEAN_V44 */
+/* GREENPARK_TOURNAMENT_MIN_THREE_V47 */
 
 const ADMIN_UID =
   'd3nVt6SbQlO6lYnOcCUDbLBhoU02';
@@ -748,7 +749,7 @@ function rebuildForm(){
       </button>
 
       <small class="gptv44-help">
-        Escolha entre 8 e 32 equipes.
+        Escolha entre 3 e 32 equipes.
       </small>
 
       <small
@@ -809,7 +810,7 @@ function rebuildForm(){
   ).value =
     String(
       Number.isFinite(oldTeams) &&
-      oldTeams >= 8 &&
+      oldTeams >= 3 &&
       oldTeams <= 32 ?
         oldTeams :
         10
@@ -971,7 +972,7 @@ function changeTeams(delta){
 
   value =
     Math.max(
-      8,
+      3,
       Math.min(
         32,
         Math.round(value) +
@@ -1157,12 +1158,12 @@ async function saveTeams(){
 
   if(
     !Number.isInteger(teams) ||
-    teams < 8 ||
+    teams < 3 ||
     teams > 32
   ){
     message(
       'gptv44TeamsMessage',
-      'Informe de 8 a 32 equipes.',
+      'Informe de 3 a 32 equipes.',
       'error'
     );
 

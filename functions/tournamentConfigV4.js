@@ -1,3 +1,4 @@
+// GREEN PARK TOURNAMENT MIN THREE V47
 "use strict";
 
 const {
@@ -66,12 +67,12 @@ function normalizeTeamsCount(value) {
 
   if (
     !Number.isInteger(count) ||
-    count < 8 ||
+    count < 3 ||
     count > 32
   ) {
     throw new HttpsError(
         "invalid-argument",
-        "A quantidade deve ser entre 8 e 32 equipes.",
+        "A quantidade deve ser entre 3 e 32 equipes.",
     );
   }
 
@@ -171,12 +172,12 @@ async function readConfig(
 
   if (
     !Number.isInteger(teamsCount) ||
-    teamsCount < 8 ||
+    teamsCount < 3 ||
     teamsCount > 32
   ) {
     teamsCount =
       Number.isInteger(parentDefault) &&
-      parentDefault >= 8 &&
+      parentDefault >= 3 &&
       parentDefault <= 32 ?
         parentDefault :
         10;
