@@ -1,0 +1,599 @@
+/* GREENPARK_UI_POLISH_V1 */
+
+
+/* ==========================================================
+   HOME - FOTO DE CAMPO
+   ========================================================== */
+
+.phone:has(#homeView.active){
+
+  background:
+
+    linear-gradient(
+      180deg,
+      rgba(4,13,18,.82) 0%,
+      rgba(4,14,17,.72) 35%,
+      rgba(5,18,13,.88) 100%
+    ),
+
+    url(
+      "https://images.pexels.com/photos/46798/the-ball-stadion-football-the-pitch-46798.jpeg?auto=compress&cs=tinysrgb&w=1600"
+    )
+    center center /
+    cover
+    no-repeat!important;
+
+}
+
+
+/* cards rapidos levemente transparentes */
+
+#homeView .quick{
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(21,31,38,.91),
+      rgba(12,22,27,.91)
+    )!important;
+
+  backdrop-filter:
+    blur(7px);
+
+  -webkit-backdrop-filter:
+    blur(7px);
+
+  border-color:
+    rgba(255,255,255,.13)!important;
+
+}
+
+
+/* ICONES */
+
+#homeView .quick b{
+
+  font-size:23px!important;
+
+  font-weight:850!important;
+
+  line-height:1!important;
+
+  filter:
+    drop-shadow(
+      0 0 7px
+      currentColor
+    );
+
+}
+
+
+/* LISTA */
+
+#openConfirmedListQuick b{
+  color:#66e83c!important;
+}
+
+
+/* RANKING */
+
+#openRankingQuick b{
+  color:#ffd653!important;
+}
+
+
+/* ESTATISTICAS */
+
+#openStatsQuick b{
+  color:#59c8ff!important;
+}
+
+
+/* TIMES */
+
+#openTeamsQuick b{
+  color:#a98aff!important;
+}
+
+
+/* GALERIA */
+
+#openGalleryQuick b{
+  color:#ff79c6!important;
+}
+
+
+/* COMUNICADOS */
+
+#openNoticesQuick b{
+  color:#ff9b47!important;
+}
+
+
+/* PATROCINADORES */
+
+#openSponsorsQuick b{
+  color:#4de1d4!important;
+}
+
+
+/* TORNEIOS */
+
+#openTournamentsQuick b{
+  color:#ffd13f!important;
+}
+
+
+/* ==========================================================
+   LISTA DE CONFIRMADOS COMPACTA
+   ========================================================== */
+
+#confirmedListView
+.confirmed-list-card{
+
+  padding:10px!important;
+
+  border-radius:14px!important;
+
+}
+
+
+#confirmedListView
+#confirmedListItems{
+
+  gap:6px!important;
+
+}
+
+
+#confirmedListView
+.confirmed-player-row{
+
+  min-height:48px!important;
+
+  padding:6px 7px!important;
+
+  grid-template-columns:
+    34px
+    minmax(0,1fr)
+    25px!important;
+
+  gap:6px!important;
+
+  border-radius:11px!important;
+
+}
+
+
+/*
+ * Quando o botão remover estiver diretamente
+ * na linha, ele fica logo depois do verdinho.
+ */
+
+@supports selector(.confirmed-player-row:has(> .gpuiv1-remove)){
+
+  #confirmedListView
+  .confirmed-player-row:has(> .gpuiv1-remove){
+
+    grid-template-columns:
+      34px
+      minmax(0,1fr)
+      25px
+      31px!important;
+
+  }
+
+}
+
+
+/* FOTO */
+
+#confirmedListView
+.confirmed-player-row
+> .confirmed-player-avatar{
+
+  width:32px!important;
+  height:32px!important;
+
+  min-width:32px!important;
+
+  border-radius:8px!important;
+
+}
+
+
+/* NOME */
+
+#confirmedListView
+.confirmed-player-row
+> .confirmed-player-name{
+
+  font-size:13px!important;
+
+  line-height:1.05!important;
+
+}
+
+
+/* CONFIRMADO = SOMENTE VERDINHO */
+
+#confirmedListView
+.confirmed-player-badge.gpuiv1-confirmed{
+
+  width:22px!important;
+  height:22px!important;
+
+  min-width:22px!important;
+
+  padding:0!important;
+  margin:0!important;
+
+  border-radius:50%!important;
+
+  background:
+    var(--green)!important;
+
+  color:
+    #102011!important;
+
+  display:flex!important;
+
+  align-items:center!important;
+  justify-content:center!important;
+
+  font-size:0!important;
+
+  letter-spacing:0!important;
+
+}
+
+
+#confirmedListView
+.confirmed-player-badge.gpuiv1-confirmed::before{
+
+  content:"✓";
+
+  font-size:11px;
+
+  font-weight:950;
+
+  line-height:1;
+
+}
+
+
+/* REMOVER COMPACTO */
+
+#confirmedListView
+.admin-cancel-racha-btn.gpuiv1-remove{
+
+  width:29px!important;
+  height:29px!important;
+
+  min-width:29px!important;
+  min-height:29px!important;
+
+  margin:0!important;
+  padding:0!important;
+
+  border:
+    1px solid
+    rgba(217,78,78,.48)!important;
+
+  border-radius:8px!important;
+
+  background:
+    rgba(217,78,78,.09)!important;
+
+  color:
+    #ff8b8b!important;
+
+  font-size:0!important;
+
+}
+
+
+#confirmedListView
+.admin-cancel-racha-btn.gpuiv1-remove::before{
+
+  content:"×";
+
+  font-size:18px;
+
+  font-weight:700;
+
+  line-height:1;
+
+}
+
+
+/* contador mais compacto */
+
+#confirmedListView
+.confirmed-list-head{
+
+  margin-bottom:7px!important;
+
+}
+
+
+#confirmedListView
+.confirmed-list-count{
+
+  font-size:8px!important;
+
+}
+
+
+/* ==========================================================
+   EDITOR DAS REGRAS
+   ========================================================== */
+
+.gprv1-admin{
+
+  margin:
+    0 0 12px;
+
+}
+
+
+.gprv1-open{
+
+  width:100%;
+
+  min-height:43px;
+
+  border:
+    1px solid
+    rgba(86,213,46,.38);
+
+  border-radius:11px;
+
+  background:
+    rgba(86,213,46,.09);
+
+  color:
+    var(--green2);
+
+  font-size:8px;
+
+  font-weight:950;
+
+}
+
+
+.gprv1-editor{
+
+  display:none;
+
+  margin-top:8px;
+
+  padding:11px;
+
+  border:
+    1px solid #2d4338;
+
+  border-radius:13px;
+
+  background:#0b1712;
+
+}
+
+
+.gprv1-editor.show{
+  display:block;
+}
+
+
+.gprv1-editor-head{
+
+  margin-bottom:10px;
+
+  text-align:center;
+
+}
+
+
+.gprv1-editor-head strong{
+
+  display:block;
+
+  color:#fff;
+
+  font-size:10px;
+
+}
+
+
+.gprv1-editor-head span{
+
+  display:block;
+
+  margin-top:3px;
+
+  color:#778980;
+
+  font-size:7px;
+
+}
+
+
+.gprv1-field{
+
+  display:block;
+
+  margin-top:10px;
+
+}
+
+
+.gprv1-field > span{
+
+  display:block;
+
+  margin-bottom:5px;
+
+  color:#96a49d;
+
+  font-size:7px;
+
+  font-weight:950;
+
+}
+
+
+.gprv1-field textarea{
+
+  width:100%;
+
+  min-height:135px;
+
+  padding:10px;
+
+  resize:vertical;
+
+  border:
+    1px solid #344951;
+
+  border-radius:10px;
+
+  outline:0;
+
+  background:#111a21;
+
+  color:#fff;
+
+  box-sizing:border-box;
+
+  font-size:12px;
+
+  line-height:1.4;
+
+}
+
+
+.gprv1-field textarea:focus{
+
+  border-color:
+    var(--green);
+
+}
+
+
+.gprv1-actions{
+
+  display:grid;
+
+  grid-template-columns:
+    1fr 1fr;
+
+  gap:6px;
+
+  margin-top:10px;
+
+}
+
+
+.gprv1-actions button{
+
+  min-height:39px;
+
+  border:
+    1px solid #394a42;
+
+  border-radius:9px;
+
+  background:#111b16;
+
+  color:#a9b4ae;
+
+  font-size:7px;
+
+  font-weight:950;
+
+}
+
+
+.gprv1-actions .save{
+
+  border-color:
+    var(--green);
+
+  background:
+    var(--green);
+
+  color:#102011;
+
+}
+
+
+.gprv1-message{
+
+  min-height:13px;
+
+  margin-top:7px;
+
+  color:#819188;
+
+  font-size:7px;
+
+  text-align:center;
+
+}
+
+
+.gprv1-message.ok{
+  color:var(--green2);
+}
+
+
+.gprv1-message.error{
+  color:#ff9696;
+}
+
+
+#rulesView
+.gprv1-empty{
+
+  color:#788981;
+
+  list-style:none;
+
+  margin-left:-18px;
+
+  font-style:italic;
+
+}
+
+
+/* HOME - telas menores */
+
+@media(max-width:370px){
+
+  #homeView .quick b{
+    font-size:20px!important;
+  }
+
+
+  #confirmedListView
+  .confirmed-player-row{
+
+    padding:
+      5px 6px!important;
+
+    gap:
+      5px!important;
+
+  }
+
+
+  #confirmedListView
+  .confirmed-player-row
+  > .confirmed-player-name{
+
+    font-size:
+      12px!important;
+
+  }
+
+}

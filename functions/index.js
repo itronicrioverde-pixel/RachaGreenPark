@@ -10409,3 +10409,9 @@ Object.assign(
     exports,
     require("./tournamentResultsV7"),
 );
+
+// GREEN PARK CONTENT RULES V1 MODULE
+Object.assign(
+    exports,
+    require("./contentRulesV1"),
+);
