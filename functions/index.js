@@ -10313,3 +10313,9 @@ exports.reconciliarPixPendentes =
         );
       },
   );
+
+// GREEN PARK TOURNAMENT PLAYERS V3 MODULE
+Object.assign(
+    exports,
+    require("./tournamentPlayersV3"),
+);
