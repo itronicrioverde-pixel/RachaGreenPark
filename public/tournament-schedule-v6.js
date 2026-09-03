@@ -17,6 +17,7 @@ import {
 /* GREENPARK_TOURNAMENT_SCHEDULE_V6 */
 /* GREENPARK_TOURNAMENT_SCHEDULE_COUNT_SYNC_V62 */
 /* GREENPARK_TOURNAMENT_RESULTS_V7 */
+/* GREENPARK_TOURNAMENT_TABLE_COMPLETE_V71 */
 
 const ADMIN_UID =
   'd3nVt6SbQlO6lYnOcCUDbLBhoU02';
@@ -36,6 +37,9 @@ let structure = {
 };
 
 let loading = false;
+
+let matchViewMode =
+  'cards';
 
 let obterTorneioAtualCall = null;
 let listarEstruturaTorneioCall = null;
@@ -673,6 +677,314 @@ function addStyle(){
   font-size:9px;
   font-weight:950;
   text-align:center;
+}
+
+
+
+
+/* ==========================================================
+   GREEN PARK - TABELA + CLASSIFICACAO V7.1
+   ========================================================== */
+
+.gptv71-view-switch{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:5px;
+  padding:4px;
+  margin:2px 0 5px;
+  border:1px solid #2b4036;
+  border-radius:10px;
+  background:#0a1511;
+}
+
+.gptv71-view-switch button{
+  min-height:35px;
+  border:0;
+  border-radius:7px;
+  background:transparent;
+  color:#75867d;
+  font-size:7px;
+  font-weight:950;
+}
+
+.gptv71-view-switch button.active{
+  background:#18301d;
+  color:var(--green2);
+}
+
+
+/* TABELA DOS JOGOS */
+
+.gptv71-games-table{
+  display:flex;
+  flex-direction:column;
+  gap:9px;
+}
+
+.gptv71-games-stage{
+  overflow:hidden;
+  border:1px solid #2c4036;
+  border-radius:11px;
+  background:#0b1712;
+}
+
+.gptv71-games-title{
+  padding:8px 9px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  border-bottom:1px solid #25382f;
+  color:#fff;
+  font-size:7px;
+  font-weight:950;
+}
+
+.gptv71-games-title span{
+  color:var(--green2);
+  font-size:6px;
+}
+
+.gptv71-game-row{
+  display:grid;
+  grid-template-columns:
+    minmax(0,1fr)
+    52px
+    minmax(0,1fr);
+  gap:5px;
+  align-items:center;
+  min-height:49px;
+  padding:7px 8px;
+  border-top:1px solid #203229;
+}
+
+.gptv71-game-row:first-of-type{
+  border-top:0;
+}
+
+.gptv71-game-team{
+  min-width:0;
+  display:flex;
+  align-items:center;
+  gap:5px;
+}
+
+.gptv71-game-team.away{
+  flex-direction:row-reverse;
+  text-align:right;
+}
+
+.gptv71-game-logo{
+  width:27px;
+  height:27px;
+  flex:0 0 27px;
+  overflow:hidden;
+  display:grid;
+  place-items:center;
+  border-radius:7px;
+  background:#17231d;
+  color:#fff;
+  font-size:6px;
+  font-weight:950;
+}
+
+.gptv71-game-logo img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+}
+
+.gptv71-game-name{
+  min-width:0;
+  overflow:hidden;
+  color:#fff;
+  font-size:7px;
+  font-weight:900;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.gptv71-game-score{
+  min-width:52px;
+  text-align:center;
+}
+
+.gptv71-game-score strong{
+  display:block;
+  color:#fff;
+  font-size:13px;
+  font-weight:950;
+}
+
+.gptv71-game-score span{
+  display:block;
+  margin-top:2px;
+  color:#74867c;
+  font-size:5.5px;
+  font-weight:900;
+}
+
+
+/* CLASSIFICACAO COMPLETA */
+
+.gptv71-ranking-info{
+  margin-bottom:7px;
+  padding:8px 9px;
+  border:1px solid #293d33;
+  border-radius:9px;
+  background:#0b1712;
+  color:#7f9087;
+  font-size:6px;
+  line-height:1.45;
+  text-align:center;
+}
+
+.gptv71-ranking-info strong{
+  color:var(--green2);
+}
+
+.gptv71-scroll-hint{
+  padding:0 2px 5px;
+  color:#64766d;
+  font-size:5.5px;
+  text-align:right;
+}
+
+.gptv71-table-scroll{
+  width:100%;
+  overflow-x:auto;
+  overflow-y:hidden;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
+}
+
+.gptv71-table-scroll::-webkit-scrollbar{
+  display:none;
+}
+
+.gptv71-ranking-table{
+  min-width:650px;
+}
+
+.gptv71-ranking-head,
+.gptv71-ranking-row{
+  display:grid;
+
+  grid-template-columns:
+    27px
+    155px
+    repeat(7,42px)
+    48px;
+
+  gap:0;
+
+  align-items:center;
+}
+
+.gptv71-ranking-head{
+  min-height:30px;
+  padding:0 5px;
+  color:#708179;
+  font-size:6px;
+  font-weight:950;
+}
+
+.gptv71-ranking-row{
+  min-height:47px;
+  padding:0 5px;
+  border-top:1px solid #22342b;
+}
+
+.gptv71-ranking-row.qualified{
+  background:
+    linear-gradient(
+      90deg,
+      rgba(86,213,46,.08),
+      rgba(86,213,46,.015)
+    );
+}
+
+.gptv71-ranking-pos{
+  color:#8c9992;
+  font-size:8px;
+  font-weight:950;
+  text-align:center;
+}
+
+.gptv71-ranking-row.qualified
+.gptv71-ranking-pos{
+  color:var(--green2);
+}
+
+.gptv71-ranking-team{
+  min-width:0;
+  display:grid;
+  grid-template-columns:29px minmax(0,1fr);
+  gap:6px;
+  align-items:center;
+  padding-right:5px;
+}
+
+.gptv71-ranking-logo{
+  width:29px;
+  height:29px;
+  overflow:hidden;
+  display:grid;
+  place-items:center;
+  border-radius:7px;
+  background:#17231d;
+  color:#fff;
+  font-size:6px;
+  font-weight:950;
+}
+
+.gptv71-ranking-logo img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+}
+
+.gptv71-ranking-team strong{
+  min-width:0;
+  overflow:hidden;
+  color:#fff;
+  font-size:7px;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.gptv71-stat{
+  font-size:7px;
+  font-weight:850;
+  text-align:center;
+  color:#9aa7a0;
+}
+
+.gptv71-sg.positive{
+  color:var(--green2);
+}
+
+.gptv71-sg.negative{
+  color:#e48d8d;
+}
+
+.gptv71-pts{
+  color:var(--green2);
+  font-size:9px;
+  font-weight:950;
+  text-align:center;
+}
+
+.gptv71-qualified-note{
+  padding:7px 9px;
+  border-top:1px solid #22342b;
+  color:#788a80;
+  font-size:6px;
+  line-height:1.4;
+}
+
+.gptv71-qualified-note strong{
+  color:var(--green2);
 }
 
 
@@ -1812,21 +2124,491 @@ function renderSummary(
 }
 
 
+function gameTableScore(match){
+
+  const finished =
+    match.status ===
+      'finished' &&
+    match.homeScore !==
+      null &&
+    match.awayScore !==
+      null;
+
+
+  if(!finished){
+    return {
+      score:'×',
+      state:
+        (
+          match.homeTeamId &&
+          match.awayTeamId
+        ) ?
+          'AGENDADO' :
+          'A DEFINIR'
+    };
+  }
+
+
+  let score =
+    String(
+      match.homeScore
+    ) +
+    ' × ' +
+    String(
+      match.awayScore
+    );
+
+
+  if(
+    match.homePenalties !==
+      null &&
+    match.homePenalties !==
+      undefined &&
+    match.awayPenalties !==
+      null &&
+    match.awayPenalties !==
+      undefined
+  ){
+    score +=
+      ' (' +
+      match.homePenalties +
+      '×' +
+      match.awayPenalties +
+      ')';
+  }
+
+
+  return {
+    score,
+    state:'FINAL'
+  };
+}
+
+
+function tableTeamCell(
+  teamId,
+  source,
+  away = false
+){
+  const wrapper =
+    document.createElement(
+      'div'
+    );
+
+  wrapper.className =
+    'gptv71-game-team' +
+    (
+      away ?
+        ' away' :
+        ''
+    );
+
+
+  const team =
+    teamById(
+      teamId
+    );
+
+
+  if(team){
+    wrapper.appendChild(
+      imageBox(
+        'gptv71-game-logo',
+        team
+      )
+    );
+  }
+
+
+  const name =
+    document.createElement(
+      'div'
+    );
+
+  name.className =
+    'gptv71-game-name';
+
+
+  name.textContent =
+    team ?
+      teamName(team) :
+      (
+        source ||
+        'A DEFINIR'
+      );
+
+
+  wrapper.appendChild(
+    name
+  );
+
+
+  return wrapper;
+}
+
+
+function renderGamesTable(
+  container
+){
+
+  const table =
+    document.createElement(
+      'div'
+    );
+
+  table.className =
+    'gptv71-games-table';
+
+
+  const stageGroups =
+    [];
+
+
+  const groupMatches =
+    structure.matches
+      .filter(
+        match =>
+          match.stage ===
+          'group'
+      );
+
+
+  const groupKeys =
+    [
+      ...new Set(
+        groupMatches.map(
+          match =>
+            (
+              match.groupLabel ||
+              'FASE DE GRUPOS'
+            ) +
+            '|' +
+            String(
+              match.round ||
+              1
+            )
+        )
+      )
+    ];
+
+
+  groupKeys.forEach(
+    key => {
+
+      const [
+        label,
+        round
+      ] =
+        key.split('|');
+
+
+      stageGroups.push({
+        title:
+          label +
+          ' • RODADA ' +
+          round,
+
+        matches:
+          groupMatches.filter(
+            match =>
+              (
+                match.groupLabel ||
+                'FASE DE GRUPOS'
+              ) +
+              '|' +
+              String(
+                match.round ||
+                1
+              ) ===
+              key
+          )
+      });
+
+    }
+  );
+
+
+  [
+    [
+      'quarterfinal',
+      'QUARTAS DE FINAL'
+    ],
+    [
+      'semifinal',
+      'SEMIFINAIS'
+    ],
+    [
+      'final',
+      'FINAL'
+    ]
+  ].forEach(
+    ([stage,label]) => {
+
+      const matches =
+        structure.matches
+          .filter(
+            match =>
+              match.stage ===
+              stage
+          );
+
+
+      if(matches.length){
+        stageGroups.push({
+          title:label,
+          matches
+        });
+      }
+
+    }
+  );
+
+
+  stageGroups.forEach(
+    group => {
+
+      const section =
+        document.createElement(
+          'section'
+        );
+
+      section.className =
+        'gptv71-games-stage';
+
+
+      const title =
+        document.createElement(
+          'div'
+        );
+
+      title.className =
+        'gptv71-games-title';
+
+
+      const strong =
+        document.createElement(
+          'strong'
+        );
+
+      strong.textContent =
+        group.title;
+
+
+      const total =
+        document.createElement(
+          'span'
+        );
+
+      total.textContent =
+        group.matches.length +
+        (
+          group.matches.length === 1 ?
+            ' JOGO' :
+            ' JOGOS'
+        );
+
+
+      title.append(
+        strong,
+        total
+      );
+
+
+      section.appendChild(
+        title
+      );
+
+
+      group.matches.forEach(
+        match => {
+
+          const row =
+            document.createElement(
+              'div'
+            );
+
+          row.className =
+            'gptv71-game-row';
+
+
+          row.appendChild(
+            tableTeamCell(
+              match.homeTeamId,
+              match.homeSource,
+              false
+            )
+          );
+
+
+          const score =
+            gameTableScore(
+              match
+            );
+
+
+          const center =
+            document.createElement(
+              'div'
+            );
+
+          center.className =
+            'gptv71-game-score';
+
+
+          const value =
+            document.createElement(
+              'strong'
+            );
+
+          value.textContent =
+            score.score;
+
+
+          const state =
+            document.createElement(
+              'span'
+            );
+
+          state.textContent =
+            score.state;
+
+
+          center.append(
+            value,
+            state
+          );
+
+
+          row.appendChild(
+            center
+          );
+
+
+          row.appendChild(
+            tableTeamCell(
+              match.awayTeamId,
+              match.awaySource,
+              true
+            )
+          );
+
+
+          section.appendChild(
+            row
+          );
+
+        }
+      );
+
+
+      table.appendChild(
+        section
+      );
+
+    }
+  );
+
+
+  container.appendChild(
+    table
+  );
+}
+
+
+function renderMatchViewSwitch(
+  container
+){
+
+  const switcher =
+    document.createElement(
+      'div'
+    );
+
+  switcher.className =
+    'gptv71-view-switch';
+
+
+  [
+    [
+      'cards',
+      'PARTIDAS'
+    ],
+    [
+      'table',
+      'TABELA'
+    ]
+  ].forEach(
+    ([mode,label]) => {
+
+      const button =
+        document.createElement(
+          'button'
+        );
+
+      button.type =
+        'button';
+
+      button.textContent =
+        label;
+
+
+      if(
+        matchViewMode ===
+        mode
+      ){
+        button.classList.add(
+          'active'
+        );
+      }
+
+
+      button.addEventListener(
+        'click',
+        () => {
+
+          matchViewMode =
+            mode;
+
+          renderMatches();
+
+        }
+      );
+
+
+      switcher.appendChild(
+        button
+      );
+
+    }
+  );
+
+
+  container.appendChild(
+    switcher
+  );
+}
+
+
 function renderMatches(){
+
   const container =
     document.getElementById(
       'gptv6MatchesContent'
     );
 
+
   if(!container){
     return;
   }
 
+
   container.innerHTML = '';
+
 
   if(
     structure.stale
   ){
+
     const alert =
       document.createElement(
         'div'
@@ -1841,22 +2623,55 @@ function renderMatches(){
     container.appendChild(
       alert
     );
+
   }
+
 
   if(
     !structure.generated
   ){
-    container.innerHTML +=
-      '<div class="gptv6-empty">' +
-      'Os grupos e jogos ainda não foram gerados.' +
-      '</div>';
+
+    const empty =
+      document.createElement(
+        'div'
+      );
+
+    empty.className =
+      'gptv6-empty';
+
+    empty.textContent =
+      'Os grupos e jogos ainda não foram gerados.';
+
+    container.appendChild(
+      empty
+    );
 
     return;
   }
 
+
   renderSummary(
     container
   );
+
+
+  renderMatchViewSwitch(
+    container
+  );
+
+
+  if(
+    matchViewMode ===
+    'table'
+  ){
+
+    renderGamesTable(
+      container
+    );
+
+    return;
+  }
+
 
   const groupMatches =
     structure.matches.filter(
@@ -1865,16 +2680,21 @@ function renderMatches(){
         'group'
     );
 
+
   const groups =
-    [...new Set(
-      groupMatches.map(
-        match =>
-          match.groupId
+    [
+      ...new Set(
+        groupMatches.map(
+          match =>
+            match.groupId
+        )
       )
-    )];
+    ];
+
 
   groups.forEach(
     id => {
+
       const section =
         document.createElement(
           'section'
@@ -1883,11 +2703,14 @@ function renderMatches(){
       section.className =
         'gptv6-section';
 
+
       const matches =
         groupMatches.filter(
           match =>
-            match.groupId === id
+            match.groupId ===
+            id
         );
+
 
       const title =
         document.createElement(
@@ -1898,25 +2721,86 @@ function renderMatches(){
         'gptv6-section-title';
 
       title.textContent =
-        matches[0]?.groupLabel ||
+        matches[0]
+          ?.groupLabel ||
         'FASE DE GRUPOS';
+
 
       section.appendChild(
         title
       );
 
+
       matches.forEach(
         match =>
           section.appendChild(
-            matchCard(match)
+            matchCard(
+              match
+            )
           )
       );
+
 
       container.appendChild(
         section
       );
+
     }
   );
+
+
+  const knockout =
+    structure.matches.filter(
+      match =>
+        match.stage !==
+        'group'
+    );
+
+
+  if(knockout.length){
+
+    const section =
+      document.createElement(
+        'section'
+      );
+
+    section.className =
+      'gptv6-section';
+
+
+    const title =
+      document.createElement(
+        'div'
+      );
+
+    title.className =
+      'gptv6-section-title';
+
+    title.textContent =
+      'MATA-MATA';
+
+
+    section.appendChild(
+      title
+    );
+
+
+    knockout.forEach(
+      match =>
+        section.appendChild(
+          matchCard(
+            match
+          )
+        )
+    );
+
+
+    container.appendChild(
+      section
+    );
+
+  }
+
 }
 
 
@@ -2149,20 +3033,25 @@ function groupStandings(
 
 
 function renderStandings(){
+
   const root =
     document.getElementById(
       'gptv6StandingsRoot'
     );
 
+
   if(!root){
     return;
   }
 
+
   root.innerHTML = '';
+
 
   if(
     !structure.generated
   ){
+
     root.innerHTML =
       '<div class="gptv6-empty">' +
       'A classificação aparecerá depois do sorteio dos grupos.' +
@@ -2172,16 +3061,37 @@ function renderStandings(){
   }
 
 
+  const info =
+    document.createElement(
+      'div'
+    );
+
+  info.className =
+    'gptv71-ranking-info';
+
+  info.innerHTML =
+    '<strong>CRITÉRIOS:</strong> ' +
+    'Pontos → Vitórias → Saldo de gols → ' +
+    'Gols pró → Menor número de gols contra.';
+
+
+  root.appendChild(
+    info
+  );
+
+
   const groupIds =
-    [...new Set(
-      structure.teams.map(
-        team =>
-          String(
-            team.groupId ||
-            'U'
-          )
+    [
+      ...new Set(
+        structure.teams.map(
+          team =>
+            String(
+              team.groupId ||
+              'U'
+            )
+        )
       )
-    )]
+    ]
       .sort();
 
 
@@ -2200,10 +3110,12 @@ function renderStandings(){
 
   groupIds.forEach(
     groupId => {
+
       const rows =
         groupStandings(
           groupId
         );
+
 
       const finished =
         groupIsFinished(
@@ -2234,6 +3146,7 @@ function renderStandings(){
           'strong'
         );
 
+
       strong.textContent =
         groupId === 'U' ?
           'GRUPO ÚNICO' :
@@ -2241,12 +3154,13 @@ function renderStandings(){
           groupId;
 
 
-      const count =
+      const state =
         document.createElement(
           'span'
         );
 
-      count.textContent =
+
+      state.textContent =
         finished ?
           'CLASSIFICAÇÃO FINAL' :
           'CLASSIFICAÇÃO';
@@ -2254,12 +3168,48 @@ function renderStandings(){
 
       title.append(
         strong,
-        count
+        state
       );
+
 
       card.appendChild(
         title
       );
+
+
+      const hint =
+        document.createElement(
+          'div'
+        );
+
+      hint.className =
+        'gptv71-scroll-hint';
+
+      hint.textContent =
+        'Deslize para ver todas as estatísticas →';
+
+
+      card.appendChild(
+        hint
+      );
+
+
+      const scroll =
+        document.createElement(
+          'div'
+        );
+
+      scroll.className =
+        'gptv71-table-scroll';
+
+
+      const table =
+        document.createElement(
+          'div'
+        );
+
+      table.className =
+        'gptv71-ranking-table';
 
 
       const head =
@@ -2268,32 +3218,57 @@ function renderStandings(){
         );
 
       head.className =
-        'gptv7-table-head';
+        'gptv71-ranking-head';
 
-      head.innerHTML =
-        '<span>#</span>' +
-        '<span>EQUIPE</span>' +
-        '<span>J</span>' +
-        '<span>SG</span>' +
-        '<span>PTS</span>';
 
-      card.appendChild(
+      [
+        '#',
+        'EQUIPE',
+        'J',
+        'V',
+        'E',
+        'D',
+        'GP',
+        'GC',
+        'SG',
+        'PTS'
+      ].forEach(
+        label => {
+
+          const cell =
+            document.createElement(
+              'span'
+            );
+
+          cell.textContent =
+            label;
+
+          head.appendChild(
+            cell
+          );
+
+        }
+      );
+
+
+      table.appendChild(
         head
       );
 
 
       rows.forEach(
         (row,index) => {
+
           const line =
             document.createElement(
               'div'
             );
 
           line.className =
-            'gptv7-table-row';
+            'gptv71-ranking-row';
+
 
           if(
-            finished &&
             index < qualify
           ){
             line.classList.add(
@@ -2308,33 +3283,26 @@ function renderStandings(){
             );
 
           position.className =
-            'gptv6-position';
+            'gptv71-ranking-pos';
 
           position.textContent =
-            String(index + 1);
+            String(
+              index + 1
+            );
 
 
-          const teamWrap =
+          const team =
             document.createElement(
               'div'
             );
 
-          teamWrap.className =
-            'gptv7-team-wrap';
+          team.className =
+            'gptv71-ranking-team';
 
 
-          const teamMain =
-            document.createElement(
-              'div'
-            );
-
-          teamMain.className =
-            'gptv7-team-main';
-
-
-          teamMain.appendChild(
+          team.appendChild(
             imageBox(
-              'gptv6-table-logo',
+              'gptv71-ranking-logo',
               row.team
             )
           );
@@ -2350,66 +3318,87 @@ function renderStandings(){
               row.team
             );
 
-          teamMain.appendChild(
+
+          team.appendChild(
             name
           );
 
 
-          const meta =
-            document.createElement(
-              'small'
-            );
-
-          meta.className =
-            'gptv7-team-meta';
-
-          meta.textContent =
-            row.wins +
-            'V • ' +
-            row.draws +
-            'E • ' +
-            row.losses +
-            'D • GP ' +
-            row.goalsFor +
-            ' • GC ' +
-            row.goalsAgainst;
+          const values = [
+            row.played,
+            row.wins,
+            row.draws,
+            row.losses,
+            row.goalsFor,
+            row.goalsAgainst,
+            row.goalDiff
+          ];
 
 
-          teamWrap.append(
-            teamMain,
-            meta
+          line.append(
+            position,
+            team
           );
 
 
-          const played =
-            document.createElement(
-              'div'
-            );
+          values.forEach(
+            (
+              value,
+              valueIndex
+            ) => {
 
-          played.className =
-            'gptv7-number';
+              const cell =
+                document.createElement(
+                  'div'
+                );
 
-          played.textContent =
-            String(
-              row.played
-            );
+              cell.className =
+                'gptv71-stat';
 
 
-          const goalDiff =
-            document.createElement(
-              'div'
-            );
+              if(
+                valueIndex === 6
+              ){
 
-          goalDiff.className =
-            'gptv7-number';
+                cell.classList.add(
+                  'gptv71-sg'
+                );
 
-          goalDiff.textContent =
-            row.goalDiff > 0 ?
-              '+' +
-              row.goalDiff :
-              String(
-                row.goalDiff
+
+                if(value > 0){
+                  cell.classList.add(
+                    'positive'
+                  );
+                }
+
+
+                if(value < 0){
+                  cell.classList.add(
+                    'negative'
+                  );
+                }
+
+
+                cell.textContent =
+                  value > 0 ?
+                    '+' +
+                    value :
+                    String(value);
+
+              }else{
+
+                cell.textContent =
+                  String(value);
+
+              }
+
+
+              line.appendChild(
+                cell
               );
+
+            }
+          );
 
 
           const points =
@@ -2418,7 +3407,7 @@ function renderStandings(){
             );
 
           points.className =
-            'gptv7-points';
+            'gptv71-pts';
 
           points.textContent =
             String(
@@ -2426,25 +3415,63 @@ function renderStandings(){
             );
 
 
-          line.append(
-            position,
-            teamWrap,
-            played,
-            goalDiff,
+          line.appendChild(
             points
           );
 
 
-          card.appendChild(
+          table.appendChild(
             line
           );
+
         }
+      );
+
+
+      scroll.appendChild(
+        table
+      );
+
+
+      card.appendChild(
+        scroll
+      );
+
+
+      const note =
+        document.createElement(
+          'div'
+        );
+
+      note.className =
+        'gptv71-qualified-note';
+
+
+      note.innerHTML =
+        '<strong>' +
+        qualify +
+        '</strong> ' +
+        (
+          qualify === 1 ?
+            'equipe classifica' :
+            'equipes classificam'
+        ) +
+        (
+          finished ?
+            ' para a próxima fase.' :
+            ' atualmente.'
+        );
+
+
+      card.appendChild(
+        note
       );
 
 
       wrap.appendChild(
         card
       );
+
     }
   );
 
@@ -2452,6 +3479,7 @@ function renderStandings(){
   root.appendChild(
     wrap
   );
+
 }
 
 
