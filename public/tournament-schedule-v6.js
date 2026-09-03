@@ -1178,6 +1178,96 @@ function addStyle(){
    IPHONES MAIS ESTREITOS
    ========================================================== */
 
+
+/* ==========================================================
+   GREENPARK_TOURNAMENT_RANKING_ALIGN_V711
+   SOMENTE ALINHAMENTO ENTRE TITULOS E NUMEROS
+   ========================================================== */
+
+
+/*
+ * CABECALHO:
+ * centraliza exatamente dentro da mesma coluna
+ * usada pelos numeros das linhas.
+ */
+.gptv71-ranking-head > span{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+
+  width:100%!important;
+  height:100%!important;
+
+  margin:0!important;
+  padding:0!important;
+
+  text-align:center!important;
+  box-sizing:border-box!important;
+}
+
+
+/*
+ * EQUIPE fica alinhada à esquerda,
+ * pois é a única coluna textual.
+ */
+.gptv71-ranking-head
+> span:nth-child(2){
+  justify-content:flex-start!important;
+  text-align:left!important;
+}
+
+
+/*
+ * POSICAO, ESTATISTICAS E PONTOS
+ * ficam perfeitamente centralizados
+ * vertical e horizontalmente.
+ */
+.gptv71-ranking-row
+> .gptv71-ranking-pos,
+
+.gptv71-ranking-row
+> .gptv71-stat,
+
+.gptv71-ranking-row
+> .gptv71-pts{
+  display:flex!important;
+
+  align-items:center!important;
+  justify-content:center!important;
+
+  align-self:stretch!important;
+
+  margin:0!important;
+  padding:0!important;
+
+  text-align:center!important;
+
+  box-sizing:border-box!important;
+}
+
+
+/*
+ * A equipe fica centralizada verticalmente
+ * na mesma linha das estatisticas.
+ */
+.gptv71-ranking-row
+> .gptv71-ranking-team{
+  align-self:stretch!important;
+  align-items:center!important;
+}
+
+
+/*
+ * Garante que CABECALHO e LINHAS
+ * usem exatamente a mesma grade.
+ */
+.gptv71-ranking-head,
+.gptv71-ranking-row{
+  align-items:center!important;
+}
+
+
+
 @media(max-width:350px){
 
   .gptv71-ranking-head,
