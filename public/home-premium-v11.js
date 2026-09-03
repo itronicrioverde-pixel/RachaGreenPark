@@ -19,6 +19,7 @@ import {
 
 
 /* GREENPARK_HOME_PREMIUM_V11 */
+/* GREENPARK_HOME_SCREENSHOT_LOCK_V12 */
 
 
 const ADMIN_UID =
@@ -194,7 +195,7 @@ function ensureCard(){
 
   card.innerHTML = `
 
-    <div>
+    <div class="gphv12-card-copy">
 
       <div class="gphv11-card-kicker">
         SEU CARD
@@ -212,9 +213,22 @@ function ensureCard(){
       </div>
 
       <div class="gphv11-card-help">
-        Criado automaticamente
-        usando sua foto real.
+        Geramos seu card de jogador
+        a partir da sua foto.
       </div>
+
+      <button
+        class="gphv12-example-btn"
+        type="button"
+      >
+        <span>
+          VER EXEMPLO
+        </span>
+
+        <b>
+          ›
+        </b>
+      </button>
 
     </div>
 
@@ -257,6 +271,43 @@ function ensureCard(){
     );
 
   }
+
+
+  const exampleButton =
+    card.querySelector(
+      '.gphv12-example-btn'
+    );
+
+
+  exampleButton
+    ?.addEventListener(
+      'click',
+      () => {
+
+        card.classList.toggle(
+          'gphv12-example-open'
+        );
+
+
+        const arrow =
+          exampleButton.querySelector(
+            'b'
+          );
+
+
+        if(arrow){
+
+          arrow.textContent =
+            card.classList.contains(
+              'gphv12-example-open'
+            ) ?
+              '×' :
+              '›';
+
+        }
+
+      }
+    );
 
 
   return card;
