@@ -105,18 +105,47 @@ function addStyle(){
    ADMIN DO TORNEIO
    ========================================= */
 
+/* GREENPARK_TOURNAMENT_ADMIN_FORM_V42 */
+
 #tournamentsView .gptournament-admin-grid{
   min-width:0;
+
+  display:grid!important;
+  grid-template-columns:1fr!important;
+
+  gap:11px!important;
 }
 
-#tournamentsView .gptournament-admin-field{
-  min-width:0;
+#tournamentsView .gptournament-admin-field,
+#tournamentsView .gptournament-admin-field.wide{
+  width:100%!important;
+  min-width:0!important;
+
+  grid-column:1!important;
 }
 
 #tournamentsView .gptournament-admin-field input,
 #tournamentsView .gptournament-admin-field select{
+  display:block!important;
+
+  width:100%!important;
   max-width:100%!important;
   min-width:0!important;
+
+  box-sizing:border-box!important;
+}
+
+#tournamentsView #tournamentDateInput,
+#tournamentsView #tournamentStatusInput{
+  width:100%!important;
+  min-width:0!important;
+
+  margin:0!important;
+}
+
+#tournamentsView #tournamentStatusInput{
+  appearance:auto;
+  -webkit-appearance:menulist;
 }
 
 
