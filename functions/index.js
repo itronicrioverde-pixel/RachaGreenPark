@@ -10403,3 +10403,9 @@ Object.assign(
     exports,
     require("./tournamentScheduleV6"),
 );
+
+// GREEN PARK TOURNAMENT RESULTS V7 MODULE
+Object.assign(
+    exports,
+    require("./tournamentResultsV7"),
+);

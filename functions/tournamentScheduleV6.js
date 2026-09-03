@@ -828,9 +828,29 @@ function teamPayload(snapshot) {
 }
 
 
+// GREEN PARK TOURNAMENT RESULTS PAYLOAD V7
+
 function matchPayload(snapshot) {
   const data =
     snapshot.data() || {};
+
+  const numberOrNull =
+    (value) => {
+      if (
+        value === null ||
+        value === undefined ||
+        value === ""
+      ) {
+        return null;
+      }
+
+      const number =
+        Number(value);
+
+      return Number.isInteger(number) ?
+        number :
+        null;
+    };
 
   return {
     id:
@@ -893,22 +913,29 @@ function matchPayload(snapshot) {
       ),
 
     homeScore:
-      Number.isFinite(
-          Number(data.homeScore),
-      ) &&
-      data.homeScore !== null &&
-      data.homeScore !== undefined ?
-        Number(data.homeScore) :
-        null,
+      numberOrNull(
+          data.homeScore,
+      ),
 
     awayScore:
-      Number.isFinite(
-          Number(data.awayScore),
-      ) &&
-      data.awayScore !== null &&
-      data.awayScore !== undefined ?
-        Number(data.awayScore) :
-        null,
+      numberOrNull(
+          data.awayScore,
+      ),
+
+    homePenalties:
+      numberOrNull(
+          data.homePenalties,
+      ),
+
+    awayPenalties:
+      numberOrNull(
+          data.awayPenalties,
+      ),
+
+    winnerTeamId:
+      safeId(
+          data.winnerTeamId,
+      ),
 
     status:
       safeString(
