@@ -1913,3 +1913,61 @@
   }
 
 }
+
+
+/* ==========================================================
+   GREENPARK_STANDARD_BACKGROUND_V15
+
+   HOME E PAGINA VOU / NAO VOU
+   VOLTAM AO MESMO FUNDO DAS DEMAIS PAGINAS
+   ========================================================== */
+
+
+/*
+ * Fundo original do aplicativo.
+ * Sem foto ocupando a tela inteira.
+ */
+.phone:has(#homeView.active),
+.phone:has(#confirmationView.active){
+
+  background:
+
+    radial-gradient(
+      circle at 100% 0,
+      rgba(86,213,46,.08),
+      transparent 30%
+    ),
+
+    linear-gradient(
+      180deg,
+      var(--bg),
+      var(--bg2)
+    )!important;
+
+}
+
+
+/*
+ * Topo volta ao comportamento normal
+ * das demais telas.
+ */
+.phone:has(#homeView.active)
+.topbar,
+
+.phone:has(#confirmationView.active)
+.topbar{
+
+  background:
+    transparent!important;
+
+}
+
+
+/*
+ * IMPORTANTE:
+ * nao alteramos o fundo interno
+ * do card pessoal do jogador.
+ *
+ * O estadio continua apenas ali,
+ * onde ficou bonito.
+ */
