@@ -20,6 +20,7 @@ import {
 
 /* GREENPARK_HOME_PREMIUM_V11 */
 /* GREENPARK_HOME_SCREENSHOT_LOCK_V12 */
+/* GREENPARK_PLAYER_CARD_STATUS_V14 */
 
 
 const ADMIN_UID =
@@ -195,40 +196,32 @@ function ensureCard(){
 
   card.innerHTML = `
 
-    <div class="gphv12-card-copy">
+    <div class="gphv14-card-copy">
 
       <div class="gphv11-card-kicker">
         SEU CARD
       </div>
 
-      <div class="gphv11-card-title">
-        AUTOMÁTICO
-      </div>
 
       <div
         id="gphv11PlayerName"
-        class="gphv11-card-name"
+        class="gphv14-player-name"
       >
+        JOGADOR GREEN PARK
+      </div>
+
+
+      <div
+        id="gphv14PlayerStatus"
+        class="gphv14-player-status neutral"
+      >
+        CADASTRO CONCLUÍDO
+      </div>
+
+
+      <div class="gphv14-player-club">
         GREEN PARK FC
       </div>
-
-      <div class="gphv11-card-help">
-        Geramos seu card de jogador
-        a partir da sua foto.
-      </div>
-
-      <button
-        class="gphv12-example-btn"
-        type="button"
-      >
-        <span>
-          VER EXEMPLO
-        </span>
-
-        <b>
-          ›
-        </b>
-      </button>
 
     </div>
 
@@ -239,17 +232,27 @@ function ensureCard(){
 
         <img
           id="gphv11PlayerPhoto"
-          alt="Card Green Park"
+          alt="Seu card Green Park"
         >
 
       </div>
 
-      <div class="gphv11-card-check">
+
+      <div
+        id="gphv14CardCheck"
+        class="gphv11-card-check"
+      >
         ✓
       </div>
 
     </div>
   `;
+
+
+  const statusCard =
+    home.querySelector(
+      '.status-card'
+    );
 
 
   const quickTitle =
@@ -258,7 +261,13 @@ function ensureCard(){
     );
 
 
-  if(quickTitle){
+  if(statusCard){
+
+    statusCard.after(
+      card
+    );
+
+  }else if(quickTitle){
 
     quickTitle.before(
       card
@@ -271,43 +280,6 @@ function ensureCard(){
     );
 
   }
-
-
-  const exampleButton =
-    card.querySelector(
-      '.gphv12-example-btn'
-    );
-
-
-  exampleButton
-    ?.addEventListener(
-      'click',
-      () => {
-
-        card.classList.toggle(
-          'gphv12-example-open'
-        );
-
-
-        const arrow =
-          exampleButton.querySelector(
-            'b'
-          );
-
-
-        if(arrow){
-
-          arrow.textContent =
-            card.classList.contains(
-              'gphv12-example-open'
-            ) ?
-              '×' :
-              '›';
-
-        }
-
-      }
-    );
 
 
   return card;
@@ -382,6 +354,163 @@ function getName(){
 }
 
 
+function getPlayerCardStatus(){
+
+  let raw =
+    String(
+      playerCloud?.status ||
+      'registered'
+    )
+      .trim()
+      .toLowerCase();
+
+
+  if(
+    raw === 'approved' ||
+    raw === 'paid'
+  ){
+
+    raw =
+      'confirmed';
+
+  }
+
+
+  const monthly =
+    playerCloud?.monthlyActive ===
+      true;
+
+
+  if(
+    raw === 'confirmed'
+  ){
+
+    return {
+      text:
+        monthly ?
+          '✓ CONFIRMADO • MENSALISTA' :
+          '✓ CONFIRMADO',
+
+      tone:
+        'confirmed'
+    };
+
+  }
+
+
+  if(
+    raw === 'requested'
+  ){
+
+    return {
+      text:
+        '⏳ AGUARDANDO CONFIRMAÇÃO',
+
+      tone:
+        'pending'
+    };
+
+  }
+
+
+  if(
+    raw === 'rejected'
+  ){
+
+    return {
+      text:
+        'NÃO APROVADO',
+
+      tone:
+        'rejected'
+    };
+
+  }
+
+
+  if(
+    raw === 'no'
+  ){
+
+    return {
+      text:
+        'NÃO VOU',
+
+      tone:
+        'no'
+    };
+
+  }
+
+
+  if(
+    raw === 'maybe'
+  ){
+
+    return {
+      text:
+        'AINDA NÃO SEI',
+
+      tone:
+        'maybe'
+    };
+
+  }
+
+
+  /*
+   * Caso tenha mensalidade ativa,
+   * mas o status semanal ainda não
+   * tenha sincronizado.
+   */
+  if(monthly){
+
+    return {
+      text:
+        'MENSALISTA ATIVO',
+
+      tone:
+        'monthly'
+    };
+
+  }
+
+
+  /*
+   * Pagamento informado,
+   * aguardando o administrador.
+   */
+  if(
+    playerCloud?.paymentReported ===
+      true
+  ){
+
+    return {
+      text:
+        '⏳ AGUARDANDO CONFIRMAÇÃO',
+
+      tone:
+        'pending'
+    };
+
+  }
+
+
+  /*
+   * Terminou cadastro, mas ainda
+   * não entrou no fluxo do racha.
+   */
+  return {
+    text:
+      'CADASTRO CONCLUÍDO',
+
+    tone:
+      'registered'
+  };
+
+}
+
+
 function renderCard(){
 
   const card =
@@ -440,6 +569,18 @@ function renderCard(){
     );
 
 
+  const status =
+    document.getElementById(
+      'gphv14PlayerStatus'
+    );
+
+
+  const check =
+    document.getElementById(
+      'gphv14CardCheck'
+    );
+
+
   if(image){
 
     if(
@@ -463,6 +604,48 @@ function renderCard(){
         .toLocaleUpperCase(
           'pt-BR'
         );
+
+  }
+
+
+  const cardStatus =
+    getPlayerCardStatus();
+
+
+  if(status){
+
+    status.textContent =
+      cardStatus.text;
+
+
+    status.className =
+      'gphv14-player-status ' +
+      cardStatus.tone;
+
+  }
+
+
+  if(check){
+
+    if(
+      cardStatus.tone ===
+        'confirmed' ||
+      cardStatus.tone ===
+        'monthly'
+    ){
+
+      check.style.display =
+        'grid';
+
+      check.textContent =
+        '✓';
+
+    }else{
+
+      check.style.display =
+        'none';
+
+    }
 
   }
 

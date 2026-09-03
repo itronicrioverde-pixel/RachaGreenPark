@@ -1559,3 +1559,357 @@
     )!important;
 
 }
+
+
+/* ==========================================================
+   GREENPARK_PLAYER_CARD_STATUS_V14
+
+   CARD REAL DO JOGADOR
+   LOGO ABAIXO DE SUA SITUACAO
+   ========================================================== */
+
+
+/*
+ * Mantem a proporcao aprovada.
+ */
+#gphv11PlayerCard{
+
+  margin:
+    7px 0 13px!important;
+
+}
+
+
+/* ==========================================================
+   TEXTO
+   ========================================================== */
+
+.gphv14-card-copy{
+
+  min-width:0;
+
+  align-self:center;
+
+}
+
+
+.gphv14-player-name{
+
+  max-width:
+    150px;
+
+  margin-top:
+    5px;
+
+  overflow:hidden;
+
+  color:#fff;
+
+  font-size:
+    19px;
+
+  font-weight:
+    950;
+
+  line-height:
+    1.05;
+
+  text-overflow:
+    ellipsis;
+
+  white-space:
+    nowrap;
+
+}
+
+
+/* clube pequeno */
+
+.gphv14-player-club{
+
+  margin-top:
+    7px;
+
+  color:
+    #96a69e;
+
+  font-size:
+    8px;
+
+  font-weight:
+    900;
+
+  letter-spacing:
+    .09em;
+
+}
+
+
+/* ==========================================================
+   STATUS
+   ========================================================== */
+
+.gphv14-player-status{
+
+  width:
+    fit-content;
+
+  max-width:
+    155px;
+
+  min-height:
+    27px;
+
+  margin-top:
+    9px;
+
+  padding:
+    6px 9px;
+
+  display:flex;
+
+  align-items:center;
+
+  justify-content:center;
+
+  border:
+    1px solid
+    #435049;
+
+  border-radius:
+    999px;
+
+  background:
+    rgba(70,82,76,.28);
+
+  color:
+    #c9d1cd;
+
+  font-size:
+    7.5px;
+
+  font-weight:
+    950;
+
+  line-height:
+    1.15;
+
+  text-align:center;
+
+}
+
+
+/* CONFIRMADO */
+
+.gphv14-player-status.confirmed{
+
+  border-color:
+    rgba(86,213,46,.52);
+
+  background:
+    rgba(86,213,46,.18);
+
+  color:
+    #9df67b;
+
+}
+
+
+/* MENSALISTA */
+
+.gphv14-player-status.monthly{
+
+  border-color:
+    rgba(86,213,46,.52);
+
+  background:
+    rgba(86,213,46,.18);
+
+  color:
+    #9df67b;
+
+}
+
+
+/* AGUARDANDO */
+
+.gphv14-player-status.pending{
+
+  border-color:
+    rgba(242,183,53,.45);
+
+  background:
+    rgba(242,183,53,.12);
+
+  color:
+    #ffd36b;
+
+}
+
+
+/* NAO VOU */
+
+.gphv14-player-status.no{
+
+  border-color:
+    rgba(217,78,78,.45);
+
+  background:
+    rgba(217,78,78,.12);
+
+  color:
+    #ff9b9b;
+
+}
+
+
+/* AINDA NAO SEI */
+
+.gphv14-player-status.maybe{
+
+  border-color:
+    rgba(242,183,53,.45);
+
+  background:
+    rgba(242,183,53,.12);
+
+  color:
+    #ffd875;
+
+}
+
+
+/* REJEITADO */
+
+.gphv14-player-status.rejected{
+
+  border-color:
+    rgba(217,78,78,.45);
+
+  background:
+    rgba(217,78,78,.12);
+
+  color:
+    #ff9b9b;
+
+}
+
+
+/* CADASTRO CONCLUIDO */
+
+.gphv14-player-status.registered{
+
+  border-color:
+    rgba(127,165,186,.40);
+
+  background:
+    rgba(93,126,145,.14);
+
+  color:
+    #c1d3dd;
+
+}
+
+
+/* ==========================================================
+   FOTO
+   ========================================================== */
+
+#gphv11PlayerCard
+.gphv11-portrait{
+
+  background:
+
+    linear-gradient(
+      rgba(1,12,10,.05),
+      rgba(1,12,10,.05)
+    ),
+
+    url("./assets/greenpark-home-field.jpg")
+    center /
+    cover
+    no-repeat;
+
+}
+
+
+/*
+ * A selfie permanece exatamente a foto real.
+ * Apenas enquadramento/cor.
+ */
+#gphv11PlayerCard
+.gphv11-portrait img{
+
+  object-position:
+    center 23%!important;
+
+  filter:
+    contrast(1.08)
+    saturate(1.08)
+    brightness(1.03)!important;
+
+}
+
+
+/* ==========================================================
+   CONFIRMADO = BRILHO UM POUCO MAIOR
+   ========================================================== */
+
+#gphv11PlayerCard:has(
+  .gphv14-player-status.confirmed
+){
+
+  border-color:
+    rgba(86,213,46,.90)!important;
+
+  box-shadow:
+
+    0 15px 34px
+    rgba(0,0,0,.22),
+
+    inset
+    0 0 28px
+    rgba(86,213,46,.035);
+
+}
+
+
+/* ==========================================================
+   CELULARES ESTREITOS
+   ========================================================== */
+
+@media(max-width:350px){
+
+  .gphv14-player-name{
+
+    max-width:
+      120px;
+
+    font-size:
+      16px;
+
+  }
+
+
+  .gphv14-player-status{
+
+    max-width:
+      120px;
+
+    padding:
+      5px 7px;
+
+    font-size:
+      6.7px;
+
+  }
+
+
+  .gphv14-player-club{
+
+    font-size:
+      7px;
+
+  }
+
+}
