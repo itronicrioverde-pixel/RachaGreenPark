@@ -6548,6 +6548,400 @@ button {
 
 </style>
 
+
+<style id="greenpark-confirmation-cinematic-v1">
+/* GREENPARK_CONFIRMATION_CINEMATIC_V1 */
+
+#confirmationView{
+  position:relative;
+  isolation:isolate;
+  min-height:calc(100dvh - 80px);
+  padding-top:5px;
+  padding-bottom:45px;
+}
+
+#confirmationView::before{
+  content:"";
+  position:absolute;
+  z-index:-2;
+  top:-95px;
+  left:-18px;
+  right:-18px;
+  bottom:-100px;
+  pointer-events:none;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(3,11,15,.52) 0%,
+      rgba(3,13,11,.62) 35%,
+      rgba(3,11,11,.82) 72%,
+      #071018 100%
+    ),
+    radial-gradient(
+      circle at 75% 20%,
+      rgba(86,213,46,.20),
+      transparent 33%
+    ),
+    url(
+      'https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&w=1200&q=88'
+    )
+    center / cover no-repeat;
+}
+
+#confirmationView::after{
+  content:"";
+  position:absolute;
+  z-index:-1;
+  inset:-90px -18px -100px;
+  pointer-events:none;
+  background:
+    radial-gradient(
+      circle at 50% 40%,
+      transparent 10%,
+      rgba(3,10,13,.14) 48%,
+      rgba(3,10,13,.58) 100%
+    );
+}
+
+
+/* TOPO */
+
+#confirmationView .page-head{
+  display:grid;
+  grid-template-columns:48px minmax(0,1fr) 48px;
+  align-items:center;
+  gap:10px;
+  margin:5px 0 20px;
+}
+
+#confirmationView .page-head-title{
+  color:#6ce448;
+  font-size:17px;
+  font-weight:950;
+  text-align:center;
+  letter-spacing:.025em;
+  text-shadow:0 0 18px rgba(86,213,46,.18);
+}
+
+#confirmationView .back-btn{
+  width:48px;
+  height:48px;
+  border:1px solid rgba(174,198,187,.28);
+  border-radius:15px;
+  background:rgba(8,20,25,.78);
+  color:#fff;
+  box-shadow:0 12px 28px rgba(0,0,0,.24);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+}
+
+
+/* CARD */
+
+#confirmationView > .confirm-card{
+  position:relative;
+  overflow:hidden;
+  padding:20px;
+  border:1px solid rgba(86,213,46,.48);
+  border-radius:25px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(10,27,23,.88),
+      rgba(5,16,20,.94)
+    );
+
+  box-shadow:
+    0 24px 55px rgba(0,0,0,.36),
+    0 0 32px rgba(86,213,46,.06);
+
+  backdrop-filter:blur(15px) saturate(1.12);
+  -webkit-backdrop-filter:blur(15px) saturate(1.12);
+}
+
+#confirmationView > .confirm-card h2{
+  margin:0 0 7px;
+  color:#fff;
+  font-size:17px;
+  font-weight:950;
+}
+
+#confirmationView .confirmation-summary{
+  color:#c7d1cc;
+  font-size:13px;
+  line-height:1.45;
+  font-weight:750;
+}
+
+
+/* BOTOES */
+
+#confirmationView .decision-grid{
+  display:grid !important;
+  grid-template-columns:1fr !important;
+  gap:13px !important;
+  margin-top:19px !important;
+}
+
+#confirmationView .decision{
+  position:relative !important;
+  width:100% !important;
+  min-height:76px !important;
+
+  padding:
+    0 55px 0 73px !important;
+
+  display:flex !important;
+  align-items:center !important;
+
+  border-radius:18px !important;
+
+  font-size:17px !important;
+  line-height:1.1 !important;
+  font-weight:950 !important;
+
+  text-align:left !important;
+  overflow:hidden !important;
+
+  transition:
+    transform .13s ease,
+    box-shadow .13s ease;
+}
+
+#confirmationView .decision:active{
+  transform:scale(.985);
+}
+
+
+/* VOU */
+
+#confirmationView #yesButton{
+  border:1px solid rgba(143,255,101,.86) !important;
+
+  background:
+    linear-gradient(
+      105deg,
+      #66e73a,
+      #50d72d 55%,
+      #42c928
+    ) !important;
+
+  color:#071508 !important;
+
+  box-shadow:
+    0 15px 32px rgba(60,214,38,.25),
+    0 1px 0 rgba(255,255,255,.38) inset !important;
+}
+
+#confirmationView #yesButton::before{
+  content:"✓";
+  position:absolute;
+  left:19px;
+  top:50%;
+  transform:translateY(-50%);
+
+  width:40px;
+  height:40px;
+
+  display:grid;
+  place-items:center;
+
+  border:1px solid rgba(6,73,11,.28);
+  border-radius:50%;
+
+  background:rgba(255,255,255,.16);
+  color:#0b500d;
+
+  font-size:23px;
+}
+
+#confirmationView #yesButton::after{
+  content:"›";
+  position:absolute;
+  right:20px;
+  top:50%;
+  transform:translateY(-54%);
+
+  color:#164513;
+  font-size:34px;
+  font-weight:400;
+}
+
+
+/* NAO VOU */
+
+#confirmationView #noButton{
+  border:1px solid rgba(232,71,82,.68) !important;
+
+  background:
+    linear-gradient(
+      120deg,
+      rgba(53,20,25,.93),
+      rgba(23,16,19,.95)
+    ) !important;
+
+  color:#ff9ca3 !important;
+
+  box-shadow:
+    0 12px 28px rgba(0,0,0,.20) !important;
+}
+
+#confirmationView #noButton::before{
+  content:"×";
+  position:absolute;
+  left:19px;
+  top:50%;
+  transform:translateY(-50%);
+
+  width:40px;
+  height:40px;
+
+  display:grid;
+  place-items:center;
+
+  border:1px solid rgba(255,79,90,.67);
+  border-radius:50%;
+
+  color:#ff6671;
+  font-size:30px;
+  font-weight:400;
+}
+
+#confirmationView #noButton::after{
+  content:"›";
+  position:absolute;
+  right:20px;
+  top:50%;
+  transform:translateY(-54%);
+
+  color:#bd5d65;
+  font-size:34px;
+}
+
+
+/* FOTO */
+
+#confirmationView .confirmation-field-photo{
+  position:relative !important;
+
+  width:100% !important;
+  height:clamp(210px,29vh,270px) !important;
+
+  margin-top:17px !important;
+
+  overflow:hidden !important;
+
+  border:1px solid rgba(86,213,46,.34) !important;
+  border-radius:20px !important;
+
+  background:#07110c !important;
+
+  box-shadow:
+    0 18px 38px rgba(0,0,0,.28) !important;
+}
+
+#confirmationView .confirmation-field-main{
+  display:block !important;
+  width:100% !important;
+  height:100% !important;
+
+  object-fit:cover !important;
+  object-position:center 55% !important;
+
+  filter:
+    saturate(1.08)
+    contrast(1.13)
+    brightness(.76) !important;
+
+  transform:scale(1.025);
+}
+
+
+/* LOGO OFICIAL */
+
+#confirmationView .confirmation-field-logo{
+  position:absolute !important;
+  z-index:4 !important;
+
+  right:14px !important;
+  bottom:13px !important;
+
+  width:60px !important;
+  height:70px !important;
+
+  padding:5px !important;
+
+  object-fit:contain !important;
+
+  border:1px solid rgba(255,255,255,.16) !important;
+  border-radius:14px !important;
+
+  background:rgba(3,13,9,.64) !important;
+
+  filter:none !important;
+
+  box-shadow:
+    0 10px 25px rgba(0,0,0,.34) !important;
+
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+}
+
+
+/* PAGAMENTO CONTINUA IGUAL EM FUNCIONAMENTO */
+
+#confirmationView .payment-flow .confirm-card,
+#confirmationView .payment-flow .pix-box{
+  border-color:rgba(86,213,46,.25) !important;
+
+  background:
+    linear-gradient(
+      150deg,
+      rgba(10,25,23,.94),
+      rgba(6,16,21,.97)
+    ) !important;
+
+  box-shadow:
+    0 18px 38px rgba(0,0,0,.24) !important;
+}
+
+
+/* IPHONE MENOR */
+
+@media(max-width:370px){
+
+  #confirmationView > .confirm-card{
+    padding:16px;
+  }
+
+  #confirmationView .decision{
+    min-height:68px !important;
+    padding-left:65px !important;
+    padding-right:46px !important;
+    font-size:15px !important;
+  }
+
+  #confirmationView #yesButton::before,
+  #confirmationView #noButton::before{
+    left:15px;
+    width:36px;
+    height:36px;
+  }
+
+  #confirmationView .confirmation-field-photo{
+    height:195px !important;
+  }
+
+  #confirmationView .confirmation-field-logo{
+    width:50px !important;
+    height:59px !important;
+  }
+}
+
+</style>
+
 </head>
 
 <body data-admin="false">
@@ -7184,7 +7578,18 @@ button {
       </div>
 
       <div class="confirmation-field-photo">
-        <img src="https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&w=1000&q=82" alt="Campo de futebol iluminado" loading="lazy">
+        <img
+          class="confirmation-field-main"
+          src="https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&w=1200&q=88"
+          alt="Campo de futebol iluminado"
+          loading="lazy"
+        >
+
+        <img
+          class="confirmation-field-logo"
+          src="./assets/greenpark-escudo-oficial.png"
+          alt="Green Park FC"
+        >
       </div>
     </section>
 
@@ -15670,27 +16075,38 @@ sponsorFileInput.addEventListener('change', async () => {
         time: matchTime.value || state.config.time || ''
       });
 
+      // GREENPARK_MONTHLY_AUTO_FRONTEND_V1
       const confirmedAfterReset =
         Number(result.data?.confirmedAfter);
 
-      if(!Number.isFinite(confirmedAfterReset) || confirmedAfterReset !== 0){
+      const monthlyAutoConfirmed =
+        Number(result.data?.monthlyAutoConfirmed || 0);
+
+      if(
+        !Number.isFinite(confirmedAfterReset) ||
+        !Number.isFinite(monthlyAutoConfirmed) ||
+        confirmedAfterReset !== monthlyAutoConfirmed
+      ){
         throw new Error(
-          'O servidor não confirmou o zeramento dos jogadores. ' +
-          'Confirmados restantes: ' +
-          (Number.isFinite(confirmedAfterReset) ? confirmedAfterReset : 'não informado')
+          'O servidor não confirmou corretamente os mensalistas. ' +
+          'Esperado: ' + monthlyAutoConfirmed +
+          ' | Encontrado: ' + confirmedAfterReset
         );
       }
 
-      // Confere também pela mesma função que alimenta a Lista de Confirmados.
-      const confirmedCheck = await listarConfirmadosCall({});
+      const confirmedCheck =
+        await listarConfirmadosCall({});
+
       const confirmedListAfter =
         Number(confirmedCheck.data?.count || 0);
 
-      if(confirmedListAfter !== 0){
+      if(confirmedListAfter !== monthlyAutoConfirmed){
         throw new Error(
-          'A Lista de Confirmados ainda retornou ' +
+          'A Lista deveria começar com ' +
+          monthlyAutoConfirmed +
+          ' mensalista(s), mas retornou ' +
           confirmedListAfter +
-          ' jogador(es) após o novo racha.'
+          '.'
         );
       }
 
