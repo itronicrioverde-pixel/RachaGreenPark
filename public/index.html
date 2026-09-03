@@ -7409,6 +7409,70 @@ button {
   opacity:.5;
 }
 
+
+/* GREENPARK_TOURNAMENT_DELETE_V2 */
+
+.gptournament-danger{
+  display:none;
+  margin-top:14px;
+  padding:13px;
+  border:1px solid rgba(222,75,75,.46);
+  border-radius:13px;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(74,20,24,.22),
+      rgba(38,14,17,.32)
+    );
+}
+
+.gptournament-danger-head{
+  color:#ff9c9c;
+  font-size:9px;
+  line-height:1;
+  font-weight:950;
+  letter-spacing:.08em;
+}
+
+.gptournament-danger-text{
+  margin-top:7px;
+  color:#a99191;
+  font-size:8.5px;
+  line-height:1.45;
+}
+
+.gptournament-delete{
+  width:100%;
+  min-height:46px;
+  margin-top:11px;
+  padding:0 12px;
+
+  border:
+    1px solid rgba(226,76,76,.72);
+
+  border-radius:11px;
+
+  background:
+    rgba(117,25,31,.22);
+
+  color:#ff9e9e;
+
+  font-size:10px;
+  font-weight:950;
+
+  touch-action:manipulation;
+}
+
+.gptournament-delete:active{
+  background:
+    rgba(151,31,38,.34);
+}
+
+.gptournament-delete:disabled{
+  opacity:.45;
+}
+
+
 .gptournament-admin-status{
   min-height:14px;
   margin-top:8px;
@@ -7885,6 +7949,29 @@ button {
         >
           SALVAR TORNEIO
         </button>
+
+        <!-- GREENPARK_TOURNAMENT_DELETE_V2 -->
+        <div
+          class="gptournament-danger"
+          id="tournamentDeleteArea"
+        >
+          <div class="gptournament-danger-head">
+            ZONA DE EXCLUSÃO
+          </div>
+
+          <div class="gptournament-danger-text">
+            Apaga definitivamente este campeonato.
+            O racha semanal e os jogadores não são alterados.
+          </div>
+
+          <button
+            class="gptournament-delete"
+            id="tournamentDeleteButton"
+            type="button"
+          >
+            APAGAR CAMPEONATO
+          </button>
+        </div>
 
         <div
           class="gptournament-admin-status"
@@ -9226,6 +9313,7 @@ const salvarPatrocinadorCall = httpsCallable(functions, 'salvarPatrocinador');
 const removerPatrocinadorCall = httpsCallable(functions, 'removerPatrocinador');
 const obterTorneioAtualCall = httpsCallable(functions, 'obterTorneioAtual');
 const salvarTorneioCall = httpsCallable(functions, 'salvarTorneio');
+const excluirTorneioCall = httpsCallable(functions, 'excluirTorneio');
 const obterDashboardFinanceiroCall = httpsCallable(functions, 'obterDashboardFinanceiro');
 const listarControlePagamentosCall = httpsCallable(functions, 'listarControlePagamentos');
 const definirPlanoJogadorCall = httpsCallable(functions, 'definirPlanoJogador');
@@ -12751,6 +12839,19 @@ let messagingInstance = null;
         data :
         null;
 
+    const deleteArea =
+      document.getElementById(
+        'tournamentDeleteArea'
+      );
+
+    if(deleteArea){
+      deleteArea.style.display =
+        exists &&
+        isAdminUser() ?
+          'block' :
+          'none';
+    }
+
     const name =
       document.getElementById(
         'tournamentName'
@@ -13049,6 +13150,139 @@ let messagingInstance = null;
     }finally{
       button.disabled =
         false;
+    }
+  }
+
+
+  async function deleteTournamentAdmin(){
+    if(!isAdminUser()){
+      alert(
+        'Entre como administrador.'
+      );
+      return;
+    }
+
+    const tournamentId =
+      String(
+        tournamentCurrent?.id ||
+        ''
+      ).trim();
+
+    if(!tournamentId){
+      setTournamentAdminStatus(
+        'Nenhum campeonato salvo para apagar.',
+        'error'
+      );
+      return;
+    }
+
+    const tournamentName =
+      String(
+        tournamentCurrent?.name ||
+        'CAMPEONATO'
+      )
+        .trim()
+        .toLocaleUpperCase(
+          'pt-BR'
+        );
+
+    const firstConfirmation =
+      confirm(
+        'APAGAR CAMPEONATO?\n\n' +
+        tournamentName +
+        '\n\n' +
+        'Esta ação é definitiva.\n' +
+        'O racha semanal, jogadores, Pix e mensalidades não serão alterados.'
+      );
+
+    if(!firstConfirmation){
+      return;
+    }
+
+    const typed =
+      prompt(
+        'Para confirmar a exclusão de:\n\n' +
+        tournamentName +
+        '\n\nDigite exatamente:\n\nAPAGAR'
+      );
+
+    if(
+      String(typed || '')
+        .trim()
+        .toLocaleUpperCase(
+          'pt-BR'
+        ) !== 'APAGAR'
+    ){
+      alert(
+        'Exclusão cancelada.'
+      );
+      return;
+    }
+
+    const deleteButton =
+      document.getElementById(
+        'tournamentDeleteButton'
+      );
+
+    const saveButton =
+      document.getElementById(
+        'tournamentSaveButton'
+      );
+
+    if(deleteButton){
+      deleteButton.disabled =
+        true;
+      deleteButton.textContent =
+        'APAGANDO...';
+    }
+
+    if(saveButton){
+      saveButton.disabled =
+        true;
+    }
+
+    setTournamentAdminStatus(
+      'Apagando campeonato...'
+    );
+
+    try{
+      await excluirTorneioCall({
+        id:tournamentId,
+        confirmation:'APAGAR'
+      });
+
+      renderTournament(null);
+      setTournamentTab('teams');
+
+      setTournamentAdminStatus(
+        'Campeonato apagado. Você pode criar um novo.',
+        'ok'
+      );
+
+    }catch(error){
+      console.error(
+        'Excluir torneio:',
+        error
+      );
+
+      setTournamentAdminStatus(
+        error?.message ||
+        'Não foi possível apagar o campeonato.',
+        'error'
+      );
+
+    }finally{
+      if(deleteButton){
+        deleteButton.disabled =
+          false;
+        deleteButton.textContent =
+          'APAGAR CAMPEONATO';
+      }
+
+      if(saveButton){
+        saveButton.disabled =
+          false;
+      }
     }
   }
 
@@ -16141,6 +16375,11 @@ document.querySelector('[data-nav="home"]').addEventListener('click', () => show
   document.getElementById('tournamentSaveButton')?.addEventListener(
     'click',
     saveTournamentAdmin
+  );
+
+  document.getElementById('tournamentDeleteButton')?.addEventListener(
+    'click',
+    deleteTournamentAdmin
   );
 
   document.querySelectorAll('[data-tournament-tab]').forEach(button => {

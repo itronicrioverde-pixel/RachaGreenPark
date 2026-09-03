@@ -7357,6 +7357,134 @@ exports.salvarTorneio = onCall(
 
 
 // ============================================================
+// GREEN PARK TOURNAMENT DELETE V2
+// Exclusao definitiva somente pelo administrador.
+// ============================================================
+
+exports.excluirTorneio = onCall(
+    {
+      invoker: "public",
+      region: "southamerica-east1",
+      timeoutSeconds: 30,
+    },
+    async (request) => {
+      contentAdminOrThrow(request);
+
+      const tournamentId =
+        safeContentString(
+            request.data?.id,
+            120,
+        )
+            .replace(
+                /[^a-zA-Z0-9_-]/g,
+                "",
+            );
+
+      const confirmation =
+        safeContentString(
+            request.data?.confirmation,
+            30,
+        )
+            .toUpperCase();
+
+      if (
+        !tournamentId ||
+        confirmation !== "APAGAR"
+      ) {
+        throw new HttpsError(
+            "failed-precondition",
+            "Confirmação de exclusão inválida.",
+        );
+      }
+
+      const db =
+        getFirestore();
+
+      const settingsRef =
+        db
+            .collection(
+                "tournament_settings",
+            )
+            .doc("current");
+
+      const settingsSnapshot =
+        await settingsRef.get();
+
+      const currentTournamentId =
+        settingsSnapshot.exists ?
+          safeContentString(
+              settingsSnapshot
+                  .data()
+                  ?.currentTournamentId,
+              120,
+          ) :
+          "";
+
+      // Segurança contra tela antiga/stale:
+      // só o campeonato atualmente selecionado
+      // pode ser apagado por esta função.
+      if (
+        currentTournamentId !==
+        tournamentId
+      ) {
+        throw new HttpsError(
+            "failed-precondition",
+            "Este campeonato não é mais o campeonato atual. Atualize a tela.",
+        );
+      }
+
+      const tournamentRef =
+        db
+            .collection("tournaments")
+            .doc(tournamentId);
+
+      const tournamentSnapshot =
+        await tournamentRef.get();
+
+      let deleted = false;
+
+      if (tournamentSnapshot.exists) {
+        // Já deixa a função preparada para quando
+        // equipes/jogos virarem subcoleções.
+        if (
+          typeof db.recursiveDelete ===
+          "function"
+        ) {
+          await db.recursiveDelete(
+              tournamentRef,
+          );
+        } else {
+          // Na V1 ainda não existem subcoleções.
+          await tournamentRef.delete();
+        }
+
+        deleted = true;
+      }
+
+      // Retira somente a referência do campeonato atual.
+      // Não toca em racha/current nem em players.
+      await settingsRef.set(
+          {
+            currentTournamentId:
+              FieldValue.delete(),
+            updatedBy:
+              request.auth.uid,
+            updatedAt:
+              FieldValue.serverTimestamp(),
+          },
+          {merge: true},
+      );
+
+      return {
+        ok: true,
+        deleted,
+        id: tournamentId,
+      };
+    },
+);
+
+
+// ============================================================
 // PATROCINADORES
 // ============================================================
 
