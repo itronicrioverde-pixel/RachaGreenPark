@@ -766,8 +766,11 @@ function rebuildForm(){
         FORMATO
       </span>
 
-      <div class="gptv44-static">
-        2 grupos + mata-mata
+      <div
+        id="gptv44FormatValue"
+        class="gptv44-static"
+      >
+        Formato automático
       </div>
 
     </div>
@@ -819,6 +822,14 @@ function rebuildForm(){
 
   bindForm();
 
+  applyAdaptiveTournamentFormat(
+    Number(
+      document.getElementById(
+        'gptv4TeamsCountInput'
+      )?.value || 10
+    )
+  );
+
   return true;
 }
 
@@ -868,6 +879,50 @@ function bindForm(){
           'gptv44DateMessage'
         );
       }
+    }
+  );
+
+
+  const teamsInput =
+    document.getElementById(
+      'gptv4TeamsCountInput'
+    );
+
+
+  teamsInput?.addEventListener(
+    'input',
+    () => {
+
+      teamsInput.value =
+        String(
+          teamsInput.value || ''
+        )
+          .replace(
+            /[^0-9]/g,
+            ''
+          )
+          .slice(
+            0,
+            2
+          );
+
+
+      const teams =
+        Number(
+          teamsInput.value
+        );
+
+
+      if(
+        Number.isInteger(teams) &&
+        teams >= 3 &&
+        teams <= 32
+      ){
+        applyAdaptiveTournamentFormat(
+          teams
+        );
+      }
+
     }
   );
 
@@ -950,6 +1005,344 @@ function bindForm(){
 }
 
 
+
+/* GREENPARK_TOURNAMENT_FORMAT_INTEGRATED_V49 */
+
+
+function tournamentBalancedGroups(
+  total,
+  groupCount
+){
+  const base =
+    Math.floor(
+      total / groupCount
+    );
+
+  const extra =
+    total % groupCount;
+
+  return Array.from(
+    {
+      length:groupCount
+    },
+    (_,index) =>
+      base +
+      (
+        index < extra ?
+          1 :
+          0
+      )
+  );
+}
+
+
+function tournamentAdaptiveFormat(
+  rawTeams
+){
+  const teams =
+    Math.max(
+      3,
+      Math.min(
+        32,
+        Math.round(
+          Number(rawTeams) || 3
+        )
+      )
+    );
+
+
+  if(teams <= 4){
+    return {
+      teams,
+      groupCount:1,
+      sizes:[teams],
+
+      shortLabel:
+        'Grupo único + final',
+
+      summary:
+        'Grupo único • todos contra todos • ' +
+        '1º e 2º fazem a final',
+
+      standings:
+        'Grupo único',
+
+      advance:
+        '1º e 2º vão à final'
+    };
+  }
+
+
+  if(teams === 5){
+    return {
+      teams,
+      groupCount:1,
+      sizes:[5],
+
+      shortLabel:
+        'Grupo único + semifinais + final',
+
+      summary:
+        'Grupo único • todos contra todos • ' +
+        '4 melhores nas semifinais • final',
+
+      standings:
+        'Grupo único',
+
+      advance:
+        '1º ao 4º avançam'
+    };
+  }
+
+
+  if(teams <= 10){
+    const sizes =
+      tournamentBalancedGroups(
+        teams,
+        2
+      );
+
+    return {
+      teams,
+      groupCount:2,
+      sizes,
+
+      shortLabel:
+        '2 grupos + semifinais + final',
+
+      summary:
+        '2 grupos (' +
+        sizes.join(' + ') +
+        ') • 2 por grupo avançam • ' +
+        'semifinais • final',
+
+      standings:
+        'Grupo A + Grupo B',
+
+      advance:
+        '1º e 2º avançam'
+    };
+  }
+
+
+  if(teams <= 16){
+    const sizes =
+      tournamentBalancedGroups(
+        teams,
+        2
+      );
+
+    return {
+      teams,
+      groupCount:2,
+      sizes,
+
+      shortLabel:
+        '2 grupos + quartas + final',
+
+      summary:
+        '2 grupos (' +
+        sizes.join(' + ') +
+        ') • 4 por grupo avançam • ' +
+        'quartas • semifinais • final',
+
+      standings:
+        'Grupo A + Grupo B',
+
+      advance:
+        '1º ao 4º avançam'
+    };
+  }
+
+
+  const sizes =
+    tournamentBalancedGroups(
+      teams,
+      4
+    );
+
+  return {
+    teams,
+    groupCount:4,
+    sizes,
+
+    shortLabel:
+      '4 grupos + quartas + final',
+
+    summary:
+      '4 grupos (' +
+      sizes.join(' + ') +
+      ') • 2 por grupo avançam • ' +
+      'quartas • semifinais • final',
+
+    standings:
+      'Grupos A + B + C + D',
+
+    advance:
+      '1º e 2º avançam'
+  };
+}
+
+
+function tournamentGroupName(
+  index,
+  total
+){
+  if(total === 1){
+    return 'GRUPO ÚNICO';
+  }
+
+  return (
+    'GRUPO ' +
+    String.fromCharCode(
+      65 + index
+    )
+  );
+}
+
+
+function applyAdaptiveTournamentFormat(
+  rawTeams
+){
+  const format =
+    tournamentAdaptiveFormat(
+      rawTeams
+    );
+
+
+  /*
+   * FORMATO NO ADMIN
+   */
+  const adminFormat =
+    document.getElementById(
+      'gptv44FormatValue'
+    ) ||
+    document.querySelector(
+      '#tournamentsView .gptv44-static'
+    );
+
+  if(adminFormat){
+    adminFormat.textContent =
+      format.shortLabel;
+  }
+
+
+  /*
+   * CARD PRINCIPAL
+   */
+  const publicFormat =
+    document.querySelector(
+      '#tournamentsView ' +
+      '.gptournament-format span'
+    );
+
+  if(publicFormat){
+    publicFormat.textContent =
+      format.summary;
+  }
+
+
+  /*
+   * CLASSIFICACAO
+   */
+  const standingsSubtitle =
+    document.querySelector(
+      '#tournamentsView ' +
+      '[data-tournament-panel="standings"] ' +
+      '.gptournament-panel-head span'
+    );
+
+  if(standingsSubtitle){
+    standingsSubtitle.textContent =
+      format.standings;
+  }
+
+
+  /*
+   * CARDS DOS GRUPOS
+   */
+  const preview =
+    document.querySelector(
+      '#tournamentsView ' +
+      '.gptournament-groups-preview'
+    );
+
+  if(preview){
+
+    preview.innerHTML = '';
+
+    preview.style
+      .gridTemplateColumns =
+      format.groupCount === 1 ?
+        '1fr' :
+        'repeat(2,minmax(0,1fr))';
+
+
+    format.sizes.forEach(
+      (size,index) => {
+
+        const card =
+          document.createElement(
+            'div'
+          );
+
+        card.className =
+          'gptournament-group';
+
+
+        const title =
+          document.createElement(
+            'strong'
+          );
+
+        title.textContent =
+          tournamentGroupName(
+            index,
+            format.groupCount
+          );
+
+
+        const count =
+          document.createElement(
+            'span'
+          );
+
+        count.textContent =
+          size +
+          (
+            size === 1 ?
+              ' equipe' :
+              ' equipes'
+          );
+
+
+        const advance =
+          document.createElement(
+            'small'
+          );
+
+        advance.textContent =
+          format.advance;
+
+
+        card.append(
+          title,
+          count,
+          advance
+        );
+
+        preview.appendChild(
+          card
+        );
+      }
+    );
+  }
+
+
+  return format;
+}
+
+
 function changeTeams(delta){
   const input =
     document.getElementById(
@@ -983,6 +1376,10 @@ function changeTeams(delta){
   input.value =
     String(value);
 
+  applyAdaptiveTournamentFormat(
+    value
+  );
+
   message(
     'gptv44TeamsMessage'
   );
@@ -1005,6 +1402,10 @@ function applyTeams(config = {}){
     input.value =
       String(teams);
   }
+
+  applyAdaptiveTournamentFormat(
+    teams
+  );
 
 
   const numbers =
