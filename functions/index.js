@@ -7138,10 +7138,50 @@ function tournamentPublicPayload(
       ),
     format:
       "groups_knockout",
-    teamsCount: 10,
-    groupCount: 2,
-    teamsPerGroup: 5,
-    qualifyPerGroup: 4,
+
+    teamsCount:
+      Math.max(
+          3,
+          Math.min(
+              32,
+              Math.floor(
+                  Number(
+                      data.teamsCount,
+                  ) || 10,
+              ),
+          ),
+      ),
+
+    groupCount:
+      Math.max(
+          1,
+          Math.floor(
+              Number(
+                  data.groupCount,
+              ) || 2,
+          ),
+      ),
+
+    teamsPerGroup:
+      Math.max(
+          1,
+          Math.floor(
+              Number(
+                  data.teamsPerGroup,
+              ) || 5,
+          ),
+      ),
+
+    qualifyPerGroup:
+      Math.max(
+          1,
+          Math.floor(
+              Number(
+                  data.qualifyPerGroup,
+              ) || 4,
+          ),
+      ),
+
     updatedAt,
   };
 }
@@ -7215,6 +7255,7 @@ exports.obterTorneioAtual = onCall(
 );
 
 
+// GREEN PARK TOURNAMENT DYNAMIC PUBLIC V62
 exports.salvarTorneio = onCall(
     {
       invoker: "public",
@@ -7299,10 +7340,35 @@ exports.salvarTorneio = onCall(
         status,
         format:
           "groups_knockout",
-        teamsCount: 10,
-        groupCount: 2,
-        teamsPerGroup: 5,
-        qualifyPerGroup: 4,
+
+        teamsCount:
+          Number(
+              previous.data()
+                  ?.teamsCount ||
+              10,
+          ),
+
+        groupCount:
+          Number(
+              previous.data()
+                  ?.groupCount ||
+              2,
+          ),
+
+        teamsPerGroup:
+          Number(
+              previous.data()
+                  ?.teamsPerGroup ||
+              5,
+          ),
+
+        qualifyPerGroup:
+          Number(
+              previous.data()
+                  ?.qualifyPerGroup ||
+              4,
+          ),
+
         updatedBy:
           request.auth.uid,
         updatedAt:

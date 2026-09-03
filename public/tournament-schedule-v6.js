@@ -15,6 +15,7 @@ import {
 
 
 /* GREENPARK_TOURNAMENT_SCHEDULE_V6 */
+/* GREENPARK_TOURNAMENT_SCHEDULE_COUNT_SYNC_V62 */
 
 const ADMIN_UID =
   'd3nVt6SbQlO6lYnOcCUDbLBhoU02';
@@ -1771,6 +1772,40 @@ async function init(){
       );
     }
   );
+
+  window.addEventListener(
+    'greenpark:tournament-teams-count-saved',
+    event => {
+
+      const savedTeams =
+        Number(
+          event.detail?.teamsCount
+        );
+
+      if(
+        Number.isInteger(savedTeams) &&
+        savedTeams >= 3 &&
+        savedTeams <= 32
+      ){
+        structure.teamsCount =
+          savedTeams;
+
+        renderAll();
+      }
+
+      setTimeout(
+        loadStructure,
+        150
+      );
+
+      setTimeout(
+        loadStructure,
+        900
+      );
+
+    }
+  );
+
 
   document.addEventListener(
     'click',

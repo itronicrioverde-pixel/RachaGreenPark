@@ -16,6 +16,7 @@ import {
 
 /* GREENPARK_TOURNAMENT_ADMIN_CLEAN_V44 */
 /* GREENPARK_TOURNAMENT_MIN_THREE_V47 */
+/* GREENPARK_TOURNAMENT_COUNT_SYNC_V62 */
 
 const ADMIN_UID =
   'd3nVt6SbQlO6lYnOcCUDbLBhoU02';
@@ -1425,6 +1426,61 @@ function applyTeams(config = {}){
         String(teams);
     }
   }
+
+
+  const adaptive =
+    tournamentAdaptiveFormat(
+      teams
+    );
+
+
+  if(numbers[1]){
+    const strong =
+      numbers[1].querySelector(
+        'strong'
+      );
+
+    if(strong){
+      strong.textContent =
+        String(
+          Number(
+            config.groupCount ||
+            adaptive.groupCount ||
+            1
+          )
+        );
+    }
+  }
+
+
+  if(numbers[2]){
+    const strong =
+      numbers[2].querySelector(
+        'strong'
+      );
+
+    if(strong){
+
+      const qualify =
+        Number(
+          config.qualifyPerGroup ||
+          (
+            teams <= 4 ?
+              2 :
+            teams === 5 ?
+              4 :
+            teams <= 10 ?
+              2 :
+            teams <= 16 ?
+              4 :
+              2
+          )
+        );
+
+      strong.textContent =
+        String(qualify);
+    }
+  }
 }
 
 
@@ -1584,21 +1640,90 @@ async function saveTeams(){
 
   try{
 
-    const response =
-      await salvarQuantidadeEquipesTorneioCall({
+    await salvarQuantidadeEquipesTorneioCall({
+      tournamentId:
+        currentTournament.id,
+      teamsCount:
+        teams
+    });
+
+
+    const verification =
+      await obterConfiguracaoEquipesTorneioCall({
         tournamentId:
-          currentTournament.id,
-        teamsCount:
-          teams
+          currentTournament.id
       });
 
+
+    const verified =
+      verification.data || {};
+
+
+    if(
+      Number(
+        verified.teamsCount
+      ) !== teams
+    ){
+      throw new Error(
+        'O servidor não confirmou a nova quantidade.'
+      );
+    }
+
+
     applyTeams(
-      response.data || {}
+      verified
     );
+
+
+    currentTournament = {
+      ...currentTournament,
+
+      teamsCount:
+        teams,
+
+      groupCount:
+        Number(
+          verified.groupCount || 1
+        ),
+
+      qualifyPerGroup:
+        Number(
+          verified.qualifyPerGroup || 2
+        )
+    };
+
+
+    window.dispatchEvent(
+      new CustomEvent(
+        'greenpark:tournament-teams-count-saved',
+        {
+          detail:{
+            tournamentId:
+              currentTournament.id,
+
+            teamsCount:
+              teams,
+
+            groupCount:
+              Number(
+                verified.groupCount || 1
+              ),
+
+            qualifyPerGroup:
+              Number(
+                verified.qualifyPerGroup || 2
+              )
+          }
+        }
+      )
+    );
+
 
     message(
       'gptv44TeamsMessage',
-      'Quantidade salva.',
+      'Quantidade salva: ' +
+      teams +
+      ' equipes.',
       'ok'
     );
 

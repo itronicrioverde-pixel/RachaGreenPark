@@ -80,6 +80,94 @@ function normalizeTeamsCount(value) {
 }
 
 
+
+// GREEN PARK TOURNAMENT COUNT SYNC V62
+
+function adaptiveTeamsConfig(
+    teamsCount,
+) {
+  let groupCount = 1;
+  let qualifyPerGroup = 2;
+  let formatKey = "single-final";
+  let formatLabel =
+    "Grupo único + final";
+
+  if (teamsCount === 5) {
+    groupCount = 1;
+    qualifyPerGroup = 4;
+    formatKey = "single-semis";
+    formatLabel =
+      "Grupo único + semifinais + final";
+  } else if (teamsCount <= 10) {
+    groupCount = 2;
+    qualifyPerGroup = 2;
+    formatKey = "two-semis";
+    formatLabel =
+      "2 grupos + semifinais + final";
+  } else if (teamsCount <= 16) {
+    groupCount = 2;
+    qualifyPerGroup = 4;
+    formatKey = "two-quarters";
+    formatLabel =
+      "2 grupos + quartas + final";
+  } else {
+    groupCount = 4;
+    qualifyPerGroup = 2;
+    formatKey = "four-quarters";
+    formatLabel =
+      "4 grupos + quartas + final";
+  }
+
+  const base =
+    Math.floor(
+        teamsCount / groupCount,
+    );
+
+  const extra =
+    teamsCount % groupCount;
+
+  const sizes =
+    Array.from(
+        {
+          length: groupCount,
+        },
+        (_, index) =>
+          base +
+          (
+            index < extra ?
+              1 :
+              0
+          ),
+    );
+
+  return {
+    teamsCount,
+    groupCount,
+
+    teamsPerGroup:
+      Math.max(
+          ...sizes,
+      ),
+
+    groupA:
+      sizes[0] || 0,
+
+    groupB:
+      sizes[1] || 0,
+
+    groupC:
+      sizes[2] || 0,
+
+    groupD:
+      sizes[3] || 0,
+
+    qualifyPerGroup,
+    formatKey,
+    formatLabel,
+  };
+}
+
+
 async function currentTournament(
     db,
     rawTournamentId,
@@ -183,23 +271,9 @@ async function readConfig(
         10;
   }
 
-  const groupA =
-    Math.ceil(
-        teamsCount / 2,
-    );
-
-  const groupB =
-    Math.floor(
-        teamsCount / 2,
-    );
-
-  return {
-    teamsCount,
-    groupCount: 2,
-    groupA,
-    groupB,
-    qualifyPerGroup: 4,
-  };
+  return adaptiveTeamsConfig(
+      teamsCount,
+  );
 }
 
 
@@ -249,14 +323,9 @@ onCall(
             request.data?.teamsCount,
         );
 
-      const groupA =
-        Math.ceil(
-            teamsCount / 2,
-        );
-
-      const groupB =
-        Math.floor(
-            teamsCount / 2,
+      const config =
+        adaptiveTeamsConfig(
+            teamsCount,
         );
 
       const configRef =
@@ -265,28 +334,46 @@ onCall(
             .collection("settings")
             .doc("format");
 
-      await configRef.set(
+      const batch =
+        db.batch();
+
+      batch.set(
+          configRef,
           {
-            teamsCount,
-            groupCount: 2,
-            groupA,
-            groupB,
-            qualifyPerGroup: 4,
+            ...config,
+
             updatedBy:
               request.auth.uid,
+
             updatedAt:
               FieldValue.serverTimestamp(),
           },
-          {merge: true},
+          {
+            merge: true,
+          },
       );
+
+      batch.set(
+          context.tournamentRef,
+          {
+            ...config,
+
+            teamFormatUpdatedBy:
+              request.auth.uid,
+
+            teamFormatUpdatedAt:
+              FieldValue.serverTimestamp(),
+          },
+          {
+            merge: true,
+          },
+      );
+
+      await batch.commit();
 
       return {
         ok: true,
-        teamsCount,
-        groupCount: 2,
-        groupA,
-        groupB,
-        qualifyPerGroup: 4,
+        ...config,
       };
     },
 );
