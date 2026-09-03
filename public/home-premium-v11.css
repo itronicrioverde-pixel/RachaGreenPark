@@ -1,0 +1,790 @@
+/* GREENPARK_HOME_PREMIUM_V11 */
+
+
+/* ==========================================================
+   MESMO CAMPO NA HOME E NO VOU / NAO VOU
+   ========================================================== */
+
+.phone:has(#homeView.active),
+.phone:has(#confirmationView.active){
+
+  background:
+
+    linear-gradient(
+      180deg,
+      rgba(2,10,16,.74) 0%,
+      rgba(2,12,17,.72) 34%,
+      rgba(3,17,11,.88) 100%
+    ),
+
+    url("./assets/greenpark-home-field.jpg")
+    center center /
+    cover
+    no-repeat!important;
+
+}
+
+
+/* topo */
+
+.phone:has(#homeView.active) .topbar,
+.phone:has(#confirmationView.active) .topbar{
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(2,9,15,.62),
+      rgba(2,9,15,.10)
+    );
+
+}
+
+
+/* ==========================================================
+   HOME - CARD PRINCIPAL
+   ========================================================== */
+
+#homeView .match-card{
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(8,23,30,.94),
+      rgba(5,18,24,.88)
+    )!important;
+
+  color:#fff!important;
+
+  border:
+    1px solid
+    rgba(215,230,223,.21)!important;
+
+  backdrop-filter:
+    blur(9px);
+
+  -webkit-backdrop-filter:
+    blur(9px);
+
+  box-shadow:
+    0 18px 40px
+    rgba(0,0,0,.24)!important;
+
+}
+
+
+#homeView .match-date{
+
+  color:#bdc8c3!important;
+
+}
+
+
+#homeView .info{
+
+  background:
+    rgba(7,21,28,.83)!important;
+
+  color:#fff!important;
+
+  border:
+    1px solid
+    rgba(210,230,220,.20);
+
+  box-shadow:none!important;
+
+}
+
+
+#homeView .info-icon{
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(57,187,51,.42),
+      rgba(27,99,42,.56)
+    )!important;
+
+  color:#fff!important;
+
+}
+
+
+#homeView .info small,
+#homeView .cap span{
+
+  color:#aab6b0!important;
+
+}
+
+
+#homeView .cap strong{
+
+  color:#fff!important;
+
+}
+
+
+#homeView .cap:first-child strong{
+
+  color:var(--green2)!important;
+
+}
+
+
+#homeView .ring::before{
+
+  background:#101c23!important;
+
+}
+
+
+#homeView .ring-text strong{
+
+  color:#fff!important;
+
+}
+
+
+#homeView .ring-text span{
+
+  color:#aeb9b3!important;
+
+}
+
+
+/* ==========================================================
+   ENTRAR NO RACHA
+   ========================================================== */
+
+#homeView .join-btn{
+
+  position:relative;
+
+  background:
+    linear-gradient(
+      180deg,
+      #6ee33d,
+      #51c82d
+    )!important;
+
+  box-shadow:
+    0 11px 28px
+    rgba(86,213,46,.30)!important;
+
+}
+
+
+#homeView .join-btn::before{
+
+  content:"⚽";
+
+  display:inline-block;
+
+  margin-right:9px;
+
+  font-family:
+    "Apple Color Emoji",
+    "Segoe UI Emoji",
+    sans-serif;
+
+}
+
+
+/* ==========================================================
+   SITUACAO
+   ========================================================== */
+
+#homeView .status-card{
+
+  background:
+    rgba(7,21,28,.90)!important;
+
+  color:#fff!important;
+
+  border:
+    1px solid
+    rgba(210,230,220,.18);
+
+  backdrop-filter:
+    blur(8px);
+
+  -webkit-backdrop-filter:
+    blur(8px);
+
+}
+
+
+#homeView .small-title{
+
+  color:#dae2de!important;
+
+}
+
+
+/* ==========================================================
+   ACESSOS RAPIDOS
+   ========================================================== */
+
+#homeView .quick{
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(11,27,35,.93),
+      rgba(7,19,26,.90)
+    )!important;
+
+  border:
+    1px solid
+    rgba(210,228,220,.20)!important;
+
+  backdrop-filter:
+    blur(8px);
+
+  -webkit-backdrop-filter:
+    blur(8px);
+
+  box-shadow:
+    0 8px 20px
+    rgba(0,0,0,.14);
+
+  min-height:
+    73px!important;
+
+  gap:
+    5px!important;
+
+}
+
+
+/*
+ * EMOJIS BEM MAIS VALORIZADOS
+ */
+#homeView .quick b{
+
+  font-size:
+    29px!important;
+
+  line-height:
+    1!important;
+
+  font-family:
+    "Apple Color Emoji",
+    "Segoe UI Emoji",
+    "Noto Color Emoji",
+    sans-serif!important;
+
+  font-weight:
+    400!important;
+
+  filter:
+    drop-shadow(
+      0 4px 7px
+      rgba(0,0,0,.32)
+    )!important;
+
+}
+
+
+/* ==========================================================
+   CARD AUTOMATICO
+   ========================================================== */
+
+#gphv11PlayerCard{
+
+  display:none;
+
+  position:relative;
+
+  min-height:
+    174px;
+
+  margin:
+    14px 0 11px;
+
+  padding:
+    16px;
+
+  overflow:hidden;
+
+  grid-template-columns:
+    minmax(0,1fr)
+    143px;
+
+  gap:
+    12px;
+
+  align-items:center;
+
+  border:
+    1px solid
+    rgba(92,222,55,.77);
+
+  border-radius:
+    19px;
+
+  background:
+    rgba(5,20,24,.91);
+
+  box-shadow:
+    0 17px 35px
+    rgba(0,0,0,.22);
+
+}
+
+
+#gphv11PlayerCard.show{
+
+  display:grid;
+
+}
+
+
+#gphv11PlayerCard::before{
+
+  content:"";
+
+  position:absolute;
+
+  inset:0;
+
+  z-index:0;
+
+  background:
+
+    linear-gradient(
+      90deg,
+      rgba(4,17,23,.97) 0%,
+      rgba(4,18,22,.84) 48%,
+      rgba(6,28,12,.32) 100%
+    ),
+
+    url("./assets/greenpark-home-field.jpg")
+    center /
+    cover
+    no-repeat;
+
+  opacity:.82;
+
+}
+
+
+#gphv11PlayerCard::after{
+
+  content:"";
+
+  position:absolute;
+
+  width:190px;
+  height:190px;
+
+  right:-27px;
+  top:-12px;
+
+  border-radius:50%;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(83,225,48,.22),
+      transparent 67%
+    );
+
+}
+
+
+#gphv11PlayerCard > *{
+
+  position:relative;
+
+  z-index:2;
+
+}
+
+
+/* textos */
+
+.gphv11-card-kicker{
+
+  color:
+    var(--green2);
+
+  font-size:
+    10px;
+
+  font-weight:
+    950;
+
+  letter-spacing:
+    .05em;
+
+}
+
+
+.gphv11-card-title{
+
+  margin-top:
+    5px;
+
+  color:#fff;
+
+  font-size:
+    21px;
+
+  font-weight:
+    950;
+
+  line-height:
+    1;
+
+}
+
+
+.gphv11-card-name{
+
+  margin-top:
+    8px;
+
+  overflow:hidden;
+
+  color:#d9e2dd;
+
+  font-size:
+    11px;
+
+  font-weight:
+    900;
+
+  white-space:
+    nowrap;
+
+  text-overflow:
+    ellipsis;
+
+}
+
+
+.gphv11-card-help{
+
+  margin-top:
+    6px;
+
+  color:#99aaa1;
+
+  font-size:
+    9px;
+
+  line-height:
+    1.4;
+
+}
+
+
+/* ==========================================================
+   FOTO
+   ========================================================== */
+
+.gphv11-portrait-wrap{
+
+  position:relative;
+
+  width:
+    140px;
+
+  height:
+    140px;
+
+}
+
+
+.gphv11-portrait{
+
+  width:
+    140px;
+
+  height:
+    140px;
+
+  overflow:hidden;
+
+  display:grid;
+
+  place-items:center;
+
+  border:
+    3px solid
+    var(--green);
+
+  border-radius:
+    50%;
+
+  background:
+    url("./assets/greenpark-home-field.jpg")
+    center /
+    cover
+    no-repeat;
+
+  box-shadow:
+
+    0 0 0 4px
+    rgba(20,48,29,.78),
+
+    0 0 27px
+    rgba(83,220,47,.37);
+
+}
+
+
+.gphv11-portrait img{
+
+  width:100%;
+  height:100%;
+
+  display:block;
+
+  object-fit:cover;
+
+  object-position:
+    center 25%;
+
+  /*
+   * Tratamento leve da selfie.
+   * Nao altera formato de rosto.
+   */
+  filter:
+    contrast(1.08)
+    saturate(1.10)
+    brightness(1.03);
+
+}
+
+
+/* vinheta esportiva */
+
+.gphv11-portrait::after{
+
+  content:"GREEN PARK FC";
+
+  position:absolute;
+
+  left:11px;
+  right:11px;
+  bottom:9px;
+
+  padding:
+    5px 3px;
+
+  border-radius:
+    999px;
+
+  background:
+    rgba(3,17,10,.80);
+
+  color:#fff;
+
+  font-size:
+    7px;
+
+  font-weight:
+    950;
+
+  text-align:center;
+
+  letter-spacing:
+    .06em;
+
+}
+
+
+.gphv11-card-check{
+
+  position:absolute;
+
+  right:
+    -1px;
+
+  bottom:
+    5px;
+
+  width:
+    35px;
+
+  height:
+    35px;
+
+  display:grid;
+
+  place-items:center;
+
+  z-index:4;
+
+  border:
+    2px solid
+    rgba(4,17,10,.80);
+
+  border-radius:
+    11px;
+
+  background:
+    var(--green);
+
+  color:#102011;
+
+  font-size:
+    18px;
+
+  font-weight:
+    950;
+
+}
+
+
+/* ==========================================================
+   PAGINA VOU / NAO VOU
+   ========================================================== */
+
+#confirmationView .confirm-card{
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(8,23,30,.95),
+      rgba(6,19,25,.91)
+    )!important;
+
+  border:
+    1px solid
+    rgba(210,230,220,.20)!important;
+
+  backdrop-filter:
+    blur(9px);
+
+  -webkit-backdrop-filter:
+    blur(9px);
+
+  box-shadow:
+    0 17px 38px
+    rgba(0,0,0,.22);
+
+}
+
+
+#confirmationView .confirm-card h2{
+
+  color:#fff!important;
+
+}
+
+
+#confirmationView .confirm-card p{
+
+  color:#aab7b0!important;
+
+}
+
+
+/* VOU */
+
+#confirmationView .decision.yes{
+
+  box-shadow:
+    0 9px 22px
+    rgba(86,213,46,.22);
+
+}
+
+
+/* NAO VOU */
+
+#confirmationView .decision.no{
+
+  background:
+    rgba(53,20,25,.86)!important;
+
+  border-color:
+    rgba(220,80,80,.50)!important;
+
+  backdrop-filter:
+    blur(6px);
+
+}
+
+
+/* titulo da pagina */
+
+#confirmationView .page-head{
+
+  padding:
+    5px 0;
+
+}
+
+
+#confirmationView .back-btn{
+
+  background:
+    rgba(8,22,29,.85)!important;
+
+  backdrop-filter:
+    blur(6px);
+
+}
+
+
+/* ==========================================================
+   RESPONSIVO
+   ========================================================== */
+
+@media(max-width:370px){
+
+  #homeView .quick b{
+
+    font-size:
+      26px!important;
+
+  }
+
+
+  #homeView .quick{
+
+    min-height:
+      68px!important;
+
+  }
+
+
+  #gphv11PlayerCard{
+
+    grid-template-columns:
+      minmax(0,1fr)
+      116px;
+
+    min-height:
+      148px;
+
+    padding:
+      13px;
+
+  }
+
+
+  .gphv11-portrait-wrap,
+  .gphv11-portrait{
+
+    width:
+      114px;
+
+    height:
+      114px;
+
+  }
+
+
+  .gphv11-card-title{
+
+    font-size:
+      18px;
+
+  }
+
+}
