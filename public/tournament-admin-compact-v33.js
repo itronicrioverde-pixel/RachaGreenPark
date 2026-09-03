@@ -1,4 +1,5 @@
 /* GREENPARK_TOURNAMENT_ADMIN_COMPACT_V33 */
+/* GREENPARK_TOURNAMENT_ADMIN_COMPACT_FIX_V331 */
 
 
 function addCompactStyle(){
@@ -545,7 +546,9 @@ function shortenLabels(){
 
       if(
         label &&
-        names[index]
+        names[index] &&
+        label.textContent !==
+          names[index]
       ){
         label.textContent =
           names[index];
@@ -608,33 +611,17 @@ async function init(){
   }
 
 
-  const view =
-    document.getElementById(
-      'tournamentsView'
-    );
-
-
-  if(view){
-
-    const observer =
-      new MutationObserver(
-        () => {
-
-          shortenLabels();
-
-        }
-      );
-
-
-    observer.observe(
-      view,
-      {
-        childList:true,
-        subtree:true
-      }
-    );
-
-  }
+  /*
+   * V3.3.1
+   *
+   * Não observamos mais alterações internas da tela.
+   * O observer antigo reagia às próprias mudanças
+   * feitas por shortenLabels(), criando um ciclo
+   * contínuo no navegador.
+   *
+   * O formulário já foi encontrado no loop acima,
+   * portanto a compactação fica aplicada sem observer.
+   */
 
 }
 
