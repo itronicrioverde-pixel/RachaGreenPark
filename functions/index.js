@@ -109,7 +109,21 @@ async function sendPixConfirmedPushes(
     const adminSnapshot = await db.collection("players").doc(ADMIN_UID).get();
     const adminData = adminSnapshot.exists ?
       adminSnapshot.data() || {} : {};
-    const adminTokens = collectFcmTokens(adminData);
+
+    /*
+     * HOTFIX V24:
+     * o teste privado do Admin usa o token atual deste iPhone e funcionou.
+     * O campo fcmTokens pode acumular registros antigos/expirados.
+     * Para o aviso financeiro usamos primeiro SOMENTE o token principal
+     * mais recente (fcmToken), evitando que tokens antigos interfiram.
+     */
+    const primaryAdminToken =
+      String(adminData.fcmToken || "").trim();
+
+    const adminTokens =
+      primaryAdminToken ?
+        [primaryAdminToken] :
+        collectFcmTokens(adminData);
 
     if (adminTokens.length) {
       const claimed = await claimPixPush(
@@ -154,6 +168,7 @@ async function sendPixConfirmedPushes(
           console.log(
               "Push Pix admin enviado:",
               orderId,
+              "modo=" + (primaryAdminToken ? "token-principal" : "fallback"),
               "sucessos=" + Number(pushResult.successCount || 0),
               "falhas=" + Number(pushResult.failureCount || 0),
           );
