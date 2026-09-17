@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <!-- GREEN PARK BUILD: 2026-09-17-v20-auth-cadastro -->
+  <!-- GREEN PARK BUILD: 2026-09-17-v21-push-admin-recovery -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#071018">
@@ -9260,6 +9260,7 @@ import {
 import {
   getMessaging,
   getToken,
+  deleteToken,
   onMessage,
   isSupported as isMessagingSupported
 } from 'https://www.gstatic.com/firebasejs/12.11.0/firebase-messaging.js';
@@ -10139,6 +10140,114 @@ let messagingInstance = null;
     return token;
   }
 
+  // GREENPARK_PUSH_ADMIN_RECOVERY_V21
+  // Quando o FCM informa que o registro antigo expirou,
+  // apagar o token local é insuficiente: getToken() pode devolver
+  // novamente o mesmo registro inválido. deleteToken() força o
+  // Firebase Messaging a criar uma inscrição Push realmente nova.
+  async function renewAdminPushToken(){
+    if(!isAdminUser()){
+      throw new Error(
+        'Entre como administrador antes de renovar as notificações.'
+      );
+    }
+
+    if(needsIOSHomeScreenInstall()){
+      showIOSPushInstallInstructions();
+      throw new Error(
+        'Abra o Green Park pelo ícone da Tela de Início para renovar as notificações.'
+      );
+    }
+
+    if(
+      !('Notification' in window) ||
+      !('serviceWorker' in navigator)
+    ){
+      throw new Error(
+        'Este aparelho não oferece suporte a notificações Web Push.'
+      );
+    }
+
+    if(Notification.permission !== 'granted'){
+      const permission =
+        await Notification.requestPermission();
+
+      if(permission !== 'granted'){
+        throw new Error(
+          'Permissão de notificações não foi concedida.'
+        );
+      }
+    }
+
+    const registration =
+      await navigator.serviceWorker.register(
+        './firebase-messaging-sw.js'
+      );
+
+    await navigator.serviceWorker.ready;
+
+    const messaging =
+      await prepareMessaging();
+
+    // Remove o registro FCM vencido do navegador.
+    try{
+      await deleteToken(messaging);
+    }catch(error){
+      console.warn(
+        'Não foi possível apagar o token Push anterior:',
+        error
+      );
+    }
+
+    localStorage.removeItem(
+      'greenpark_admin_fcm_token'
+    );
+
+    adminFcmToken.value = '';
+    adminFcmToken.classList.remove('show');
+
+    // Pequena espera para o PushManager/iOS concluir a remoção.
+    await new Promise(resolve =>
+      setTimeout(resolve, 700)
+    );
+
+    const token =
+      await getToken(messaging, {
+        vapidKey: VAPID_PUBLIC_KEY,
+        serviceWorkerRegistration: registration
+      });
+
+    if(!token){
+      throw new Error(
+        'O Firebase não conseguiu criar um novo registro Push neste iPhone.'
+      );
+    }
+
+    await salvarMeuPushTokenCall({
+      token
+    });
+
+    localStorage.setItem(
+      'greenpark_admin_fcm_token',
+      token
+    );
+
+    adminFcmToken.value = token;
+    adminFcmToken.classList.add('show');
+    copyFcmTokenButton.classList.add('show');
+
+    enablePushButton.textContent =
+      'NOTIFICAÇÕES ATIVADAS ✓';
+
+    setPushState(
+      'Registro renovado neste iPhone. As notificações estão ativas.',
+      'ok'
+    );
+
+    return token;
+  }
+
+
   async function refreshPushTokenSilently(uid, storageKey){
     if(!uid) return '';
     if(needsIOSHomeScreenInstall()) return '';
@@ -10625,19 +10734,96 @@ let messagingInstance = null;
         error
       );
 
+      const message =
+        String(
+          error?.message ||
+          'Não foi possível enviar o teste.'
+        );
+
+      const expiredRegistration =
+        /registro Push deste aparelho expirou/i.test(message) ||
+        /registration-token-not-registered/i.test(message) ||
+        /requested entity was not found/i.test(message);
+
+      if(expiredRegistration){
+        try{
+          setAdminPushTestState(
+            'Registro expirado. Renovando automaticamente este iPhone...'
+          );
+
+          sendAdminPushTestButton.textContent =
+            'RENOVANDO NOTIFICAÇÕES...';
+
+          const newToken =
+            await renewAdminPushToken();
+
+          sendAdminPushTestButton.textContent =
+            'TESTANDO NOVO REGISTRO...';
+
+          const retry =
+            await enviarTestePushAdminCall({
+              token:newToken
+            });
+
+          if(
+            Number(retry.data?.sent || 0) !== 1
+          ){
+            throw new Error(
+              'O Firebase não confirmou o teste após renovar o registro.'
+            );
+          }
+
+          setAdminPushTestState(
+            'Novo registro criado. Teste enviado para este iPhone.',
+            'ok'
+          );
+
+          sendAdminPushTestButton.textContent =
+            'TESTE ENVIADO ✓';
+
+          setTimeout(() => {
+            if(sendAdminPushTestButton){
+              sendAdminPushTestButton.textContent =
+                originalText;
+            }
+          }, 2600);
+
+          await refreshAdminPushOverview();
+
+          return;
+        }catch(renewError){
+          console.error(
+            'Falha renovando Push do Admin:',
+            renewError
+          );
+
+          setAdminPushTestState(
+            renewError?.message ||
+            'Não foi possível renovar o registro Push.',
+            'error'
+          );
+
+          sendAdminPushTestButton.textContent =
+            originalText;
+
+          alert(
+            renewError?.message ||
+            'Não foi possível renovar as notificações deste iPhone.'
+          );
+
+          return;
+        }
+      }
+
       setAdminPushTestState(
-        error?.message ||
-        'Não foi possível enviar o teste.',
+        message,
         'error'
       );
 
       sendAdminPushTestButton.textContent =
         originalText;
 
-      alert(
-        error?.message ||
-        'Não foi possível enviar o teste Push.'
-      );
+      alert(message);
     }finally{
       sendAdminPushTestButton.disabled = false;
     }
