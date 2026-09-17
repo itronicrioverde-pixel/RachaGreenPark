@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <!-- GREEN PARK BUILD: 2026-08-27-v18-admin-cancelar-excluir-foto -->
+  <!-- GREEN PARK BUILD: 2026-09-17-v20-auth-cadastro -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#071018">
@@ -11051,9 +11051,37 @@ let messagingInstance = null;
     });
   }
 
+  // GREENPARK_AUTH_RECOVERY_V20
+  // Valida a sessão anônima antes de usá-la.
   async function ensureFirebasePlayer(){
-    if(auth.currentUser) return auth.currentUser;
-    const result = await signInAnonymously(auth);
+    const current = auth.currentUser;
+
+    if(current){
+      try{
+        await current.getIdToken(true);
+        return current;
+      }catch(error){
+        console.warn(
+          'Sessão Firebase antiga/inválida. Criando nova sessão anônima.',
+          error
+        );
+
+        try{
+          await signOut(auth);
+        }catch(signOutError){
+          console.warn(
+            'Falha ao limpar sessão antiga:',
+            signOutError
+          );
+        }
+      }
+    }
+
+    const result =
+      await signInAnonymously(auth);
+
+    await result.user.getIdToken(true);
+
     return result.user;
   }
 
