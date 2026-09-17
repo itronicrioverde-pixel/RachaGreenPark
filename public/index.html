@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <!-- GREEN PARK BUILD: 2026-09-17-v21-push-admin-recovery -->
+  <!-- GREEN PARK BUILD: 2026-09-17-v22-perfil-obrigatorio -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#071018">
@@ -15692,18 +15692,37 @@ async function removeSponsorLogo(slot){
         throw new Error('Saia do modo administrador para confirmar presença como jogador.');
       }
 
-      // Atualiza o perfil local diretamente da nuvem antes de decidir o fluxo.
+      // GREENPARK_PROFILE_COMPLETENESS_V22
+      // A nuvem é a fonte oficial do perfil. Campos ausentes no Firestore
+      // precisam limpar valores antigos do aparelho; caso contrário um
+      // e-mail/foto velho do localStorage pode fazer o app acreditar
+      // incorretamente que o cadastro está completo.
       const snap = await getDoc(doc(db, 'players', user.uid));
+      const cloudProfile =
+        snap.exists()
+          ? (snap.data() || {})
+          : {};
+
       if(snap.exists()){
-        const p = snap.data() || {};
-        if(p.name) state.currentUser.name = p.name;
-        if(p.phone) state.currentUser.phone = p.phone;
-        if(p.email) state.currentUser.email = p.email;
+        state.currentUser.name =
+          String(cloudProfile.name || '').trim();
+
+        state.currentUser.phone =
+          String(cloudProfile.phone || '').trim();
+
+        state.currentUser.email =
+          String(cloudProfile.email || '').trim();
+
         state.currentUser.position =
-          p.position === 'goalkeeper'
+          cloudProfile.position === 'goalkeeper'
             ? 'goalkeeper'
             : 'field';
-        if(p.photoURL){ state.currentUser.photoURL = p.photoURL; state.currentUser.photo = p.photoURL; }
+
+        state.currentUser.photoURL =
+          String(cloudProfile.photoURL || '').trim();
+
+        state.currentUser.photo =
+          state.currentUser.photoURL;
       }
 
       const planResult = await obterMeuPlanoCall({});
@@ -15731,16 +15750,19 @@ async function removeSponsorLogo(slot){
 
       const existingProfileHasPhoto =
         !!String(
-          state.currentUser.photoURL ||
-          state.currentUser.photo ||
-          ''
+          cloudProfile.photoURL || ''
         ).trim();
+
+      const existingProfileHasValidEmail =
+        isValidPaymentEmail(
+          cloudProfile.email || ''
+        );
 
       const existingProfileReady =
         snap.exists() &&
-        !!String(state.currentUser.name || '').trim() &&
-        !!String(state.currentUser.phone || '').trim() &&
-        !!String(state.currentUser.email || '').trim() &&
+        !!String(cloudProfile.name || '').trim() &&
+        !!String(cloudProfile.phone || '').trim() &&
+        existingProfileHasValidEmail &&
         existingProfileHasPhoto;
 
       // Jogador já cadastrado não refaz cadastro a cada racha.
@@ -15800,10 +15822,31 @@ async function removeSponsorLogo(slot){
         return;
       }
 
-      if(snap.exists() && !existingProfileHasPhoto){
+      if(snap.exists() && !existingProfileReady){
+        const missingProfileItems = [];
+
+        if(!String(cloudProfile.name || '').trim()){
+          missingProfileItems.push('nome');
+        }
+
+        if(!String(cloudProfile.phone || '').trim()){
+          missingProfileItems.push('telefone');
+        }
+
+        if(!existingProfileHasValidEmail){
+          missingProfileItems.push('e-mail');
+        }
+
+        if(!existingProfileHasPhoto){
+          missingProfileItems.push('foto');
+        }
+
         alert(
-          'FOTO OBRIGATÓRIA\n\n' +
-          'Para entrar no racha, todo atleta precisa ter uma foto de perfil.'
+          'COMPLETE SEU CADASTRO\n\n' +
+          'Antes de reservar sua vaga, falta: ' +
+          missingProfileItems.join(', ') +
+          '.\n\n' +
+          'Preencha os dados abaixo e salve para continuar.'
         );
       }
 
