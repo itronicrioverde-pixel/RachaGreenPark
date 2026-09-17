@@ -10415,3 +10415,158 @@ Object.assign(
     exports,
     require("./contentRulesV1"),
 );
+
+
+// ============================================================
+// GREEN PARK — PUSH PIX ADMIN GARANTIA V23
+//
+// Camada adicional de segurança:
+// sempre que uma pix_order paga/confirmada for atualizada,
+// garante que o Admin receba o Push caso adminPushSentAt
+// ainda não exista.
+//
+// Não altera valor, status financeiro ou confirmação do Pix.
+// ============================================================
+exports.pixConfirmadoPushGarantiaV23 = onDocumentUpdated(
+    {
+      document: "pix_orders/{orderId}",
+      region: "southamerica-east1",
+      timeoutSeconds: 30,
+    },
+    async (event) => {
+      if (!event.data) {
+        return null;
+      }
+
+      const after =
+        event.data.after.data() || {};
+
+      const orderId =
+        String(event.params.orderId || "").trim();
+
+      if (!orderId) {
+        return null;
+      }
+
+      const status =
+        String(after.status || "").trim();
+
+      const statusDetail =
+        String(
+            after.statusDetail ||
+            after.status_detail ||
+            "",
+        ).trim();
+
+      const paid =
+        after.confirmed === true ||
+        after.webhookConfirmed === true ||
+        after.paid === true ||
+        (
+          status === "processed" &&
+          statusDetail === "accredited"
+        );
+
+      if (!paid) {
+        return null;
+      }
+
+      if (after.adminPushSentAt) {
+        return null;
+      }
+
+      const db =
+        getFirestore();
+
+      const orderRef =
+        db.collection("pix_orders")
+            .doc(orderId);
+
+      /*
+       * Se uma execução antiga deixou claim preso por mais
+       * de 2 minutos, libera para permitir nova tentativa.
+       */
+      if (after.adminPushClaimedAt) {
+        const claimMillis =
+          typeof after.adminPushClaimedAt.toMillis === "function" ?
+            after.adminPushClaimedAt.toMillis() :
+            0;
+
+        const stale =
+          claimMillis > 0 &&
+          Date.now() - claimMillis > 2 * 60 * 1000;
+
+        if (!stale) {
+          return null;
+        }
+
+        await orderRef.set(
+            {
+              adminPushClaimedAt:
+                FieldValue.delete(),
+              adminPushClaimRecoveredAt:
+                FieldValue.serverTimestamp(),
+            },
+            {merge: true},
+        );
+      }
+
+      const userId =
+        String(after.userId || "").trim();
+
+      let playerData = {};
+
+      if (userId) {
+        const playerSnapshot =
+          await db.collection("players")
+              .doc(userId)
+              .get();
+
+        if (playerSnapshot.exists) {
+          playerData =
+            playerSnapshot.data() || {};
+        }
+      }
+
+      try {
+        await sendPixConfirmedPushes(
+            db,
+            {
+              orderId,
+              userId,
+              playerData,
+              includeAdmin: true,
+              includePlayer: false,
+            },
+        );
+
+        const verify =
+          await orderRef.get();
+
+        const verifyData =
+          verify.exists ?
+            verify.data() || {} :
+            {};
+
+        if (verifyData.adminPushSentAt) {
+          console.log(
+              "V23 Push Pix Admin garantido:",
+              orderId,
+          );
+        } else {
+          console.warn(
+              "V23 order paga ainda sem Push Admin:",
+              orderId,
+          );
+        }
+      } catch (error) {
+        console.error(
+            "V23 falha garantindo Push Pix Admin:",
+            orderId,
+            error?.message || error,
+        );
+      }
+
+      return null;
+    },
+);
