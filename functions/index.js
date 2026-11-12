@@ -478,6 +478,95 @@ function greenParkRequirePlayerPhoto(playerData = {}) {
 }
 
 
+exports.salvarMeuCadastroPerfil = onCall(
+    {
+      invoker: "public",
+      region: "southamerica-east1",
+      timeoutSeconds: 20,
+    },
+    async (request) => {
+      if (!request.auth) {
+        throw new HttpsError(
+            "unauthenticated",
+            "Jogador precisa estar conectado.",
+        );
+      }
+
+      const uid = String(request.auth.uid || "").trim();
+
+      if (!uid) {
+        throw new HttpsError(
+            "unauthenticated",
+            "Sessão do jogador inválida.",
+        );
+      }
+
+      if (uid === GREEN_PARK_ADMIN_UID_FINANCE) {
+        throw new HttpsError(
+            "failed-precondition",
+            "Saia do modo administrador para cadastrar um jogador.",
+        );
+      }
+
+      const data = request.data || {};
+      const name = String(data.name || "")
+          .trim()
+          .replace(/\s+/g, " ")
+          .slice(0, 80)
+          .toLocaleUpperCase("pt-BR");
+      const phone = String(data.phone || "").trim().slice(0, 30);
+      const phoneDigits = phone.replace(/\D/g, "");
+      const email = String(data.email || "").trim().toLowerCase().slice(0, 254);
+      const photoURL = String(data.photoURL || "").trim().slice(0, 2000);
+      const photoStoragePath = String(data.photoStoragePath || "").trim().slice(0, 500);
+
+      if (!name) {
+        throw new HttpsError("invalid-argument", "Informe seu nome ou apelido.");
+      }
+
+      if (phoneDigits.length < 10) {
+        throw new HttpsError("invalid-argument", "Informe um telefone válido com DDD.");
+      }
+
+      if (!greenParkValidPayerEmail(email)) {
+        throw new HttpsError("invalid-argument", "Informe um e-mail válido.");
+      }
+
+      if (!photoURL.startsWith("https://") && !photoURL.startsWith("http://")) {
+        throw new HttpsError("failed-precondition", "A foto de perfil é obrigatória.");
+      }
+
+      if (photoStoragePath && !photoStoragePath.startsWith("players/" + uid + "/")) {
+        throw new HttpsError("permission-denied", "Caminho da foto inválido.");
+      }
+
+      const db = getFirestore();
+      const ref = db.collection("players").doc(uid);
+      const snapshot = await ref.get();
+      const current = snapshot.exists ? snapshot.data() || {} : {};
+      const currentStatus = String(current.status || "").trim().toLowerCase();
+      const status = currentStatus === "confirmed" ? "confirmed" : "registered";
+
+      const patch = {
+        uid,
+        name,
+        phone,
+        email,
+        photoURL,
+        status,
+        updatedAt: FieldValue.serverTimestamp(),
+      };
+
+      if (photoStoragePath) patch.photoStoragePath = photoStoragePath;
+      if (!snapshot.exists) patch.createdAt = FieldValue.serverTimestamp();
+
+      await ref.set(patch, {merge: true});
+
+      return {ok: true, uid, status, name, email, photoURL};
+    },
+);
+
+
 exports.criarPagamentoPix = onCall(
     {
       region: "southamerica-east1",

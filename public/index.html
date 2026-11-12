@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <!-- GREEN PARK BUILD: 2026-09-17-v22-perfil-obrigatorio -->
+  <!-- GREEN PARK BUILD: 2026-11-11-v25-cadastro-reserva-pix -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#071018">
@@ -9295,6 +9295,7 @@ const buscarLocalCall = httpsCallable(functions, 'buscarLocal');
 const listarConfirmadosCall = httpsCallable(functions, 'listarConfirmados');
 const listarJogadoresAdminCall = httpsCallable(functions, 'listarJogadoresAdmin');
 const definirPosicaoJogadorCall = httpsCallable(functions, 'definirPosicaoJogador');
+const salvarMeuCadastroPerfilCall = httpsCallable(functions, 'salvarMeuCadastroPerfil');
 const cancelarJogadorDoRachaCall = httpsCallable(functions, 'cancelarJogadorDoRacha');
 const excluirJogadorDefinitivamenteCall = httpsCallable(functions, 'excluirJogadorDefinitivamente');
 const salvarMinhaPosicaoCall = httpsCallable(functions, 'salvarMinhaPosicao');
@@ -11368,29 +11369,29 @@ let messagingInstance = null;
       state.currentUser.photoURL = photoURL;
     }
 
-    const playerRef = doc(db, 'players', user.uid);
-    const existingPlayer = await getDoc(playerRef);
-    const existingStatus = existingPlayer.exists() ?
-      String(existingPlayer.data()?.status || '') :
-      '';
-
-    // O cadastro nunca pode reconfirmar alguém usando um status antigo do celular.
-    // Se já estiver confirmado no Firebase, preserva; caso contrário vai para registered.
-    const statusToSave = existingStatus === 'confirmed' ? 'confirmed' : 'registered';
-
-    await setDoc(playerRef, {
-      uid: user.uid,
+    // GREENPARK_PROFILE_SAVE_V25
+    // O navegador não grava mais o perfil diretamente no Firestore.
+    // Uma Function autenticada salva somente o documento do próprio usuário.
+    const profileResult = await salvarMeuCadastroPerfilCall({
       name: state.currentUser.name,
       phone: state.currentUser.phone,
       email: state.currentUser.email || '',
       photoURL: photoURL || '',
-      ...(photoStoragePath ? {photoStoragePath} : {}),
-      status: statusToSave,
-      updatedAt: serverTimestamp()
-    }, {merge:true});
+      photoStoragePath: photoStoragePath || ''
+    });
 
-    // A posição é gravada no backend autenticado para não depender
-    // da allowlist do Firestore usada pelo cadastro normal.
+    const savedProfile = profileResult.data || {};
+
+    state.currentUser.status =
+      String(savedProfile.status || 'registered');
+
+    state.currentUser.photoURL =
+      String(savedProfile.photoURL || photoURL || '');
+
+    state.currentUser.photo =
+      state.currentUser.photoURL;
+
+    // A posição continua sendo gravada pelo backend autenticado.
     const positionResult = await salvarMinhaPosicaoCall({
       position:
         state.currentUser.position === 'goalkeeper'
@@ -15728,30 +15729,12 @@ async function removeSponsorLogo(slot){
       const planResult = await obterMeuPlanoCall({});
       const plan = planResult.data || {};
 
-      // Mensalista pago só confirma a lista: não passa pelo Pix de R$ 13.
-      if(plan.monthlyActive === true && state.currentUser.name){
-        const result = await confirmarPresencaMensalistaCall({});
-        state.currentUser.status = 'confirmed';
-        state.currentUser.paymentReported = true;
-        state.currentUser.paymentType = 'monthly';
-        state.currentUser.pixOrderId = '';
-        state.currentUser.pixStatus = 'paid';
-        currentPixOrderId = '';
-        saveState();
-        syncLocalUserConfirmation();
-        if(remoteRacha && result.data?.confirmedCount !== undefined){
-          remoteRacha.confirmedCount = Number(result.data.confirmedCount) || 0;
-        }
-        renderHome();
-        showView('homeView');
-        alert('MENSALIDADE ATIVA ✓\nSua presença foi confirmada sem novo pagamento.');
-        return;
-      }
+      const existingProfilePhotoURL =
+        String(cloudProfile.photoURL || '').trim();
 
       const existingProfileHasPhoto =
-        !!String(
-          cloudProfile.photoURL || ''
-        ).trim();
+        existingProfilePhotoURL.startsWith('https://') ||
+        existingProfilePhotoURL.startsWith('http://');
 
       const existingProfileHasValidEmail =
         isValidPaymentEmail(
@@ -15764,6 +15747,38 @@ async function removeSponsorLogo(slot){
         !!String(cloudProfile.phone || '').trim() &&
         existingProfileHasValidEmail &&
         existingProfileHasPhoto;
+
+      // V25: mensalista também precisa ter o perfil realmente completo.
+      if(
+        plan.monthlyActive === true &&
+        existingProfileReady
+      ){
+        const result = await confirmarPresencaMensalistaCall({});
+        state.currentUser.status = 'confirmed';
+        state.currentUser.paymentReported = true;
+        state.currentUser.paymentType = 'monthly';
+        state.currentUser.pixOrderId = '';
+        state.currentUser.pixQrCode = '';
+        state.currentUser.pixQrCodeBase64 = '';
+        state.currentUser.pixStatus = 'paid';
+        state.currentUser.pixProvider = '';
+        currentPixOrderId = '';
+        stopPixPolling();
+        saveState();
+        syncLocalUserConfirmation();
+
+        if(remoteRacha && result.data?.confirmedCount !== undefined){
+          remoteRacha.confirmedCount = Number(result.data.confirmedCount) || 0;
+        }
+
+        renderHome();
+        showView('homeView');
+        alert(
+          'MENSALIDADE ATIVA ✓\n' +
+          'Sua presença foi confirmada sem novo pagamento.'
+        );
+        return;
+      }
 
       // Jogador já cadastrado não refaz cadastro a cada racha.
       if(existingProfileReady){
@@ -16088,13 +16103,7 @@ async function removeSponsorLogo(slot){
       state.currentUser.email = email;
       state.currentUser.paymentType = selectedPaymentType;
 
-      await setDoc(doc(db, 'players', user.uid), {
-        uid: user.uid,
-        email,
-        paymentType: selectedPaymentType,
-        updatedAt: serverTimestamp()
-      }, {merge:true});
-
+      // V25: sem escrita direta no Firestore antes do Pix.
       const result = await criarPagamentoPixCall({
         type: selectedPaymentType,
         email
@@ -16367,7 +16376,8 @@ async function removeSponsorLogo(slot){
       setTimeout(() => paymentFlow.scrollIntoView({behavior:'smooth',block:'start'}),100);
     }catch(error){
       console.error(error);
-      alert('Não foi possível salvar o cadastro no Firebase: ' + error.message);
+      const message = String(error?.message || 'erro desconhecido');
+      alert('Não foi possível salvar o cadastro.\n\n' + message);
     }finally{
       finishRegistration.disabled = false;
       finishRegistration.textContent = originalText;
